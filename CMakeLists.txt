@@ -27,7 +27,7 @@ INCLUDE_DIRECTORIES(SYSTEM ${ROOT_INCLUDE_DIR})
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 
-add_definitions(-g -O3 -std=c++11 -W -Wall -Wpointer-arith)
+add_definitions(-g -O3 -std=c++17 -W -Wall -Wpointer-arith)
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 #

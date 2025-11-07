@@ -14,13 +14,13 @@ public:
   BM_SteppingAction();
   virtual ~BM_SteppingAction();
 
-  static BM_SteppingAction* Instance();
-  virtual void UserSteppingAction(const G4Step*);
+  static BM_SteppingAction *Instance();
+  virtual void UserSteppingAction(const G4Step *);
   void Reset();
-  void SetVolume(G4LogicalVolume* volume){}
+  void SetVolume(G4LogicalVolume *volume) {}
 
 private:
-  static BM_SteppingAction* fgInstance;
+  static BM_SteppingAction *fgInstance;
 };
 
 #endif // BM_STEPPINGACTION_HH

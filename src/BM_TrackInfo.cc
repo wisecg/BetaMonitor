@@ -5,17 +5,16 @@
 
 G4Allocator<BM_TrackInfo> aTrackInfoAllocator;
 
-BM_TrackInfo::BM_TrackInfo():
-  originalTrackID(0),
-  particleDefinition(0),
-  originalEnergy(0.),
-  originalTime(0.)
+BM_TrackInfo::BM_TrackInfo() : originalTrackID(0),
+                               particleDefinition(0),
+                               originalEnergy(0.),
+                               originalTime(0.)
 {
   originalMomentum = G4ThreeVector(0., 0., 0.);
   angleIsRead_ = FALSE;
 }
 
-BM_TrackInfo::BM_TrackInfo(const G4Track* aTrack)
+BM_TrackInfo::BM_TrackInfo(const G4Track *aTrack)
 {
   originalTrackID = aTrack->GetTrackID();
   particleDefinition = aTrack->GetDefinition();
@@ -24,7 +23,7 @@ BM_TrackInfo::BM_TrackInfo(const G4Track* aTrack)
   originalTime = aTrack->GetGlobalTime();
 }
 
-BM_TrackInfo::BM_TrackInfo(const G4Track* aTrack, bool beta2)
+BM_TrackInfo::BM_TrackInfo(const G4Track *aTrack, bool beta2)
 {
   originalTrackID = 3;
   particleDefinition = aTrack->GetDefinition();
@@ -33,16 +32,16 @@ BM_TrackInfo::BM_TrackInfo(const G4Track* aTrack, bool beta2)
   originalTime = aTrack->GetGlobalTime();
 }
 
-BM_TrackInfo::BM_TrackInfo(const BM_TrackInfo* aTrackInfo)
+BM_TrackInfo::BM_TrackInfo(const BM_TrackInfo *aTrackInfo)
 {
-    originalTrackID = aTrackInfo->originalTrackID;
-    particleDefinition = aTrackInfo->particleDefinition;
-    originalMomentum = aTrackInfo->originalMomentum;
-    originalEnergy = aTrackInfo->originalEnergy;
-    originalTime = aTrackInfo->originalTime;
+  originalTrackID = aTrackInfo->originalTrackID;
+  particleDefinition = aTrackInfo->particleDefinition;
+  originalMomentum = aTrackInfo->originalMomentum;
+  originalEnergy = aTrackInfo->originalEnergy;
+  originalTime = aTrackInfo->originalTime;
 }
 
-BM_TrackInfo::~BM_TrackInfo(){}
+BM_TrackInfo::~BM_TrackInfo() {}
 
 void BM_TrackInfo::Print() const
 {

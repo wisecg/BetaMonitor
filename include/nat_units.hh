@@ -5,14 +5,14 @@
 
 #ifndef NAT_UNITS_HH
 #define NAT_UNITS_HH
-//#define MEHLMAN_UNITS // Use the outdated/imprecise units that Mehlman used
+// #define MEHLMAN_UNITS // Use the outdated/imprecise units that Mehlman used
 
 namespace NAT
 {
    // Mathematical constants
 #ifdef MEHLMAN_UNITS
    static constexpr double pi = 3.1415926535; // Mehlman's
-   static constexpr double e = 2.71828183; // Mehlman's
+   static constexpr double e = 2.71828183;    // Mehlman's
 #else
    static constexpr double pi = 3.141592653589793238;
    static constexpr double e = 2.718281828459045235;
@@ -54,11 +54,11 @@ namespace NAT
 
    // Physical constants and particular properties
 #ifdef MEHLMAN_UNITS
-   static constexpr double alpha_em = 7.297352537e-3; // Mehlman's
-   static constexpr double GF = 1.11637e-5 / GeV / GeV; // Fermi constant // Mehlman's
+   static constexpr double alpha_em = 7.297352537e-3;          // Mehlman's
+   static constexpr double GF = 1.11637e-5 / GeV / GeV;        // Fermi constant // Mehlman's
    static constexpr double mass_e = 0.510998910 * MeV / c / c; // Mehlman's
-   static constexpr double mass_p = 938.272013 * MeV / c / c; // Mehlman's
-   static constexpr double AMU = 931.494028 * MeV / c / c; // Mehlman's
+   static constexpr double mass_p = 938.272013 * MeV / c / c;  // Mehlman's
+   static constexpr double AMU = 931.494028 * MeV / c / c;     // Mehlman's
 #else
    static constexpr double alpha_em = 7.2973525664e-3;
    static constexpr double GF = 1.1163787e-5 / GeV / GeV; // Fermi constant

@@ -26,14 +26,12 @@
 #ifndef BM_DETECTOR_H
 #define BM_DETECTOR_H
 
-
 #include "G4VUserDetectorConstruction.hh"
 #include "globals.hh"
 #include "G4Material.hh"
 #include "G4NistManager.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4SDManager.hh"
-
 
 #include "BM_TrackInfo.hh"
 #include "G4VUserDetectorConstruction.hh"
@@ -48,39 +46,36 @@ class MagField;
 
 class BM_Detector : public G4VUserDetectorConstruction
 {
-  public:
-    BM_Detector();
-    virtual ~BM_Detector();
+public:
+  BM_Detector();
+  virtual ~BM_Detector();
 
-    virtual G4VPhysicalVolume* Construct();
-    virtual void ConstructSDandField();
+  virtual G4VPhysicalVolume *Construct();
+  virtual void ConstructSDandField();
 
-    G4LogicalVolume* GetScoringVolume() const { return fScoringVolume; }
-    G4SDManager* SDMan;
-    G4LogicalVolume* flogicDetector1;
-    G4LogicalVolume* flogicDetector5;
-    G4LogicalVolume* flogicDetector6;
-    G4LogicalVolume* flogicDetector3;
-    G4LogicalVolume* logicWorld;
-    G4LogicalVolume* logicSiPM1;
-    G4LogicalVolume* logicSiPM2;
-    G4LogicalVolume* logicSiPM3;
-    G4LogicalVolume* logicSiPM4;
-    G4LogicalVolume* logicPCB1;
-    G4LogicalVolume* logicPCB2;
-    G4LogicalVolume* logicPCB3;
-    G4LogicalVolume* logicPCB4;
-    G4LogicalVolume* fLogicMagnetic;
-    G4LogicalVolume* logicEnv;
+  G4LogicalVolume *GetScoringVolume() const { return fScoringVolume; }
+  G4SDManager *SDMan;
+  G4LogicalVolume *flogicDetector1;
+  G4LogicalVolume *flogicDetector5;
+  G4LogicalVolume *flogicDetector6;
+  G4LogicalVolume *flogicDetector3;
+  G4LogicalVolume *logicWorld;
+  G4LogicalVolume *logicSiPM1;
+  G4LogicalVolume *logicSiPM2;
+  G4LogicalVolume *logicSiPM3;
+  G4LogicalVolume *logicSiPM4;
+  G4LogicalVolume *logicPCB1;
+  G4LogicalVolume *logicPCB2;
+  G4LogicalVolume *logicPCB3;
+  G4LogicalVolume *logicPCB4;
+  G4LogicalVolume *fLogicMagnetic;
+  G4LogicalVolume *logicEnv;
 
-    static G4UniformMagField* fMagneticField;
-    static G4FieldManager* fFieldMgr;
-  protected:
-    G4LogicalVolume*  fScoringVolume;
+  static G4UniformMagField *fMagneticField;
+  static G4FieldManager *fFieldMgr;
 
-
+protected:
+  G4LogicalVolume *fScoringVolume;
 };
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif

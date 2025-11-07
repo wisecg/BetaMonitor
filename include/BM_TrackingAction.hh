@@ -14,8 +14,8 @@ class BM_TrackingAction : public G4UserTrackingAction
 public:
   BM_TrackingAction();
   virtual ~BM_TrackingAction();
-  void PreUserTrackingAction(const G4Track*);
-  void PostUserTrackingAction(const G4Track*);
+  void PreUserTrackingAction(const G4Track *);
+  void PostUserTrackingAction(const G4Track *);
 };
 
 #endif

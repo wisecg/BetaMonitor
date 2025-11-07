@@ -13,20 +13,20 @@ class G4GenericMessenger;
 
 class MagField : public G4MagneticField
 {
-  public:
-    MagField();
-    virtual ~MagField();
-    
-    virtual void GetFieldValue(const G4double point[4], double* bField ) const;
-    
-    void SetField(G4double val) { fBz = val; }
-    G4double GetField() const { return fBz; }
-    
-  private:
-    void DefineCommands();
+public:
+  MagField();
+  virtual ~MagField();
 
-    G4GenericMessenger* fMessenger;
-    G4double fBz;
+  virtual void GetFieldValue(const G4double point[4], double *bField) const;
+
+  void SetField(G4double val) { fBz = val; }
+  G4double GetField() const { return fBz; }
+
+private:
+  void DefineCommands();
+
+  G4GenericMessenger *fMessenger;
+  G4double fBz;
 };
 
 //-----------------------------------------------------------------------------
