@@ -9,14 +9,16 @@ For viewing and small number simulations run the executable and navigate the GEA
 
 # Output files
 Output files are defined within ```src/BM_Output.cc```. The file paths defined originate from the build directory. 
+
 ## Multicore processing
-The code was written to compute on 16 threads, to add additional threads, follow the pattern of the current outputs within ```src/BM_Output.cc``` and ```include/BM_Output.hh```, as well as the case statements in ```src/BM_EventAction.cc```. 
+~~The code was written to compute on 16 threads, to add additional threads, follow the pattern of the current outputs within `src/BM_Output.cc` and `include/BM_Output.hh`, as well as the case statements in `src/BM_EventAction.cc`.~~
 
-To alter the number of threads used, one can alter the statement within ```BetaMon.cc```:
+~~To alter the number of threads used, one can alter the statement within ```BetaMon.cc```:~~
+~~```runManager->SetNumberOfThreads((G4Threading::G4GetNumberOfCores())-2);```~~
+~~Regardless of the number of cores selected. All output files will be generated, those of higher value than the number of cores used will be empty.~~
 
-```runManager->SetNumberOfThreads((G4Threading::G4GetNumberOfCores())-2);```
+Update Nov 2025 (Clint):  Multithreading support was dropped to simplify the code; this task is ``embarassingly parallel.''  To run with a large number of primaries, simply run multiple single-core processes.
 
-Regardless of the number of cores selected. All output files will be generated, those of higher value than the number of cores used will be empty.
 ## Merging files
 Included in the ```BetaMonitorAnalysis.ipynb``` is the ```load2root``` function which utilizes the uproot library to load in the series of files associated with one simulation and condenses them, after making the cut that the main detector (archaically called SQ) must have some energy deposited by the event. The new root file will contain all events that deposit energy in the detector in the ```[Tree]``` branch, and the total number of simulated events in the ```[Size]``` branch. These can be read in individually via uproot. After condensing these files, one can delete the original separated files to free up disk space.
 

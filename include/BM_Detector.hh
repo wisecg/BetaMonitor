@@ -55,21 +55,14 @@ public:
 
   G4LogicalVolume *GetScoringVolume() const { return fScoringVolume; }
   G4SDManager *SDMan;
+  
+  G4LogicalVolume *flogicDetector6;
+  G4LogicalVolume *fLogicMagnetic;
   G4LogicalVolume *flogicDetector1;
   G4LogicalVolume *flogicDetector5;
-  G4LogicalVolume *flogicDetector6;
   G4LogicalVolume *flogicDetector3;
-  G4LogicalVolume *logicWorld;
-  G4LogicalVolume *logicSiPM1;
-  G4LogicalVolume *logicSiPM2;
-  G4LogicalVolume *logicSiPM3;
-  G4LogicalVolume *logicSiPM4;
-  G4LogicalVolume *logicPCB1;
-  G4LogicalVolume *logicPCB2;
-  G4LogicalVolume *logicPCB3;
-  G4LogicalVolume *logicPCB4;
-  G4LogicalVolume *fLogicMagnetic;
   G4LogicalVolume *logicEnv;
+  G4LogicalVolume *logicWorld;
 
   static G4UniformMagField *fMagneticField;
   static G4FieldManager *fFieldMgr;

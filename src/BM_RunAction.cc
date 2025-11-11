@@ -55,6 +55,8 @@ void BM_RunAction::BeginOfRunAction(const G4Run *aRun)
   //  analysisManager->CreateNtupleDColumn("detSQ_z");
   //  analysisManager->CreateNtupleDColumn("detSQ_t");
   //  analysisManager->FinishNtuple();
+  G4cout << "Run ID:" << aRun->GetRunID() << G4endl;
+  
   BM_Output::Instance()->OpenFile();
   G4RunManager::GetRunManager()->SetRandomNumberStore(false);
 
@@ -72,4 +74,5 @@ void BM_RunAction::EndOfRunAction(const G4Run *aRun)
   // analysisManager->Write();
   // analysisManager->CloseFile();
   BM_Output::Instance()->CloseFile();
+  G4cout << "Finished Run ID:" << aRun->GetRunID() << G4endl;
 }

@@ -60,14 +60,15 @@ void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
 
   // In order to avoid dependence of PrimaryGeneratorAction on DetectorConstruction class we get Envelope volume from G4LogicalVolumeStore.
 
-  // G4cout << "Generator 1" << G4endl;
   G4double branchEn[23] = {511, 897.77, 1442.2, 1770.228, 1063.656, 569.698, 324.25, 1438.35, 312.24, 1426.34, 893.92, 240.10, 1354.20, 881.91, 809.77, 1754.367, 1682.224, 565.8473, 1059.805, 553.8372, 481.6935, 1047.795, 975.651};
   G4double branchIn[23] = {0.076, 0.128, 0.131, 6.87, 74.5, 97.75, 7.50e-06, 0.0000144, 3.20e-05, 6.13e-05, 9.50e-05, 1.88e-04, 3.55e-04, 4.07e-04, 0.00246, 0.0034, 0.0238, 0.111, 0.44, 0.442, 1.537, 1.84, 7.08};
   G4double max_randomBi = 0.0;
-  G4double num_gammas = 6;
-  G4double num_electrons = 17;
-  G4double num_branch = num_gammas + num_electrons;
+  
+  // G4double num_gammas = 6;
+  // G4double num_electrons = 17;
+  // G4double num_branch = num_gammas + num_electrons;
   // max_random = accumulate(branchIn, branchIn+num_branch, max_random);
+
   srand(time(NULL));
   double rando = rand() % 100000000;
   double randnew = rando / 100000000;
@@ -270,7 +271,7 @@ void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   v = 2 * 3.141592653 * G4UniformRand();
   G4double x1 = 0 / 2 * cm + u * cos(v); //-2.68205602104
   G4double y1 = 0 / 2 * cm + u * sin(v);
-  G4double z1 = 1.27 * cm + G4UniformRand() * 16.51 * cm; // 11.13765*cm-2.31115*cm+(G4UniformRand())*16*cm/2;
+  // G4double z1 = 1.27 * cm + G4UniformRand() * 16.51 * cm; // 11.13765*cm-2.31115*cm+(G4UniformRand())*16*cm/2;
 
   G4double vx1 = 2 * G4UniformRand() - 1;
   G4double vy1 = 2 * G4UniformRand() - 1;
@@ -278,11 +279,11 @@ void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   G4double t02 = 10 * G4UniformRand();
 
   // T pipe generator
-  G4double randall = 2 * G4UniformRand() - 1;
-  G4double H1 = 6.75 * 2.54;     // make sure this agrees with Tdv_H1 in BM_Detector.cc
-  G4double h2 = 6.75 * 2.54 / 2; // make sure this agrees with Tdv_h2 in BM_Detector.cc
-  G4bool okay = false;
-  G4double rat = (h2 + rad_new / 2) / (H1 + h2 + rad_new);
+  // G4double randall = 2 * G4UniformRand() - 1;
+  // G4double H1 = 6.75 * 2.54;     // make sure this agrees with Tdv_H1 in BM_Detector.cc
+  // G4double h2 = 6.75 * 2.54 / 2; // make sure this agrees with Tdv_h2 in BM_Detector.cc
+  // G4bool okay = false;
+  // G4double rat = (h2 + rad_new / 2) / (H1 + h2 + rad_new);
   
   // u = sqrt ((rad_new/2) * (rad_new)/2 * G4UniformRand())*cm;
   // v = 2 * 3.141592653* G4UniformRand();
