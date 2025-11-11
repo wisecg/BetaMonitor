@@ -23,50 +23,47 @@ INCLUDE_DIRECTORIES(SYSTEM ${ROOT_INCLUDE_DIR})
 #----------------------------------------------------------------------------
 # Locate sources and headers for this project
 # NB: headers are included so they will show up in IDEs
-#
+
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 
 add_definitions(-g -O3 -std=c++17 -W -Wall -Wpointer-arith)
+
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
-#
+
 add_executable(BetaMon BetaMon.cc ${sources} ${headers})
 target_link_libraries(BetaMon ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
 link_directories(/fastdata)
 target_link_libraries(BetaMon gsl gslcblas)
 
 #----------------------------------------------------------------------------
-# Copy all scripts to the build directory, i.e. the directory in which we
+# Copy scripts to the build directory, i.e. the directory in which we
 # build B1. This is so that we can run the executable directly because it
 # relies on these scripts being in the current working directory.
-#
-set(EXAMPLEB1_SCRIPTS
-  #BetaMon.in
-  #BetaMon.out
-  init.mac
-  init_vis.mac
-  run1.mac
-  run2.mac
-  run3.mac
-  vis.mac
-)
-
-foreach(_script ${EXAMPLEB1_SCRIPTS})
-  configure_file(
-    ${PROJECT_SOURCE_DIR}/${_script}
-    ${PROJECT_BINARY_DIR}/${_script}
-    COPYONLY
-    )
-endforeach()
+# set(EXAMPLEB1_SCRIPTS
+#   #BetaMon.in
+#   #BetaMon.out
+#   init.mac
+#   init_vis.mac
+#   run1.mac
+#   run2.mac
+#   run3.mac
+#   vis.mac
+# )
+# foreach(_script ${EXAMPLEB1_SCRIPTS})
+#   configure_file(
+#     ${PROJECT_SOURCE_DIR}/${_script}
+#     ${PROJECT_BINARY_DIR}/${_script}
+#     COPYONLY
+#     )
+# endforeach()
 
 #----------------------------------------------------------------------------
 # For internal Geant4 use - but has no effect if you build this
 # example standalone
-#
 add_custom_target(B1 DEPENDS BetaMon)
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
-#
 install(TARGETS BetaMon DESTINATION bin)

@@ -1,5 +1,6 @@
 #include <list>
 #include <fstream>
+#include <vector>
 class FileReader
 {
 public:

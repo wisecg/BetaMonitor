@@ -1,20 +1,18 @@
 // BM_RunAction.cc - Implementation of BM_RunAction class
-
-#include "BM_RunAction.hh"
-
 #include "nat_units.hh"
+#include "FileReader.hh"
+#include "g4root.hh"
 
 #include "G4Run.hh"
 #include "G4RunManager.hh"
 #include "G4UnitsTable.hh"
 #include "G4SystemOfUnits.hh"
 
+#include "BM_RunAction.hh"
 #include "BM_PrimaryGenerator.hh"
 #include "BM_EventAction.hh"
 #include "BM_SteppingAction.hh"
 #include "BM_Output.hh"
-#include "FileReader.hh"
-#include "g4root.hh"
 
 BM_RunAction::BM_RunAction() : G4UserRunAction()
 {
@@ -23,9 +21,10 @@ BM_RunAction::BM_RunAction() : G4UserRunAction()
   // analysisManager->SetNtupleDirectoryName("ntuple");
   analysisManager->SetVerboseLevel(1);
   // analysisManager->SetNtupleRowWise(false);
-  //  analysisManager->SetFirstNtupleId(0);
-  //  analysisManager->SetNtupleMerging(true);
+  // analysisManager->SetFirstNtupleId(0);
+  // analysisManager->SetNtupleMerging(true);
 }
+
 BM_RunAction::~BM_RunAction()
 {
   delete G4AnalysisManager::Instance();
@@ -61,11 +60,11 @@ void BM_RunAction::BeginOfRunAction(const G4Run *aRun)
   //  analysisManager->FinishNtuple();
   BM_Output::Instance()->OpenFile();
   G4RunManager::GetRunManager()->SetRandomNumberStore(false);
+
+  G4cout << "CALLING GETANEVENT CLINT" << G4endl;
   FileReader::Instance()->GetAnEvent();
-  // G4cout<<"run 3"<<G4endl;
   // initialize event cumulative quantities
   BM_EventAction::Instance()->Reset();
-  // G4cout<<"run 4"<<G4endl;
   // initialize our event generator
 }
 
@@ -75,5 +74,4 @@ void BM_RunAction::EndOfRunAction(const G4Run *aRun)
   // analysisManager->Write();
   // analysisManager->CloseFile();
   BM_Output::Instance()->CloseFile();
-  // G4cout<<"run 5"<<G4endl;
 }

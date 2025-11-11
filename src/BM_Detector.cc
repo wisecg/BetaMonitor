@@ -82,23 +82,23 @@ BM_Detector::~BM_Detector() {}
 #include "G4Tubs.hh"
 #include "G4Box.hh"
 
-
 G4VPhysicalVolume *BM_Detector::Construct()
 
 {
   // Options to turn on/off certain volumes
-  // DOES NOT WORK CURRENTLY, variables are not saved in if statements in C++, need a separate function for detector, bore, and source
+  // FIXME: DOES NOT WORK -- variables are not saved in if statements in C++, need a separate function for detector, bore, and source
+
   // detectors
   // G4bool OrigMon = false; //top round, bottom round, square, Cu, normal flange
   G4bool SiPMWinston = false; // LargeScin, Cu, normal flange
   G4bool TeleOld = false;     // thinTele, Cu, normal flange
   G4bool SiPMBlake = true;    // SmallScin, Al, cone flange
+  // G4cout << "Running sim with Blake's SiPM geometry." << G4endl;
   G4bool TeleTAMU = false;    // TAMUdE, ?, normal flange?
 
   // source (make sure PrimaryGenerator Agrees)
   G4bool Beamline = true;   // adds the flange and decay volume geometry
   G4bool TabSource = false; // adds table source geometry
-
 
   // Get nist material manager
   G4NistManager *nist = G4NistManager::Instance();
@@ -115,11 +115,13 @@ G4VPhysicalVolume *BM_Detector::Construct()
   G4Material *Kap = nist->FindOrBuildMaterial("G4_KAPTON");
   G4double density = 8030. * mg / cm3;
   G4Material *Stainless_Steel = new G4Material("Stainless_Steel", density, 4);
+  
   // auto pcb = G4Material::GetMaterial("Vetronite");
   auto pcb = new G4Element("Vetronite", 2. * g / cm3, 2); // Fiber glass
   auto el_PCB_Si = new G4Element("Silicon", "Si", 14., 28.0855 * g / mole);
   auto el_PCB_O = new G4Element("Oxygen", "O", 8., 15.9994 * g / mole);
   auto mat_PCB = new G4Material("Vetronite", 2. * g / cm3, 2); // Fiber glass
+  
   mat_PCB->AddElement(el_PCB_Si, 1);
   mat_PCB->AddElement(el_PCB_O, 2);
   Stainless_Steel->AddMaterial(Fe, 72 * perCent);
@@ -154,7 +156,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                         G4ThreeVector(), // at (0,0,0)
                         logicWorld,      // its logical volume
                         "World",         // its name
-                        0,               // its mother  volume
+                        0,               // its mother volume
                         false,           // no boolean operation
                         0,               // copy number
                         checkOverlaps);  // overlaps checking
@@ -231,7 +233,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     G4ThreeVector(0 * cm, 0 * cm, cyl_hdv / 2 + 2 * 1.27 * cm), // 11.13765*cm-2.31115*cm+3.9624/2*cm),         //old (-2.68205602104/2*cm, -2.68205602104/2*cm, 11.13765*cm+cyl_hdv/2)
                     logicEnv,                                                   // its logical volume
                     "Envelope",                                                 // its name
-                    logicWorld,                                                 // its mother  volume
+                    logicWorld,                                                 // its mother volume
                     false,                                                      // no boolean operation
                     0,                                                          // copy number
                     checkOverlaps);                                             // overlaps checking
@@ -246,7 +248,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     G4ThreeVector(0 * cm, 0 * cm, cyl_hdv / 2 + 2 * 1.27 * cm), // old (-2.68205602104/2*cm, -2.68205602104/2*cm, 11.13765*cm+cyl_hdv/2)
                     flogicDetector6,                                            // its logical volume
                     "Envelopedet",                                              // its name
-                    logicWorld,                                                 // its mother  volume
+                    logicWorld,                                                 // its mother volume
                     false,                                                      // no boolean operation
                     0,                                                          // copy number
                     checkOverlaps);                                             // overlaps checking
@@ -271,7 +273,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //                    G4ThreeVector(0, 0, 0), //posdv,                    //at position
   //                    logicDecayVolume1,             //its logical volume
   //                    "Decay_Volume",                //its name
-  //                    logicEnv,                //its mother  volume
+  //                    logicEnv,                //its mother volume
   //                    false,                   //no boolean operation
   //                    0,                       //copy number
   //                    checkOverlaps);          //overlaps checking
@@ -286,7 +288,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //  //                   G4ThreeVector(0*cm, 0*cm, cyl_hdv/2), //posdv,                    //at position
   //  //                   logicDecayVolume2,             //its logical volume
   //  //                   "Decay_Volume",                //its name
-  //  //                   logicEnv,                //its mother  volume
+  //  //                   logicEnv,                //its mother volume
   //  //                   false,                   //no boolean operation
   //  //                   0,                       //copy number
   //  //                   checkOverlaps);          //overlaps checking
@@ -300,7 +302,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     posdv2,                  // posdv,                    //at position
                     logicDecayVolume3,       // its logical volume
                     "Decay_Volume_r",        // its name
-                    logicWorld,              // its mother  volume
+                    logicWorld,              // its mother volume
                     false,                   // no boolean operation
                     0,                       // copy number
                     checkOverlaps);          // overlaps checking
@@ -314,7 +316,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     G4ThreeVector(0 * cm, 0 * cm, 3 * 1.27 / 2 * cm), // posdv,                    //at position
                     logicDecayVolume6,                                // its logical volume
                     "Decay_Volume_r",                                 // its name
-                    logicWorld,                                       // its mother  volume
+                    logicWorld,                                       // its mother volume
                     false,                                            // no boolean operation
                     0,                                                // copy number
                     checkOverlaps);                                   // overlaps checking
@@ -327,7 +329,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     G4ThreeVector(0, 0, cyl_hdv + 1.27 * 2 * cm), // posdv,                    //at position
                     logicDecayVolume4,                            // its logical volume
                     "Decay_Volume_r",                             // its name
-                    logicWorld,                                   // its mother  volume
+                    logicWorld,                                   // its mother volume
                     false,                                        // no boolean operation
                     0,                                            // copy number
                     checkOverlaps);                               // overlaps checking
@@ -340,7 +342,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     G4ThreeVector(-Tdv_h2 + 1.27 / 2 * cm, 0, cyl_hdv / 2 + 1.27 * 2 * cm), // posdv,                    //at position
                     logicDecayVolume5,                                                      // its logical volume
                     "Decay_Volume_r",                                                       // its name
-                    logicWorld,                                                             // its mother  volume
+                    logicWorld,                                                             // its mother volume
                     false,                                                                  // no boolean operation
                     0,                                                                      // copy number
                     false);                                                                 // overlaps checking
@@ -353,7 +355,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     poscu,                // at position
                     flogicDetector1,      // logicDecayVolume2,             //its logical volume
                     "Copper",             // its name
-                    logicWorld,           // its mother  volume
+                    logicWorld,           // its mother volume
                     false,                // no boolean operation
                     0,                    // copy number
                     checkOverlaps);       // overlaps checking
@@ -367,7 +369,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     G4ThreeVector(0, 0, cyl_hdv / 2 + 1.27 * 2 * cm), // posdv,                    //at position
                     logicDecayVolume1,                                // its logical volume
                     "Decay_Volume",                                   // its name
-                    logicWorld,                                       // its mother  volume
+                    logicWorld,                                       // its mother volume
                     false,                                            // no boolean operation
                     0,                                                // copy number
                     checkOverlaps);                                   // overlaps checking
@@ -381,7 +383,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //                   G4ThreeVector(0, -65, 0), //posdv,                    //at position
   //                   logicDecayVolume1,             //its logical volume
   //                   "Decay_Volume",                //its name
-  //                   logicWorld,                //its mother  volume
+  //                   logicWorld,                //its mother volume
   //                   false,                   //no boolean operation
   //                   0,                       //copy number
   //                   checkOverlaps);          //overlaps checking
@@ -573,7 +575,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //                     posa,                    //at position
   //                     logicTape1,             //its logical volume
   //                     "Tape_rt",                //its name
-  //                     logicWorld,                //its mother  volume
+  //                     logicWorld,                //its mother volume
   //                     false,                   //no boolean operation
   //                     0,                       //copy number
   //                     checkOverlaps);          //overlaps checking
@@ -586,7 +588,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //                     posc,                    //at position
   //                     logicTape2,             //its logical volume
   //                     "Tape_rb",                //its name
-  //                     logicWorld,                //its mother  volume
+  //                     logicWorld,                //its mother volume
   //                     false,                   //no boolean operation
   //                     0,                       //copy number
   //                     checkOverlaps);          //overlaps checking
@@ -601,7 +603,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //                    posa,                    //at position
   //                    logicMylar1,             //its logical volume
   //                    "Mylar_rt",                //its name
-  //                    logicWorld,                //its mother  volume
+  //                    logicWorld,                //its mother volume
   //                    false,                   //no boolean operation
   //                    0,                       //copy number
   //                    checkOverlaps);          //overlaps checking
@@ -614,7 +616,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //                    posc,                    //at position
   //                    logicMylar2,             //its logical volume
   //                    "Mylar_rb",                //its name
-  //                    logicWorld,                //its mother  volume
+  //                    logicWorld,                //its mother volume
   //                    false,                   //no boolean operation
   //                    0,                       //copy number
   //                    checkOverlaps);          //overlaps checking
@@ -628,7 +630,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   // posb,                    //at position
   // logicAlumMy,             //its logical volume
   // "Aluminum_sq",                //its name
-  // logicWorld,                //its mother  volume
+  // logicWorld,                //its mother volume
   // false,                   //no boolean operation
   // 0,                       //copy number
   // checkOverlaps);          //overlaps checking
@@ -642,7 +644,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //                    posa,                    //at position
   //                    flogicDetector1,             //its logical volume
   //                    "Detector_rt",                //its name
-  //                    logicWorld,                //its mother  volume
+  //                    logicWorld,                //its mother volume
   //                    false,                   //no boolean operation
   //                    0,                       //copy number
   //                    checkOverlaps);          //overlaps checking
@@ -655,7 +657,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //                    posc,                    //at position
   //                    flogicDetector2,             //its logical volume
   //                    "Detector_rb",                //its name
-  //                    logicWorld,                //its mother  volume
+  //                    logicWorld,                //its mother volume
   //                    false,                   //no boolean operation
   //                    0,                       //copy number
   //                    checkOverlaps);          //overlaps checking
@@ -671,7 +673,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //                     posb,                    //at position posb
   //                     logicTape3,             //its logical volume
   //                     "Tape_sq",                //its name
-  //                     logicWorld,                //its mother  volume
+  //                     logicWorld,                //its mother volume
   //                     false,                   //no boolean operation
   //                     0,                       //copy number
   //                     checkOverlaps);          //overlaps checking
@@ -684,7 +686,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //                     posb,                    //at position posb?
   //                     logicMylar3,             //its logical volume
   //                     "Mylar_sq",                //its name
-  //                     logicWorld,                //its mother  volume
+  //                     logicWorld,                //its mother volume
   //                     false,                   //no boolean operation
   //                     0,                       //copy number
   //                     checkOverlaps);          //overlaps checking
@@ -697,7 +699,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //                     posb,                    //at position posb? 10 mm shift looks close
   //                     flogicDetector3,             //its logical volume
   //                     "Detector_sq",                //its name
-  //                     logicWorld,                //its mother  volume
+  //                     logicWorld,                //its mother volume
   //                     false,                   //no boolean operation
   //                     0,                       //copy number
   //                     checkOverlaps);          //overlaps checking
@@ -712,7 +714,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //                    posb2,                    //at position posb
   //                    logicTape3b1,             //its logical volume
   //                    "Tape_sq1",                //its name
-  //                    logicWorld,                //its mother  volume
+  //                    logicWorld,                //its mother volume
   //                    false,                   //no boolean operation
   //                    0,                       //copy number
   //                    checkOverlaps);          //overlaps checking
@@ -727,7 +729,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     posb2,              // at position posb?
                     logicAlMylarMy1,    // its logical volume
                     "Mylar_sq1",        // its name
-                    logicWorld,         // its mother  volume
+                    logicWorld,         // its mother volume
                     false,              // no boolean operation
                     0,                  // copy number
                     checkOverlaps);     // overlaps checking
@@ -740,7 +742,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     posb2,            // at position posb?
                     logicAlMylarAli1, // its logical volume
                     "Ali_sq1",        // its name
-                    logicWorld,       // its mother  volume
+                    logicWorld,       // its mother volume
                     false,            // no boolean operation
                     0,                // copy number
                     checkOverlaps);   // overlaps checking
@@ -753,7 +755,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     posb2,            // at position posb?
                     logicAlMylarAlo1, // its logical volume
                     "Alo_sq1",        // its name
-                    logicWorld,       // its mother  volume
+                    logicWorld,       // its mother volume
                     false,            // no boolean operation
                     0,                // copy number
                     checkOverlaps);   // overlaps checking
@@ -766,7 +768,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     posb2,                 // at position posb? 10 mm shift looks close
                     flogicDetector3,       // its logical volume
                     "Detector_sq1",        // its name
-                    logicWorld,            // its mother  volume
+                    logicWorld,            // its mother volume
                     false,                 // no boolean operation
                     0,                     // copy number
                     checkOverlaps);        // overlaps checking
@@ -780,7 +782,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     posb3,              // at position posb?
                     logicAlMylarMy2,    // its logical volume
                     "Mylar_sq2",        // its name
-                    logicWorld,         // its mother  volume
+                    logicWorld,         // its mother volume
                     false,              // no boolean operation
                     0,                  // copy number
                     checkOverlaps);     // overlaps checking
@@ -793,7 +795,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     posb3,             // at position posb?
                     logicAlMylarAli2,  // its logical volume
                     "Ali_sq2",         // its name
-                    logicWorld,        // its mother  volume
+                    logicWorld,        // its mother volume
                     false,             // no boolean operation
                     0,                 // copy number
                     checkOverlaps);    // overlaps checking
@@ -806,7 +808,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     posb3,             // at position posb?
                     logicAlMylarAlo2,  // its logical volume
                     "Alo_sq2",         // its name
-                    logicWorld,        // its mother  volume
+                    logicWorld,        // its mother volume
                     false,             // no boolean operation
                     0,                 // copy number
                     checkOverlaps);    // overlaps checking
@@ -819,7 +821,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     posb3,                 // at position posb? 10 mm shift looks close
                     flogicDetector5,       // its logical volume
                     "Detector_sq2",        // its name
-                    logicWorld,            // its mother  volume
+                    logicWorld,            // its mother volume
                     false,                 // no boolean operation
                     0,                     // copy number
                     checkOverlaps);        // overlaps checking
@@ -833,7 +835,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     G4ThreeVector(0, 0, -(32.079 + 8.89 / 2) * mm), //-(0.5*25.4)*mm),                    //at position posb?
                     logicSiPMLid,                                   // its logical volume
                     "sipm_Lid",                                     // its name
-                    logicWorld,                                     // its mother  volume
+                    logicWorld,                                     // its mother volume
                     false,                                          // no boolean operation
                     0,                                              // copy number
                     checkOverlaps);                                 // overlaps checking
@@ -847,7 +849,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     G4ThreeVector(0, 0, -(2.317 + 27.4 / 2) * mm), //-(0.5*25.4)*mm),                    //at position posb?
                     logicScintHolder,                              // its logical volume
                     "scint_holder",                                // its name
-                    logicWorld,                                    // its mother  volume
+                    logicWorld,                                    // its mother volume
                     false,                                         // no boolean operation
                     0,                                             // copy number
                     checkOverlaps);                                // overlaps checking
@@ -861,7 +863,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     G4ThreeVector(0, 0, -(29.717 + 1.575 / 2) * mm), //-(0.5*25.4)*mm),                    //at position posb?
                     logicScintHolderBase,                            // its logical volume
                     "scint_holderBase",                              // its name
-                    logicWorld,                                      // its mother  volume
+                    logicWorld,                                      // its mother volume
                     false,                                           // no boolean operation
                     0,                                               // copy number
                     checkOverlaps);                                  // overlaps checking
@@ -875,7 +877,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     G4ThreeVector(0, 0, -(9.467 + 10 / 2) * mm), //-(0.5*25.4)*mm),                    //at position posb?
                     logicScintSleeve,                            // its logical volume
                     "scint_Sleeve",                              // its name
-                    logicWorld,                                  // its mother  volume
+                    logicWorld,                                  // its mother volume
                     false,                                       // no boolean operation
                     0,                                           // copy number
                     checkOverlaps);                              // overlaps checking
@@ -892,7 +894,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //                   G4ThreeVector(0, -2.54/2*cm, -1.7145*cm-2.54/2*cm+0.066/2*mm+2*0.2794/2*mm-3*mm),                    //at position
   //                   flogicDetector3,             //its logical volume
   //                   "Detector_tele1",                //its name
-  //                   logicWorld,                //its mother  volume
+  //                   logicWorld,                //its mother volume
   //                   false,                   //no boolean operation
   //                   0,                       //copy number
   //                   checkOverlaps);          //overlaps checking
@@ -905,7 +907,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //                   G4ThreeVector(0, -2.54/2*cm, -1.7145*cm-2.54*cm-3*mm),                    //at position
   //                   logicteleMy,             //its logical volume
   //                   "TelescopeMy",                //its name
-  //                   logicWorld,                //its mother  volume
+  //                   logicWorld,                //its mother volume
   //                   false,                   //no boolean operation
   //                   0,                       //copy number
   //                   checkOverlaps);          //overlaps checking
@@ -918,7 +920,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //                   G4ThreeVector(0, -2.54/2*cm, -1.7145*cm-2.54*cm-3*mm),                    //at position
   //                   logicteleT,             //its logical volume
   //                   "TelescopeT",                //its name
-  //                   logicWorld,                //its mother  volume
+  //                   logicWorld,                //its mother volume
   //                   false,                   //no boolean operation
   //                   0,                       //copy number
   //                   checkOverlaps);          //overlaps checking
@@ -936,7 +938,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //                   G4ThreeVector(0, 0, -1.7145*cm+0.585*2.54*cm+3/2*mm-5*mm),                    //at position
   //                   flogicDetector5,             //its logical volume
   //                   "Detector_tele2",                //its name
-  //                   logicWorld,                //its mother  volume
+  //                   logicWorld,                //its mother volume
   //                   false,                   //no boolean operation
   //                   0,                       //copy number
   //                   checkOverlaps);          //overlaps checking
@@ -949,7 +951,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //                   G4ThreeVector(0, 0, -1.7145*cm+0.585*2.54*cm+3/2*mm-5*mm),                    //at position
   //                   logictelethMy,             //its logical volume
   //                   "thTelescopeMy",                //its name
-  //                   logicWorld,                //its mother  volume
+  //                   logicWorld,                //its mother volume
   //                   false,                   //no boolean operation
   //                   0,                       //copy number
   //                   checkOverlaps);          //overlaps checking
@@ -962,7 +964,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //                   G4ThreeVector(0, 0, -1.7145*cm+0.585*2.54*cm+3/2*mm-5*mm),                    //at position
   //                   logictelethT,             //its logical volume
   //                   "thTelescopeT",                //its name
-  //                   logicWorld,                //its mother  volume
+  //                   logicWorld,                //its mother volume
   //                   false,                   //no boolean operation
   //                   0,                       //copy number
   //                   checkOverlaps);          //overlaps checking
@@ -977,7 +979,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //                   G4ThreeVector(0, 0, possource-0.3437/2*cm),                    //at position
   //                   logicBiSource,             //its logical volume
   //                   "BiSource",                //its name
-  //                   logicWorld,                //its mother  volume
+  //                   logicWorld,                //its mother volume
   //                   false,                   //no boolean operation
   //                   0,                       //copy number
   //                   checkOverlaps);          //overlaps checking
@@ -992,7 +994,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     G4ThreeVector(0, 0, possource), // at position
                     logicSourceMy,                  // its logical volume
                     "SourceMy",                     // its name
-                    logicWorld,                     // its mother  volume
+                    logicWorld,                     // its mother volume
                     false,                          // no boolean operation
                     0,                              // copy number
                     checkOverlaps);                 // overlaps checking
@@ -1006,7 +1008,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     G4ThreeVector(0, 0, possource - 0.8 * cm), // at position 0.635
                     logicSourceAl,                             // its logical volume
                     "SourceAl",                                // its name
-                    logicWorld,                                // its mother  volume
+                    logicWorld,                                // its mother volume
                     false,                                     // no boolean operation
                     0,                                         // copy number
                     checkOverlaps);                            // overlaps checking
@@ -1019,7 +1021,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     G4ThreeVector(0, 0, possource - 0 * cm), // at position
                     logicSourceAlo,                          // its logical volume
                     "SourceAlo",                             // its name
-                    logicWorld,                              // its mother  volume
+                    logicWorld,                              // its mother volume
                     false,                                   // no boolean operation
                     0,                                       // copy number
                     checkOverlaps);                          // overlaps checking
@@ -1033,7 +1035,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   //                   G4ThreeVector(0, 0, possource-0.01064*cm),                    //at position
   //                   logicSourceSS,             //its logical volume
   //                   "SourceSS",                //its name
-  //                   logicWorld,                //its mother  volume
+  //                   logicWorld,                //its mother volume
   //                   false,                   //no boolean operation
   //                   0,                       //copy number
   //                   checkOverlaps);          //overlaps checking
@@ -1053,7 +1055,7 @@ void BM_Detector::ConstructSDandField()
   G4VSensitiveDetector *SDVac = new BM_SD("Det_vac", "Det_vac_HC");
   // G4VSensitiveDetector* Scinr2 = new BM_SD("Det_rb",  "Det_wind_HC");
 
-  //   Add the silicon detectors to the Sens.Det.Management
+  // Add the silicon detectors to the Sens.Det.Management
   SDMan->AddNewDetector(Scinsq);
   SDMan->AddNewDetector(SDVac);
   SDMan->AddNewDetector(SDWindow);
@@ -1077,7 +1079,5 @@ void BM_Detector::ConstructSDandField()
   // y = 1.56951645526 cm
 
   // Set Shape2 as scoring volume
-  //
   fScoringVolume = logicWorld;
-  //
 }

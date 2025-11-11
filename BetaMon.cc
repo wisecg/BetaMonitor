@@ -1,7 +1,5 @@
 #include <fstream>
 #include <string>
-#include "g4root.hh"
-
 // #define SEG_DBG 
 #ifdef SEG_DBG
   #include <stdio.h>
@@ -11,6 +9,7 @@
   #include <unistd.h>
 #endif
 
+#include "g4root.hh"
 #include "G4Types.hh"
 #include "G4UImanager.hh"
 
@@ -19,8 +18,6 @@
   #include "G4VisExecutive.hh"
   #include "G4UIExecutive.hh"
 #endif
-
-
 // #define G4MULTITHREADED
 #ifdef G4MULTITHREADED
    #include "G4MTRunManager.hh"
@@ -30,17 +27,17 @@
 #include "BM_RunAction.hh"
 #include "BM_EventAction.hh"
 #include "BM_SteppingAction.hh"
-//#include "BM_TrackingAction.hh"
+//#include "BM_TrackingAction.hh" 
 #include "ActionInitialization.hh"
-//#include "BM_PhysicsList.hh"
+//#include "BM_PhysicsList.hh" // removed
 #include "QBBC.hh"
 
 #include "BM_Detector.hh"
 #include "BM_PrimaryGenerator.hh"
 #include "BM_Output.hh"
-#include <TFile.h>
 
 class TFile;
+#include <TFile.h>
 #ifdef SEG_DBG
 void handler(int sig) // for segfault
 {
@@ -65,7 +62,6 @@ int main(int argc, char** argv)
   //Change to G4MTRunManager if we want multithreading
   // #define G4MULTITHREADED
   // #ifdef G4MULTITHREADED
-  // 
   // G4MTRunManager* runManager = new G4MTRunManager;
   // runManager->SetNumberOfThreads((G4Threading::G4GetNumberOfCores())-2);
   // G4cout << "Multithreaded, you crazy kid" << G4endl;
@@ -74,32 +70,30 @@ int main(int argc, char** argv)
   G4cout << "Single threaded" << G4endl;
   // #endif
   runManager->SetVerboseLevel(1);
-  //G4cout << "main 3" << G4endl;
 
   // initialize detector
   runManager->SetUserInitialization(new BM_Detector());
   
-  // initialize physics list
+  // initialize physics list - use a standard one for now
   //runManager->SetUserInitialization(new BM_PhysicsList());
   //physlist->AddPhysicsList("local");
-  G4VModularPhysicsList* physicsList = new QBBC;
+  
+  G4VModularPhysicsList* physicsList = new QBBC; 
   physicsList->SetVerboseLevel(1);
   runManager->SetUserInitialization(physicsList);
   runManager->SetUserInitialization(new ActionInitialization());
   
-  // // initialize work manager
+  // // initialize work manager - for multithreading
   // G4WorkerRunManager* WorkManager = new G4WorkerRunManager;
   // WorkManager->SetUserAction(new BM_PrimaryGenerator());
   // runManager->SetUserAction(new BM_SteppingAction());
   // runManager->SetUserAction(new BM_EventAction());
   // runManager->SetUserAction(new BM_RunAction());
   // runManager->SetUserAction(new BM_TrackingAction());
-  // G4cout << "main 4" << G4endl;
+
   // runManager->Initialize();
 
   // initialize ROOT output
-  // G4cout << "The output for this run will be stored in " << outname << G4endl;
-  // BM_Output::Instance()->SetFilename(outname);
   // BM_Output::Instance()->SetFilename();
   
   // initialize visualization
@@ -134,7 +128,7 @@ int main(int argc, char** argv)
   }
 
   // Job termination
-  // Free the store: user actions, physics_list and detector_description are
+  // Free the store. user actions, physics_list and detector_description are
   // owned and deleted by the run manager, so they should not be deleted
   // in the main() program !
   #ifdef G4VIS_USE

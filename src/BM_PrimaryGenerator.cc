@@ -1,22 +1,13 @@
-#include <iostream>
 #include <fstream>
 #include <cmath>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
-#include <iostream>
 #include <complex>
-// #include <math>
-#include <fstream>
 #include <iostream>
 #include <algorithm>
 #include <vector>
-
-using namespace std;
-
-#include "BM_PrimaryGenerator.hh"
-#include "BM_EventAction.hh"
 
 #include "nat_units.hh"
 #include "globals.hh"
@@ -36,6 +27,11 @@ using namespace std;
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 
+#include "BM_PrimaryGenerator.hh"
+#include "BM_EventAction.hh"
+
+using namespace std;
+
 BM_PrimaryGenerator::BM_PrimaryGenerator()
     : G4VUserPrimaryGeneratorAction(),
       fParticleGun(0),
@@ -43,11 +39,13 @@ BM_PrimaryGenerator::BM_PrimaryGenerator()
       fEnvelopeBox(0)
 {
   G4int n_particle = 1;
-  fParticleGun = new G4ParticleGun(n_particle);
-  heParticleGun = new G4ParticleGun(n_particle);
 
   // Bi Generation
   // set up He/Ne particle generation
+  
+  fParticleGun = new G4ParticleGun(n_particle);
+  heParticleGun = new G4ParticleGun(n_particle);
+  
 }
 
 BM_PrimaryGenerator::~BM_PrimaryGenerator()
@@ -58,11 +56,9 @@ BM_PrimaryGenerator::~BM_PrimaryGenerator()
 
 void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
 {
-  // this function is called at the begining of ecah event
+  // this function is called at the begining of each event
 
-  // In order to avoid dependence of PrimaryGeneratorAction
-  // on DetectorConstruction class we get Envelope volume
-  // from G4LogicalVolumeStore.
+  // In order to avoid dependence of PrimaryGeneratorAction on DetectorConstruction class we get Envelope volume from G4LogicalVolumeStore.
 
   // G4cout << "Generator 1" << G4endl;
   G4double branchEn[23] = {511, 897.77, 1442.2, 1770.228, 1063.656, 569.698, 324.25, 1438.35, 312.24, 1426.34, 893.92, 240.10, 1354.20, 881.91, 809.77, 1754.367, 1682.224, 565.8473, 1059.805, 553.8372, 481.6935, 1047.795, 975.651};
@@ -283,10 +279,11 @@ void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
 
   // T pipe generator
   G4double randall = 2 * G4UniformRand() - 1;
-  G4double H1 = 6.75 * 2.54;     // make sure this agrees with Tdv_H1 in detector.cc
-  G4double h2 = 6.75 * 2.54 / 2; // make sure this agrees with Tdv_h2 in detector.cc
+  G4double H1 = 6.75 * 2.54;     // make sure this agrees with Tdv_H1 in BM_Detector.cc
+  G4double h2 = 6.75 * 2.54 / 2; // make sure this agrees with Tdv_h2 in BM_Detector.cc
   G4bool okay = false;
   G4double rat = (h2 + rad_new / 2) / (H1 + h2 + rad_new);
+  
   // u = sqrt ((rad_new/2) * (rad_new)/2 * G4UniformRand())*cm;
   // v = 2 * 3.141592653* G4UniformRand();
   // G4double z2 = 0/2*cm + u * cos (v);//-2.68205602104
@@ -294,7 +291,7 @@ void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   // G4double x2 = -1* G4UniformRand()*h2*cm;
   // G4double r2 = sqrt(y2*y2 + x2*x2);
 
-  // Tpipe  position Generator  /////////////////////////////
+  // Tpipe position Generator  /////////////////////////////
   //  if (randall < rat){
   //    while (okay != true){
   //      u = sqrt ((rad_new/2) * (rad_new)/2 * G4UniformRand())*cm;
@@ -303,13 +300,11 @@ void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   //      G4double y2 = 0/2*cm + u * sin (v);
   //      G4double x2 = -1* G4UniformRand()*h2*cm;
   //      G4double r2 = sqrt(y2*y2 + x2*x2);
-
   //     if (r2 > rad_new){
   //       okay = true;
   //       heParticleGun->SetParticlePosition(G4ThreeVector(x2,y2,z2));// T pipe
   //     }
   //   }
-
   // }
   // else {
   // // if(randall >= rat){
@@ -334,33 +329,27 @@ void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   double rando2 = rand() % 100000000;
   double randnew4 = 0.;
 
+  FileReader ffr = FileReader();
+  ffr.GetAnEvent();
+  
   vector<double> ncEn = FileReader().cEn;
-  G4cout << "BREAK 1" << G4endl;
-  G4cout << "I found " << ncEn.at(0) << G4endl;
   vector<double> ncIn = FileReader().cIn;
-  G4cout << "BREAK 2" << G4endl;
   randnew4 = ncIn.back() * rando2 / 100000000;
-  G4cout << "BREAK 3" << G4endl;
   vector<double>::iterator low;
-  G4cout << "BREAK 4" << G4endl;
   low = lower_bound(ncIn.begin(), ncIn.end(), randnew4);
-  G4cout << "BREAK 5" << G4endl;
   double n = low - ncIn.begin();
-  G4cout << "BREAK 6" << G4endl;
-  //  //G4cout << ncEn.at(n) << G4endl;
+  // G4cout << ncEn.at(n) << G4endl; // access example
   
   // He/Sr is e-
   G4ParticleDefinition *particle = particleTable->FindParticle(particleName = "e-");
-  G4cout << "BREAK 7" << G4endl;
+  
   // Ne is e+
   // G4ParticleDefinition* particle = particleTable->FindParticle(particleName="e+");
   // G4ParticleDefinition* particle = particleTable->FindParticle(particleName="gamma");
+  
   heParticleGun->SetParticleDefinition(particle);
-  G4cout << "BREAK 8" << G4endl;
   heParticleGun->SetParticleEnergy(ncEn.at(n) * eV);
-  G4cout << "BREAK 9" << G4endl;
 
   heParticleGun->GeneratePrimaryVertex(anEvent); // gas source
-  G4cout << "BREAK 10" << G4endl;
   // fParticleGun->GeneratePrimaryVertex(anEvent); //table source
 }
