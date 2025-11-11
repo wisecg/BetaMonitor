@@ -1,10 +1,13 @@
 // BM_EventAction.cc - Implementation of BM_EventAction class
-
-#include "BM_EventAction.hh"
-
 #include <stdlib.h>
 #include <utility>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <chrono>
+#include <thread>
 
+#include "g4root.hh"
 #include "G4RunManager.hh"
 #include "G4Event.hh"
 #include "G4SDManager.hh"
@@ -15,13 +18,7 @@
 #include "BM_RunAction.hh"
 #include "BM_Output.hh"
 #include "BM_PrimaryGenerator.hh"
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <chrono>
-#include <thread>
-#include "g4root.hh"
-
+#include "BM_EventAction.hh"
 // #include "BM_StepCounter.hh"
 
 using std::swap;
@@ -60,7 +57,7 @@ void BM_EventAction::BeginOfEventAction(const G4Event *event)
    time_t my_time = time(NULL);
    G4int eventN = event->GetEventID();
    if (eventN % 100000 == 0)
-      G4cout << "\n---> Begin of event: " << eventN << ctime(&my_time) << G4endl;
+      G4cout << "\n---> Begin event: " << eventN << ctime(&my_time) << G4endl;
 }
 
 void BM_EventAction::EvaluateHC(BM_HitsCollection *hc, int det_num) //, G4String particleType)

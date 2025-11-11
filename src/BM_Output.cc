@@ -1,14 +1,13 @@
 // BM_Output.cc - Implementation of BM_Output class to write data to TTree for ROOT analysis
-
-#include "BM_Output.hh"
-#include "G4Threading.hh"
-#include "PMT.hh"
-
 #include <string>
 
+#include "g4root.hh"
+#include "G4Threading.hh"
 #include <TFile.h>
 #include <TTree.h>
-#include "g4root.hh"
+
+#include "BM_Output.hh"
+#include "PMT.hh"
 
 BM_Output *BM_Output::Instance_ = nullptr;
 
@@ -48,7 +47,6 @@ void BM_Output::SetFilename()
 
 void BM_Output::OpenFile()
 {
-
   File_0 = new TFile(Form(Name_0.c_str()), "RECREATE");
   Tree_0 = new TTree("simData", "Simulation Data");
   Tree_0->Branch("detSQ_En", &sqEn_0, "sqEn/D");
@@ -590,7 +588,7 @@ void BM_Output::Fill()
   }
 }
 
-void BM_Output::setSQParams0(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setSQParams0(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   sqEn_0 = en;
   sqInEn_0 = inen;
@@ -599,7 +597,7 @@ void BM_Output::setSQParams0(bool hit, int iD, int IDNew, double en, double enPh
   sqInz_0 = inz;
   sqID_0 = iD;
 }
-void BM_Output::setTrigParams0(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setTrigParams0(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   trigEn_0 = en;
   trigInEn_0 = inen;
@@ -608,7 +606,7 @@ void BM_Output::setTrigParams0(bool hit, int iD, int IDNew, double en, double en
   trigInz_0 = inz;
   trigID_0 = iD;
 }
-void BM_Output::setWindParams0(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setWindParams0(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   windEn_0 = en;
   windInEn_0 = inen;
@@ -617,7 +615,7 @@ void BM_Output::setWindParams0(bool hit, int iD, int IDNew, double en, double en
   windInz_0 = inz;
   windID_0 = iD;
 }
-void BM_Output::setVacParams0(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setVacParams0(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   vacEn_0 = en;
   vacInEn_0 = inen;
@@ -626,7 +624,7 @@ void BM_Output::setVacParams0(bool hit, int iD, int IDNew, double en, double enP
   vacInz_0 = inz;
   vacID_0 = iD;
 }
-void BM_Output::setSQParams1(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setSQParams1(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   sqEn_1 = en;
   sqInEn_1 = inen;
@@ -635,7 +633,7 @@ void BM_Output::setSQParams1(bool hit, int iD, int IDNew, double en, double enPh
   sqInz_1 = inz;
   sqID_1 = iD;
 }
-void BM_Output::setTrigParams1(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setTrigParams1(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   trigEn_1 = en;
   trigInEn_1 = inen;
@@ -644,7 +642,7 @@ void BM_Output::setTrigParams1(bool hit, int iD, int IDNew, double en, double en
   trigInz_1 = inz;
   trigID_1 = iD;
 }
-void BM_Output::setWindParams1(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setWindParams1(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   windEn_1 = en;
   windInEn_1 = inen;
@@ -653,7 +651,7 @@ void BM_Output::setWindParams1(bool hit, int iD, int IDNew, double en, double en
   windInz_1 = inz;
   windID_1 = iD;
 }
-void BM_Output::setVacParams1(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setVacParams1(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   vacEn_1 = en;
   vacInEn_1 = inen;
@@ -662,7 +660,7 @@ void BM_Output::setVacParams1(bool hit, int iD, int IDNew, double en, double enP
   vacInz_1 = inz;
   vacID_1 = iD;
 }
-void BM_Output::setSQParams2(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setSQParams2(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   sqEn_2 = en;
   sqInEn_2 = inen;
@@ -671,7 +669,7 @@ void BM_Output::setSQParams2(bool hit, int iD, int IDNew, double en, double enPh
   sqInz_2 = inz;
   sqID_2 = iD;
 }
-void BM_Output::setTrigParams2(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setTrigParams2(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   trigEn_2 = en;
   trigInEn_2 = inen;
@@ -680,7 +678,7 @@ void BM_Output::setTrigParams2(bool hit, int iD, int IDNew, double en, double en
   trigInz_2 = inz;
   trigID_2 = iD;
 }
-void BM_Output::setWindParams2(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setWindParams2(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   windEn_2 = en;
   windInEn_2 = inen;
@@ -689,7 +687,7 @@ void BM_Output::setWindParams2(bool hit, int iD, int IDNew, double en, double en
   windInz_2 = inz;
   windID_2 = iD;
 }
-void BM_Output::setVacParams2(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setVacParams2(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   vacEn_2 = en;
   vacInEn_2 = inen;
@@ -698,7 +696,7 @@ void BM_Output::setVacParams2(bool hit, int iD, int IDNew, double en, double enP
   vacInz_2 = inz;
   vacID_2 = iD;
 }
-void BM_Output::setSQParams3(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setSQParams3(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   sqEn_3 = en;
   sqInEn_3 = inen;
@@ -707,7 +705,7 @@ void BM_Output::setSQParams3(bool hit, int iD, int IDNew, double en, double enPh
   sqInz_3 = inz;
   sqID_3 = iD;
 }
-void BM_Output::setTrigParams3(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setTrigParams3(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   trigEn_3 = en;
   trigInEn_3 = inen;
@@ -716,7 +714,7 @@ void BM_Output::setTrigParams3(bool hit, int iD, int IDNew, double en, double en
   trigInz_3 = inz;
   trigID_3 = iD;
 }
-void BM_Output::setWindParams3(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setWindParams3(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   windEn_3 = en;
   windInEn_3 = inen;
@@ -725,7 +723,7 @@ void BM_Output::setWindParams3(bool hit, int iD, int IDNew, double en, double en
   windInz_3 = inz;
   windID_3 = iD;
 }
-void BM_Output::setVacParams3(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setVacParams3(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   vacEn_3 = en;
   vacInEn_3 = inen;
@@ -734,7 +732,7 @@ void BM_Output::setVacParams3(bool hit, int iD, int IDNew, double en, double enP
   vacInz_3 = inz;
   vacID_3 = iD;
 }
-void BM_Output::setSQParams4(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setSQParams4(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   sqEn_4 = en;
   sqInEn_4 = inen;
@@ -743,7 +741,7 @@ void BM_Output::setSQParams4(bool hit, int iD, int IDNew, double en, double enPh
   sqInz_4 = inz;
   sqID_4 = iD;
 }
-void BM_Output::setTrigParams4(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setTrigParams4(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   trigEn_4 = en;
   trigInEn_4 = inen;
@@ -752,7 +750,7 @@ void BM_Output::setTrigParams4(bool hit, int iD, int IDNew, double en, double en
   trigInz_4 = inz;
   trigID_4 = iD;
 }
-void BM_Output::setWindParams4(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setWindParams4(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   windEn_4 = en;
   windInEn_4 = inen;
@@ -761,7 +759,7 @@ void BM_Output::setWindParams4(bool hit, int iD, int IDNew, double en, double en
   windInz_4 = inz;
   windID_4 = iD;
 }
-void BM_Output::setVacParams4(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setVacParams4(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   vacEn_4 = en;
   vacInEn_4 = inen;
@@ -770,7 +768,7 @@ void BM_Output::setVacParams4(bool hit, int iD, int IDNew, double en, double enP
   vacInz_4 = inz;
   vacID_4 = iD;
 }
-void BM_Output::setSQParams5(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setSQParams5(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   sqEn_5 = en;
   sqInEn_5 = inen;
@@ -779,7 +777,7 @@ void BM_Output::setSQParams5(bool hit, int iD, int IDNew, double en, double enPh
   sqInz_5 = inz;
   sqID_5 = iD;
 }
-void BM_Output::setTrigParams5(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setTrigParams5(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   trigEn_5 = en;
   trigInEn_5 = inen;
@@ -788,7 +786,7 @@ void BM_Output::setTrigParams5(bool hit, int iD, int IDNew, double en, double en
   trigInz_5 = inz;
   trigID_5 = iD;
 }
-void BM_Output::setWindParams5(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setWindParams5(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   windEn_5 = en;
   windInEn_5 = inen;
@@ -797,7 +795,7 @@ void BM_Output::setWindParams5(bool hit, int iD, int IDNew, double en, double en
   windInz_5 = inz;
   windID_5 = iD;
 }
-void BM_Output::setVacParams5(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setVacParams5(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   vacEn_5 = en;
   vacInEn_5 = inen;
@@ -806,7 +804,7 @@ void BM_Output::setVacParams5(bool hit, int iD, int IDNew, double en, double enP
   vacInz_5 = inz;
   vacID_5 = iD;
 }
-void BM_Output::setSQParams6(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setSQParams6(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   sqEn_6 = en;
   sqInEn_6 = inen;
@@ -815,7 +813,7 @@ void BM_Output::setSQParams6(bool hit, int iD, int IDNew, double en, double enPh
   sqInz_6 = inz;
   sqID_6 = iD;
 }
-void BM_Output::setTrigParams6(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setTrigParams6(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   trigEn_6 = en;
   trigInEn_6 = inen;
@@ -824,7 +822,7 @@ void BM_Output::setTrigParams6(bool hit, int iD, int IDNew, double en, double en
   trigInz_6 = inz;
   trigID_6 = iD;
 }
-void BM_Output::setWindParams6(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setWindParams6(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   windEn_6 = en;
   windInEn_6 = inen;
@@ -833,7 +831,7 @@ void BM_Output::setWindParams6(bool hit, int iD, int IDNew, double en, double en
   windInz_6 = inz;
   windID_6 = iD;
 }
-void BM_Output::setVacParams6(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setVacParams6(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   vacEn_6 = en;
   vacInEn_6 = inen;
@@ -842,7 +840,7 @@ void BM_Output::setVacParams6(bool hit, int iD, int IDNew, double en, double enP
   vacInz_6 = inz;
   vacID_6 = iD;
 }
-void BM_Output::setSQParams7(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setSQParams7(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   sqEn_7 = en;
   sqInEn_7 = inen;
@@ -851,7 +849,7 @@ void BM_Output::setSQParams7(bool hit, int iD, int IDNew, double en, double enPh
   sqInz_7 = inz;
   sqID_7 = iD;
 }
-void BM_Output::setTrigParams7(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setTrigParams7(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   trigEn_7 = en;
   trigInEn_7 = inen;
@@ -860,7 +858,7 @@ void BM_Output::setTrigParams7(bool hit, int iD, int IDNew, double en, double en
   trigInz_7 = inz;
   trigID_7 = iD;
 }
-void BM_Output::setWindParams7(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setWindParams7(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   windEn_7 = en;
   windInEn_7 = inen;
@@ -869,7 +867,7 @@ void BM_Output::setWindParams7(bool hit, int iD, int IDNew, double en, double en
   windInz_7 = inz;
   windID_7 = iD;
 }
-void BM_Output::setVacParams7(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setVacParams7(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   vacEn_7 = en;
   vacInEn_7 = inen;
@@ -878,7 +876,7 @@ void BM_Output::setVacParams7(bool hit, int iD, int IDNew, double en, double enP
   vacInz_7 = inz;
   vacID_7 = iD;
 }
-void BM_Output::setSQParams8(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setSQParams8(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   sqEn_8 = en;
   sqInEn_8 = inen;
@@ -887,7 +885,7 @@ void BM_Output::setSQParams8(bool hit, int iD, int IDNew, double en, double enPh
   sqInz_8 = inz;
   sqID_8 = iD;
 }
-void BM_Output::setTrigParams8(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setTrigParams8(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   trigEn_8 = en;
   trigInEn_8 = inen;
@@ -896,7 +894,7 @@ void BM_Output::setTrigParams8(bool hit, int iD, int IDNew, double en, double en
   trigInz_8 = inz;
   trigID_8 = iD;
 }
-void BM_Output::setWindParams8(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setWindParams8(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   windEn_8 = en;
   windInEn_8 = inen;
@@ -905,7 +903,7 @@ void BM_Output::setWindParams8(bool hit, int iD, int IDNew, double en, double en
   windInz_8 = inz;
   windID_8 = iD;
 }
-void BM_Output::setVacParams8(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setVacParams8(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   vacEn_8 = en;
   vacInEn_8 = inen;
@@ -914,7 +912,7 @@ void BM_Output::setVacParams8(bool hit, int iD, int IDNew, double en, double enP
   vacInz_8 = inz;
   vacID_8 = iD;
 }
-void BM_Output::setSQParams9(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setSQParams9(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   sqEn_9 = en;
   sqInEn_9 = inen;
@@ -923,7 +921,7 @@ void BM_Output::setSQParams9(bool hit, int iD, int IDNew, double en, double enPh
   sqInz_9 = inz;
   sqID_9 = iD;
 }
-void BM_Output::setTrigParams9(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setTrigParams9(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   trigEn_9 = en;
   trigInEn_9 = inen;
@@ -932,7 +930,7 @@ void BM_Output::setTrigParams9(bool hit, int iD, int IDNew, double en, double en
   trigInz_9 = inz;
   trigID_9 = iD;
 }
-void BM_Output::setWindParams9(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setWindParams9(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   windEn_9 = en;
   windInEn_9 = inen;
@@ -941,7 +939,7 @@ void BM_Output::setWindParams9(bool hit, int iD, int IDNew, double en, double en
   windInz_9 = inz;
   windID_9 = iD;
 }
-void BM_Output::setVacParams9(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setVacParams9(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   vacEn_9 = en;
   vacInEn_9 = inen;
@@ -950,7 +948,7 @@ void BM_Output::setVacParams9(bool hit, int iD, int IDNew, double en, double enP
   vacInz_9 = inz;
   vacID_9 = iD;
 }
-void BM_Output::setSQParams10(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setSQParams10(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   sqEn_10 = en;
   sqInEn_10 = inen;
@@ -959,7 +957,7 @@ void BM_Output::setSQParams10(bool hit, int iD, int IDNew, double en, double enP
   sqInz_10 = inz;
   sqID_10 = iD;
 }
-void BM_Output::setTrigParams10(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setTrigParams10(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   trigEn_10 = en;
   trigInEn_10 = inen;
@@ -968,7 +966,7 @@ void BM_Output::setTrigParams10(bool hit, int iD, int IDNew, double en, double e
   trigInz_10 = inz;
   trigID_10 = iD;
 }
-void BM_Output::setWindParams10(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setWindParams10(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   windEn_10 = en;
   windInEn_10 = inen;
@@ -977,7 +975,7 @@ void BM_Output::setWindParams10(bool hit, int iD, int IDNew, double en, double e
   windInz_10 = inz;
   windID_10 = iD;
 }
-void BM_Output::setVacParams10(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setVacParams10(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   vacEn_10 = en;
   vacInEn_10 = inen;
@@ -986,7 +984,7 @@ void BM_Output::setVacParams10(bool hit, int iD, int IDNew, double en, double en
   vacInz_10 = inz;
   vacID_10 = iD;
 }
-void BM_Output::setSQParams11(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setSQParams11(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   sqEn_11 = en;
   sqInEn_11 = inen;
@@ -995,7 +993,7 @@ void BM_Output::setSQParams11(bool hit, int iD, int IDNew, double en, double enP
   sqInz_11 = inz;
   sqID_11 = iD;
 }
-void BM_Output::setTrigParams11(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setTrigParams11(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   trigEn_11 = en;
   trigInEn_11 = inen;
@@ -1004,7 +1002,7 @@ void BM_Output::setTrigParams11(bool hit, int iD, int IDNew, double en, double e
   trigInz_11 = inz;
   trigID_11 = iD;
 }
-void BM_Output::setWindParams11(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setWindParams11(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   windEn_11 = en;
   windInEn_11 = inen;
@@ -1013,7 +1011,7 @@ void BM_Output::setWindParams11(bool hit, int iD, int IDNew, double en, double e
   windInz_11 = inz;
   windID_11 = iD;
 }
-void BM_Output::setVacParams11(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setVacParams11(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   vacEn_11 = en;
   vacInEn_11 = inen;
@@ -1022,7 +1020,7 @@ void BM_Output::setVacParams11(bool hit, int iD, int IDNew, double en, double en
   vacInz_11 = inz;
   vacID_11 = iD;
 }
-void BM_Output::setSQParams12(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setSQParams12(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   sqEn_12 = en;
   sqInEn_12 = inen;
@@ -1031,7 +1029,7 @@ void BM_Output::setSQParams12(bool hit, int iD, int IDNew, double en, double enP
   sqInz_12 = inz;
   sqID_12 = iD;
 }
-void BM_Output::setTrigParams12(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setTrigParams12(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   trigEn_12 = en;
   trigInEn_12 = inen;
@@ -1040,7 +1038,7 @@ void BM_Output::setTrigParams12(bool hit, int iD, int IDNew, double en, double e
   trigInz_12 = inz;
   trigID_12 = iD;
 }
-void BM_Output::setWindParams12(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setWindParams12(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   windEn_12 = en;
   windInEn_12 = inen;
@@ -1049,7 +1047,7 @@ void BM_Output::setWindParams12(bool hit, int iD, int IDNew, double en, double e
   windInz_12 = inz;
   windID_12 = iD;
 }
-void BM_Output::setVacParams12(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setVacParams12(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   vacEn_12 = en;
   vacInEn_12 = inen;
@@ -1058,7 +1056,7 @@ void BM_Output::setVacParams12(bool hit, int iD, int IDNew, double en, double en
   vacInz_12 = inz;
   vacID_12 = iD;
 }
-void BM_Output::setSQParams13(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setSQParams13(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   sqEn_13 = en;
   sqInEn_13 = inen;
@@ -1067,7 +1065,7 @@ void BM_Output::setSQParams13(bool hit, int iD, int IDNew, double en, double enP
   sqInz_13 = inz;
   sqID_13 = iD;
 }
-void BM_Output::setTrigParams13(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setTrigParams13(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   trigEn_13 = en;
   trigInEn_13 = inen;
@@ -1076,7 +1074,7 @@ void BM_Output::setTrigParams13(bool hit, int iD, int IDNew, double en, double e
   trigInz_13 = inz;
   trigID_13 = iD;
 }
-void BM_Output::setWindParams13(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setWindParams13(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   windEn_13 = en;
   windInEn_13 = inen;
@@ -1085,7 +1083,7 @@ void BM_Output::setWindParams13(bool hit, int iD, int IDNew, double en, double e
   windInz_13 = inz;
   windID_13 = iD;
 }
-void BM_Output::setVacParams13(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setVacParams13(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   vacEn_13 = en;
   vacInEn_13 = inen;
@@ -1094,7 +1092,7 @@ void BM_Output::setVacParams13(bool hit, int iD, int IDNew, double en, double en
   vacInz_13 = inz;
   vacID_13 = iD;
 }
-void BM_Output::setSQParams14(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setSQParams14(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   sqEn_14 = en;
   sqInEn_14 = inen;
@@ -1103,7 +1101,7 @@ void BM_Output::setSQParams14(bool hit, int iD, int IDNew, double en, double enP
   sqInz_14 = inz;
   sqID_14 = iD;
 }
-void BM_Output::setTrigParams14(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setTrigParams14(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   trigEn_14 = en;
   trigInEn_14 = inen;
@@ -1112,7 +1110,7 @@ void BM_Output::setTrigParams14(bool hit, int iD, int IDNew, double en, double e
   trigInz_14 = inz;
   trigID_14 = iD;
 }
-void BM_Output::setWindParams14(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setWindParams14(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   windEn_14 = en;
   windInEn_14 = inen;
@@ -1121,7 +1119,7 @@ void BM_Output::setWindParams14(bool hit, int iD, int IDNew, double en, double e
   windInz_14 = inz;
   windID_14 = iD;
 }
-void BM_Output::setVacParams14(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setVacParams14(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   vacEn_14 = en;
   vacInEn_14 = inen;
@@ -1130,7 +1128,7 @@ void BM_Output::setVacParams14(bool hit, int iD, int IDNew, double en, double en
   vacInz_14 = inz;
   vacID_14 = iD;
 }
-void BM_Output::setSQParams15(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setSQParams15(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   sqEn_15 = en;
   sqInEn_15 = inen;
@@ -1139,7 +1137,7 @@ void BM_Output::setSQParams15(bool hit, int iD, int IDNew, double en, double enP
   sqInz_15 = inz;
   sqID_15 = iD;
 }
-void BM_Output::setTrigParams15(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setTrigParams15(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   trigEn_15 = en;
   trigInEn_15 = inen;
@@ -1148,7 +1146,7 @@ void BM_Output::setTrigParams15(bool hit, int iD, int IDNew, double en, double e
   trigInz_15 = inz;
   trigID_15 = iD;
 }
-void BM_Output::setWindParams15(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setWindParams15(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   windEn_15 = en;
   windInEn_15 = inen;
@@ -1157,7 +1155,7 @@ void BM_Output::setWindParams15(bool hit, int iD, int IDNew, double en, double e
   windInz_15 = inz;
   windID_15 = iD;
 }
-void BM_Output::setVacParams15(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) //, //double theta,
+void BM_Output::setVacParams15(bool hit, int iD, int IDNew, double en, double enPhot, double enPos, double enElec, double enOther, double enAnn, int exitAnnCounter, double x, double y, double z, double t, double inen, double inx, double iny, double inz, double annix, double anniy, double anniz, double escx, double escy, double escz, double finEn, bool exited, int exitPhotCounter, int exitPosCounter, int exitElecCounter, int exitOthCounter) 
 {
   vacEn_15 = en;
   vacInEn_15 = inen;

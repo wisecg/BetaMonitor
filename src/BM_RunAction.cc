@@ -16,7 +16,6 @@
 
 BM_RunAction::BM_RunAction() : G4UserRunAction()
 {
-
   auto analysisManager = G4AnalysisManager::Instance();
   // analysisManager->SetNtupleDirectoryName("ntuple");
   analysisManager->SetVerboseLevel(1);
@@ -28,13 +27,11 @@ BM_RunAction::BM_RunAction() : G4UserRunAction()
 BM_RunAction::~BM_RunAction()
 {
   delete G4AnalysisManager::Instance();
-  // delete BM_Output::Instance();// Probably?
-  // G4cout<<"run 1"<<G4endl;
+  // delete BM_Output::Instance(); // probably?
 }
 
 void BM_RunAction::BeginOfRunAction(const G4Run *aRun)
 {
-  // G4cout<<"run 2"<<G4endl;
   //  auto analysisManager = G4AnalysisManager::Instance();
   //  analysisManager->SetFileName("Bi");
   //  analysisManager->OpenFile();
@@ -61,11 +58,12 @@ void BM_RunAction::BeginOfRunAction(const G4Run *aRun)
   BM_Output::Instance()->OpenFile();
   G4RunManager::GetRunManager()->SetRandomNumberStore(false);
 
-  G4cout << "CALLING GETANEVENT CLINT" << G4endl;
-  FileReader::Instance()->GetAnEvent();
   // initialize event cumulative quantities
-  BM_EventAction::Instance()->Reset();
+  FileReader::Instance()->GetAnEvent();
+  
   // initialize our event generator
+  BM_EventAction::Instance()->Reset();
+  
 }
 
 void BM_RunAction::EndOfRunAction(const G4Run *aRun)
