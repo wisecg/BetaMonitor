@@ -15,8 +15,8 @@ public:
   virtual ~BM_Output();
   static BM_Output *Instance();
 
-  // Writeout functions
   void SetFilename(G4String outname);
+  G4String GetFilename();
   void OpenFile();
   void CloseFile();
   void Fill();

@@ -31,6 +31,11 @@ void BM_Output::SetFilename(G4String outname)
   Name = outname;
 }
 
+G4String BM_Output::GetFilename()
+{
+  return Name;
+}
+
 void BM_Output::OpenFile()
 {
   File = new TFile(Name.c_str(), "RECREATE");
@@ -74,6 +79,12 @@ void BM_Output::CloseFile()
 
 void BM_Output::Fill()
 {
+  // // review data before filling.
+  // if (sqEn > 0)
+  //   printf("1 %i %f %f %f %f %f\n", sqID, sqEn, sqInEn, sqInx, sqIny, sqInz);
+  // printf("2 %i %f %f %f %f %f\n", trigID, trigEn, trigInEn, trigInx, trigIny, trigInz);
+  // printf("3 %i %f %f %f %f %f\n", windID, windEn, windInEn, windInx, windIny, windInz);
+  // printf("4 %i %f %f %f %f %f\n", vacID, vacEn, vacInEn, vacInx, vacIny, vacInz);
   Tree->Fill();
 }
 
@@ -86,6 +97,7 @@ void BM_Output::setSQParams0(int iD, double en, double inen, double inx, double 
   sqInz = inz;
   sqID = iD;
 }
+
 void BM_Output::setTrigParams0(int iD, double en, double inen, double inx, double iny, double inz)
 {
   trigEn = en;
@@ -95,6 +107,7 @@ void BM_Output::setTrigParams0(int iD, double en, double inen, double inx, doubl
   trigInz = inz;
   trigID = iD;
 }
+
 void BM_Output::setWindParams0(int iD, double en, double inen, double inx, double iny, double inz)
 {
   windEn = en;
@@ -104,6 +117,7 @@ void BM_Output::setWindParams0(int iD, double en, double inen, double inx, doubl
   windInz = inz;
   windID = iD;
 }
+
 void BM_Output::setVacParams0(int iD, double en, double inen, double inx, double iny, double inz)
 {
   vacEn = en;

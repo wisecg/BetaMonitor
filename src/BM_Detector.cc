@@ -552,6 +552,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
     G4Tubs *SourceAl2 = new G4Tubs("SourceAl2", 0 * cm, 0.31623 / 2 * cm, 0.3175 * cm, 0, 360 * deg);
     // G4Tubs* SourceSS = new G4Tubs("SourceSS", 0*cm, 0.9398/2*cm, 0.0254*cm, 0, 360*deg);
     G4Tubs *SourceMy = new G4Tubs("SourceMy", 0 * cm, 0.9398 / 2 * cm, 0.00032 * cm, 0, 360 * deg);
+    
     // Subtraction
     G4RotationMatrix *yRot = new G4RotationMatrix; // Rotates X and Z axes only
     yRot->rotateY(0 * rad);                        // Rotates 45 degrees

@@ -27,7 +27,6 @@ BM_RunAction::BM_RunAction() : G4UserRunAction()
 BM_RunAction::~BM_RunAction()
 {
   delete G4AnalysisManager::Instance();
-  // delete BM_Output::Instance(); // probably?
 }
 
 void BM_RunAction::BeginOfRunAction(const G4Run *aRun)
@@ -58,6 +57,8 @@ void BM_RunAction::BeginOfRunAction(const G4Run *aRun)
   G4cout << "Run ID:" << aRun->GetRunID() << G4endl;
   
   BM_Output::Instance()->OpenFile();
+  G4cout << "Opened output file: " << BM_Output::Instance()->GetFilename() << G4endl;
+  
   G4RunManager::GetRunManager()->SetRandomNumberStore(false);
 
   // initialize event cumulative quantities
@@ -70,9 +71,9 @@ void BM_RunAction::BeginOfRunAction(const G4Run *aRun)
 
 void BM_RunAction::EndOfRunAction(const G4Run *aRun)
 {
+  G4cout << "Finished Run ID:" << aRun->GetRunID() << G4endl;
   // auto analysisManager = G4AnalysisManager::Instance();
   // analysisManager->Write();
   // analysisManager->CloseFile();
   BM_Output::Instance()->CloseFile();
-  G4cout << "Finished Run ID:" << aRun->GetRunID() << G4endl;
 }

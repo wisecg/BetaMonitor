@@ -51,7 +51,7 @@ void BM_EventAction::BeginOfEventAction(const G4Event *event)
    time_t my_time = time(NULL);
    G4int eventN = event->GetEventID();
    if (eventN % 100000 == 0)
-      G4cout << "\n---> Begin event: " << eventN << ctime(&my_time) << G4endl;
+      G4cout << "\n---> Begin event: " << eventN << "  time: " << ctime(&my_time) << G4endl;
 }
 
 void BM_EventAction::EvaluateHC(BM_HitsCollection *hc, int det_num)
@@ -211,7 +211,8 @@ void BM_EventAction::EvaluateHC(BM_HitsCollection *hc, int det_num)
 
 void BM_EventAction::EndOfEventAction(const G4Event *event)
 {
-   // G4cout << "this event step count: " << BM_StepCounter::Instance()->Read() << G4endl;
+   // G4cout << "Event step count: " << BM_StepCounter::Instance()->Read() << G4endl;
+   
    // auto analysisManager = G4AnalysisManager::Instance();
    G4HCofThisEvent *hce = event->GetHCofThisEvent();
    if (!hce)
@@ -219,7 +220,6 @@ void BM_EventAction::EndOfEventAction(const G4Event *event)
       G4cout << "No hits collection of this event found.\n";
       return;
    }
-
    //  BM_HitsCollection* HC_trig_pvt;
    //  BM_HitsCollection* HC_wind_pvt;
    //  BM_HitsCollection* HC_sq_pvt;
@@ -230,9 +230,9 @@ void BM_EventAction::EndOfEventAction(const G4Event *event)
 
    output = BM_Output::Instance();
 
-   EvaluateHC(HC_trig_pvt, trigger); //, "nan");//error
-   EvaluateHC(HC_sq_pvt, square);    //, "nan");
-   EvaluateHC(HC_wind_pvt, window);  //, "nan");
+   EvaluateHC(HC_trig_pvt, trigger);
+   EvaluateHC(HC_sq_pvt, square);
+   EvaluateHC(HC_wind_pvt, window);
    // analysisManager->AddNtupleRow();
 
    output->Fill();

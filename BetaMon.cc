@@ -48,6 +48,13 @@ int main(int argc, char** argv)
   // NOTE: this version of the BetaMon sim was changed to single-threaded
   // operation.  (change to main branch to find the multi-threaded version).
 
+  // review input arguments
+  G4cout << "Running with " << argc << " arguments:";
+  for (int i = 0; i < argc; ++i) {
+    G4cout << i << ": " << argv[i] << "  ";
+  }
+  G4cout << G4endl;
+    
   #ifdef SEG_DBG
     std::cout << "Using our segfault debugger...\n";
     signal(SIGSEGV, handler); // using the segfault handler
@@ -63,23 +70,20 @@ int main(int argc, char** argv)
   G4VModularPhysicsList* physicsList = new QBBC; 
   physicsList->SetVerboseLevel(1);
   runManager->SetUserInitialization(physicsList);
+  
   runManager->SetUserInitialization(new ActionInitialization());
+
+  runManager->SetUserAction(new BM_RunAction());
   
   // initialize ROOT output (example: ./BetaMon run1.mac ./output/outfile.root)
-  if (argc > 1) {
-    G4String outname;
-    if (argc == 2) {
-      outname = argv[2];
-    }
-    else if (argc == 1) {
-      outname = "./output/test.root";
-    }
+  if (argc == 3) {
+    G4String outname = argv[2];
+    G4cout << "Output file: " << outname << G4endl;
     BM_Output::Instance()->SetFilename(outname);
   }
   
   // initialize visualization
   #ifdef G4VIZ
-  // G4VisManager* visManager = new G4VisExecutive("Quiet"); // see /vis/verbose guidance
     G4VisManager* visManager = new G4VisExecutive;
     visManager->Initialize();
   #endif
