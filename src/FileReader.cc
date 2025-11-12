@@ -25,6 +25,8 @@ FileReader *FileReader::Instance()
 
 void FileReader::GetAnEvent()
 {
+  // FIXME: The FileReader should open the input file only once -- not at every event
+
   // std::ifstream inputFile ("6HeDecay5.txt");
   // std::ifstream inputFile ("19NeDecay.txt");
   // std::ifstream inputFile ("Mono1MeV.txt");
@@ -34,7 +36,7 @@ void FileReader::GetAnEvent()
   // std::ifstream inputFile("90Sr90YDecaycdf.txt");
   // std::ifstream inputFile ("90SrDecaypdf.txt");
   // std::ifstream inputFile ("90YDecaypdf.txt");
-  
+
   // std::ifstream inputFile("He6Betas-test.txt");
 
   // std::filesystem::path currentPath = std::filesystem::current_path();

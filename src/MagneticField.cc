@@ -7,15 +7,10 @@
 #include "G4SystemOfUnits.hh"
 #include "globals.hh"
 
-
-MagField::MagField()
-    : G4MagneticField(),
-      fMessenger(nullptr), fBz(0.0 * gauss)
+MagField::MagField() : G4MagneticField(), fMessenger(nullptr), fBz(0.0 * gauss)
 {
-  // define commands for this class
   DefineCommands();
 }
-
 
 MagField::~MagField()
 {
@@ -28,7 +23,6 @@ void MagField::GetFieldValue(const G4double[4], double *bField) const
   bField[1] = fBz * sin(60 * degree);
   bField[2] = fBz * cos(60 * degree);
 }
-
 
 void MagField::DefineCommands()
 {
@@ -44,4 +38,3 @@ void MagField::DefineCommands()
   valueCmd.SetParameterName("field", true);
   valueCmd.SetDefaultValue("0.");
 }
-

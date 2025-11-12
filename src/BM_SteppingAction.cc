@@ -15,8 +15,7 @@ BM_SteppingAction *BM_SteppingAction::Instance()
    return fgInstance;
 }
 
-BM_SteppingAction::BM_SteppingAction()
-    : G4UserSteppingAction()
+BM_SteppingAction::BM_SteppingAction() : G4UserSteppingAction()
 {
    fgInstance = this;
 }
@@ -32,7 +31,7 @@ void BM_SteppingAction::UserSteppingAction(const G4Step *step)
    G4double z = track->GetParticleDefinition()->GetAtomicNumber();
    if (z == 16)
    {
-      // G4cout << "Killing track for a sulfur ion" << G4endl;
+      G4cout << "Killing track for a sulfur ion" << G4endl;
       track->SetTrackStatus(fKillTrackAndSecondaries);
    }
    // else if (z == 17)

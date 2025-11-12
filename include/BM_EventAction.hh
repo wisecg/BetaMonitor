@@ -32,7 +32,7 @@ public:
    void Reset();
 
 private:
-   void EvaluateHC(BM_HitsCollection *hits, int det_num); //, G4String particleType);
+   void EvaluateHC(BM_HitsCollection *hits, int det_num);
    static BM_EventAction *fgInstance;
    G4int HC_trig;
    G4int HC_wind;

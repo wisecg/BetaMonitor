@@ -59,6 +59,7 @@ G4bool BM_SD::ProcessHits(G4Step *aStep, G4TouchableHistory *)
    //    newHit->SetChamberNb(aStep->GetPreStepPoint()->GetTouchableHandle()
    //                                                ->GetCopyNumber());
    //    newHit->SetPos (aStep->GetPostStepPoint()->GetPosition());
+   
    G4ParticleDefinition *aPart = aStep->GetTrack()->GetDefinition();
    G4StepPoint *preStepPoint = aStep->GetPreStepPoint();
    G4int id = preStepPoint->GetTouchableHandle()->GetVolume()->GetCopyNo(); // Which volume we hit
@@ -77,9 +78,11 @@ G4bool BM_SD::ProcessHits(G4Step *aStep, G4TouchableHistory *)
    G4int parent = aStep->GetTrack()->GetParentID();
 
    BM_Hit *aHit = new BM_Hit(id, pid, myTime, globalPosition, energy, energyDep, momentum, exited, inEnergy, parent);
+   
    // G4String type = aPart->GetParticleSubType();
    // G4int parID = aStep->GetTrack()->GetParentID();
    // G4int myID = info->GetOriginalTrackID();
+   
    pIncident_ = localPosition;
    pCollection_->insert(aHit);
    return true;

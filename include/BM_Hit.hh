@@ -52,6 +52,7 @@ public: // Accessors
    G4double energyDep() const { return energyDep_; }
    G4int parentID() const { return parentid_; }
    G4bool leftVolume() const { return exited_; };
+   
    // Set methods
    //     void SetTrackID  (G4int track)      { fTrackID = track; };
    //     void SetChamberNb(G4int chamb)      { fChamberNb = chamb; };

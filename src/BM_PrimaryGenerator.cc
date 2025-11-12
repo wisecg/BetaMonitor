@@ -330,6 +330,7 @@ void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   double rando2 = rand() % 100000000;
   double randnew4 = 0.;
 
+  // FIXME: FileReader should not be called for every event - the current version opens & closes an input file every time.
   FileReader ffr = FileReader();
   ffr.GetAnEvent();
   

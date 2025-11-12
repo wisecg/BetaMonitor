@@ -4,6 +4,8 @@
 #include "BM_EventAction.hh"
 #include "BM_SteppingAction.hh"
 
+// FIXME: This file was needed for multithreading support; can maybe drop
+
 ActionInitialization::ActionInitialization()
     : G4VUserActionInitialization()
 {
@@ -12,6 +14,7 @@ ActionInitialization::ActionInitialization()
 ActionInitialization::~ActionInitialization()
 {
 }
+
 
 void ActionInitialization::BuildForMaster() const
 {
