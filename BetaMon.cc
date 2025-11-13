@@ -76,11 +76,12 @@ int main(int argc, char** argv)
   runManager->SetUserAction(new BM_RunAction());
   
   // initialize ROOT output (example: ./BetaMon run1.mac ./output/outfile.root)
+  G4String outname = "./output/test.root";
   if (argc == 3) {
-    G4String outname = argv[2];
-    G4cout << "Output file: " << outname << G4endl;
-    BM_Output::Instance()->SetFilename(outname);
+    outname = argv[2];
   }
+  G4cout << "Output file: " << outname << G4endl;
+  BM_Output::Instance()->SetFilename(outname);
   
   // initialize visualization
   #ifdef G4VIZ

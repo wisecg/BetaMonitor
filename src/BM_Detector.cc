@@ -133,7 +133,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   G4double world_sizeZ = 40.75 * cm;
   G4Material *world_mat = nist->FindOrBuildMaterial("G4_AIR");
   G4Box *solidWorld = new G4Box("World", 0.5 * world_sizeXY, 0.5 * world_sizeXY, 0.5 * world_sizeZ);
-  logicWorld = new G4LogicalVolume(solidWorld, world_mat, "World");
+  logicWorld = new G4LogicalVolume(solidWorld, world_mat, "World"); // (G4 volume instance, material, name)
 
   // set maximum step - SetUserLimits(Limits) should be called for every G4LogicalVolume we create
   G4UserLimits *Limits = new G4UserLimits(10 * um); 
@@ -150,142 +150,197 @@ G4VPhysicalVolume *BM_Detector::Construct()
                         0,               // copy number
                         checkOverlaps);  // overlaps checking
 
-  // Decay Volume Geometry
-  // G4double cyl_r1dvo = 3.81 / 2 * cm;   // Outer Radius of Decay Volume
-  G4double cyl_r1dvi = 3.4798 / 2 * cm; // Inner Radius of Decay Volume
-  G4double cyl_hdv = 6.75 * 2.54 * cm;  // 12.5476*cm;//length of decay volume 16.51 standard
-  G4double cyl_r2dvo = 6.9088 / 2 * cm; // Flange Outer Radius
-
-  // T Decay Volume Geometry
-  G4double Tdv_r1o = 3.81 / 2 * cm;       // outer radius of DV
-  G4double Tdv_r1i = 3.4798 / 2 * cm;     // inner radius of DV
-  G4double Tdv_H1 = 6.75 * 2.54 * cm;     // Major axis length of DV
-  G4double Tdv_h2 = 6.75 * 2.54 / 2 * cm; // Minor axis length of DV
-
-  // Decay Volume T
-  G4Tubs *solidShapeT1o = new G4Tubs("Pipe1o", 0, Tdv_r1o, Tdv_H1 / 2., 0, 360 * deg);
-  G4Tubs *solidShapeT1i = new G4Tubs("Pipe1i", 0, Tdv_r1i, Tdv_H1 / 1.9, 0, 360 * deg);
-  G4Tubs *solidShapeT2o = new G4Tubs("Pipe2o", 0, Tdv_r1o, Tdv_h2 / 2, 0, 360 * deg);
-  G4Tubs *solidShapeT2i = new G4Tubs("Pipe2i", 0, Tdv_r1i, Tdv_h2 / 2, 0, 360 * deg);
+  // === Declare Geometry components (each is assoc. with a G4LogicalVolume) ===
+  // NOTE: To temporarily remove something from the geometry, comment out the G4LV, GVPVPLacement, and SetUserLimits lines.
   
-  // Decay Volume Flange
-  G4Tubs *solidFlange = new G4Tubs("Flange", 0 * cm, cyl_r2dvo, 1.2700 / 2 * cm, 0, 360 * deg);
-  G4Tubs *boreFlange = new G4Tubs("boreFlange", 0 * cm, cyl_r1dvi, 1.27 * cm, 0, 360 * deg);
 
-  // Vacuum Seal
-  G4double cyl_r2c = 3.556 / 2 * cm; // copper seal radius
-  G4double cyl_hc = 0.0254 * cm;     // thickness of copper
-  // G4double cyl_hkap = 0.0012 * cm;   // thickness of kapton (trials,1:0.0012, 2: 0.00075, 3: 0.006, 4: 0.0127)
-
-  // 
+  // === T Pipe Inner Vacuum (a.k.a. Decay Volume) == 
+  G4double cyl_hdv = 6.75 * 2.54 * cm;    // height of decay volume 16.51 standard
+  G4double Tdv_r1i = 3.4798 / 2 * cm;     // T Pipe inner radius
+  G4double Tdv_H1 = 6.75 * 2.54 * cm;     // T Pipe Major axis length
+  G4double Tdv_h2 = 6.75 * 2.54 / 2 * cm; // T Pipe Minor axis length
   G4ThreeVector TransT(Tdv_r1i / 2 - Tdv_h2 / 2, 0, 0);
   G4RotationMatrix *yRotT = new G4RotationMatrix;
   yRotT->rotateY(3.14159265 / 2 * rad); // Rotates 90 degrees
+  G4Tubs *solidShapeT1i = new G4Tubs("Pipe1i",      // 
+                                      0,            // rmin
+                                      Tdv_r1i,      // rmax
+                                      Tdv_H1 / 1.9, // delta-z
+                                      0,            // start-phi
+                                      360 * deg);   // delta-phi
+  G4Tubs *solidShapeT2i = new G4Tubs("Pipe2i", 0, Tdv_r1i, Tdv_h2 / 2, 0, 360 * deg);
   G4UnionSolid *Pipei = new G4UnionSolid("InnerTPipe", solidShapeT1i, solidShapeT2i, yRotT, TransT);
-  logicEnv = new G4LogicalVolume(Pipei, Vacuum, "Envelope"); // (its solid, its material, its name)
+
+  logicEnv = new G4LogicalVolume(Pipei, Vacuum, "Envelope"); // (its g4 geometry object, its material, its name)
   new G4PVPlacement(0, G4ThreeVector(0 * cm, 0 * cm, cyl_hdv / 2 + 2 * 1.27 * cm),
                     logicEnv, "Envelope", logicWorld, false, 0, checkOverlaps);
   logicEnv->SetUserLimits(Limits);
 
-  flogicDetector6 = new G4LogicalVolume(Pipei, Vacuum, "Envelopedet");
+  // copy of logicEnv to create a sensitive detector for the vacuum.
+  // FIXME: appears redundant w/ logicEnv; could make logicEnv the Sens.Det.
+  flogicDetector6 = new G4LogicalVolume(Pipei, Vacuum, "Envelopedet"); 
   new G4PVPlacement(0, G4ThreeVector(0 * cm, 0 * cm, cyl_hdv / 2 + 2 * 1.27 * cm),
                     flogicDetector6, "Envelopedet", logicWorld, false, 0, checkOverlaps);
   flogicDetector6->SetUserLimits(Limits);
 
+
+  // === T Pipe Outer (steel) ===
+  G4double Tdv_r1o = 3.81 / 2 * cm;       // T Pipe outer radius
+  G4ThreeVector TransT2(Tdv_r1i / 2 - Tdv_h2, 0, 0);
+  G4Tubs *solidShapeT1o = new G4Tubs("Pipe1o", 0, Tdv_r1o, Tdv_H1 / 2., 0, 360 * deg);
+  G4Tubs *solidShapeT2o = new G4Tubs("Pipe2o", 0, Tdv_r1o, Tdv_h2 / 2, 0, 360 * deg);
+  G4UnionSolid *Pipeo = new G4UnionSolid("OuterTPipe", solidShapeT1o, solidShapeT2o, yRotT, TransT);
+  G4SubtractionSolid *TPipe1 = new G4SubtractionSolid("TDecayVolume", Pipeo, solidShapeT1i);
+  G4SubtractionSolid *TPipe = new G4SubtractionSolid("TDecayVolume", TPipe1, solidShapeT2i, yRotT, TransT2);
+  G4LogicalVolume *logicDecayVolume1 = new G4LogicalVolume(TPipe, Stainless_Steel, "Decay_Volume");
+  new G4PVPlacement(0, G4ThreeVector(0, 0, cyl_hdv / 2 + 1.27 * 2 * cm),
+                    logicDecayVolume1, "Decay_Volume", logicWorld, false, 0, checkOverlaps);
+  logicDecayVolume1->SetUserLimits(Limits);
+
+
+  // === T Pipe Flanges (steel) === 
+  G4double cyl_r2dvo = 6.9088 / 2 * cm; // Flange Outer Radius
+  G4double cyl_r1dvi = 3.4798 / 2 * cm; // Inner Radius of T Pipe Decay Volume
+  G4Tubs *solidFlange = new G4Tubs("Flange", 0 * cm, cyl_r2dvo, 1.2700 / 2 * cm, 0, 360 * deg);
+  G4Tubs *boreFlange = new G4Tubs("boreFlange", 0 * cm, cyl_r1dvi, 1.27 * cm, 0, 360 * deg);
   G4SubtractionSolid *Flangen = new G4SubtractionSolid("Flange", solidFlange, boreFlange);
+  
+  // leftmost flange (nearest beta monitor)
   G4LogicalVolume *logicDecayVolume3 = new G4LogicalVolume(Flangen, Stainless_Steel, "Decay_Volume_r");
   G4ThreeVector posdv2 = G4ThreeVector(0 * cm, 0 * cm, 1.27 / 2 * cm);
   new G4PVPlacement(0, posdv2, logicDecayVolume3, "Decay_Volume_r", logicWorld,
                     false, 0, checkOverlaps);
   logicDecayVolume3->SetUserLimits(Limits);
 
+  // second to leftmost flange (sandwiches the "window")
   G4LogicalVolume *logicDecayVolume6 = new G4LogicalVolume(Flangen, Stainless_Steel, "Decay_Volume_r");
   new G4PVPlacement(0, G4ThreeVector(0 * cm, 0 * cm, 3 * 1.27 / 2 * cm),
                     logicDecayVolume6, "Decay_Volume_r", logicWorld, false, 0, checkOverlaps);
   logicDecayVolume6->SetUserLimits(Limits);
 
+  // right flange
   G4LogicalVolume *logicDecayVolume4 = new G4LogicalVolume(Flangen, Stainless_Steel, "Decay_Volume_r");
   new G4PVPlacement(0, G4ThreeVector(0, 0, cyl_hdv + 1.27 * 2 * cm), logicDecayVolume4, "Decay_Volume_r",
                     logicWorld, false, 0, checkOverlaps);
   logicDecayVolume4->SetUserLimits(Limits);
 
+  // middle flange
   G4LogicalVolume *logicDecayVolume5 = new G4LogicalVolume(Flangen, Stainless_Steel, "Decay_Volume_r");
   new G4PVPlacement(yRotT, G4ThreeVector(-Tdv_h2 + 1.27 / 2 * cm, 0, cyl_hdv / 2 + 1.27 * 2 * cm),
                     logicDecayVolume5, "Decay_Volume_r", logicWorld, false, 0, false);
   logicDecayVolume5->SetUserLimits(Limits);
 
+
+  // === Vacuum Window (copper) - between two left flanges ===
+  G4double cyl_r2c = 3.556 / 2 * cm; // copper seal radius
+  G4double cyl_hc = 0.0254 * cm;     // thickness of copper
+  // G4double cyl_hkap = 0.0012 * cm;   // thickness of kapton (trials - 1:0.0012, 2: 0.00075, 3: 0.006, 4: 0.0127)
   G4Tubs *solidShape4 = new G4Tubs("Shape4", 0. * cm, cyl_r2c, cyl_hc / 2., 0, 360 * deg);
   flogicDetector1 = new G4LogicalVolume(solidShape4, Al, "Copper");
   G4ThreeVector poscu = G4ThreeVector(0 * cm, 0 * cm, 1.27 * cm + cyl_hc / 2);
   new G4PVPlacement(0, poscu, flogicDetector1, "Copper", logicWorld, false, 0, checkOverlaps);
   flogicDetector1->SetUserLimits(Limits);
 
-  // T Pipe
-  G4ThreeVector TransT2(Tdv_r1i / 2 - Tdv_h2, 0, 0);
-  G4UnionSolid *Pipeo = new G4UnionSolid("OuterTPipe", solidShapeT1o, solidShapeT2o, yRotT, TransT);
-  G4SubtractionSolid *TPipe1 = new G4SubtractionSolid("TDecayVolume", Pipeo, solidShapeT1i);
-  G4SubtractionSolid *TPipe = new G4SubtractionSolid("TDecayVolume", TPipe1, solidShapeT2i, yRotT, TransT2);
 
-  G4LogicalVolume *logicDecayVolume1 = new G4LogicalVolume(TPipe, Stainless_Steel, "Decay_Volume");
-  new G4PVPlacement(0, G4ThreeVector(0, 0, cyl_hdv / 2 + 1.27 * 2 * cm),
-                    logicDecayVolume1, "Decay_Volume", logicWorld, false, 0, checkOverlaps);
-  logicDecayVolume1->SetUserLimits(Limits);
+  // === Scintillators (A & B) ===
 
-  // Blake's SiPM (2024)
+  // bare scintillator
   G4Box *SmallScin = new G4Box("SmallScin", 20.0 / 2 * mm, 20.0 / 2 * mm, 3.0 / 2 * mm);
-
-  G4Box *SmallScinMA = new G4Box("SmallScinMA", // aluminized mylar
-                                 20 / 2 * mm + 0.0001 * mm, 20 / 2 * mm + 0.0001 * mm,
-                                 3.0 / 2 * mm + 0.0001 * mm);
-
-  G4Box *SmallScinM = new G4Box("SmallScinM",
-                                20.0 / 2 * mm + 0.0761 * mm, 20.0 / 2 * mm + 0.0761 * mm,
+  
+  // the scintillators are wrapped in aluminized mylar (a sandwich of Al - My - Al)
+  G4Box *SmallScinM = new G4Box("SmallScinM", // mylar
+                                20.0 / 2 * mm + 0.0761 * mm, 
+                                20.0 / 2 * mm + 0.0761 * mm,
                                 3.0 / 2 * mm + 0.0761 * mm);
-
-  G4Box *SmallScinMA2 = new G4Box("SmallScinMAOuter",
+  G4Box *SmallScinMA = new G4Box("SmallScinMA", // aluminum 
+                                  20 / 2 * mm + 0.0001 * mm, 
+                                  20 / 2 * mm + 0.0001 * mm,
+                                  3.0 / 2 * mm + 0.0001 * mm);                                  
+  G4Box *SmallScinMA2 = new G4Box("SmallScinMAOuter", // aluminum
                                   20.0 / 2 * mm + 0.0762 * mm + 0.00055 * mm,
                                   20.0 / 2 * mm + 0.0762 * mm + 0.00055 * mm,
-                                  3.0 / 2 * mm + 0.0762 * mm + 0.00055 * mm);
+                                  3.0 / 2 * mm + 0.0762 * mm + 0.00055 * mm);                                                             
+  
+  // inner scintillator "A" (inner = closer to window)
+  G4ThreeVector posb2 = G4ThreeVector(0 * cm, 0 * cm, -(3.317 * mm + (3.0 + 0.0762) / 2 * mm));
+  flogicDetector3 = new G4LogicalVolume(SmallScin, PVT, "Detector_sq1");
+  new G4PVPlacement(0, posb2, flogicDetector3, "Detector_sq1", logicWorld, false, 0, checkOverlaps);
+  flogicDetector3->SetUserLimits(Limits);
+  
+  // inner aluminum layer for scint A
+  G4SubtractionSolid *solidAlMyI = new G4SubtractionSolid("InnerAl", SmallScinMA, SmallScin);
+  G4LogicalVolume *logicAlMylarAli1 = new G4LogicalVolume(solidAlMyI, Al, "Ali_sq1");
+  new G4PVPlacement(0, posb2, logicAlMylarAli1, "Ali_sq1", logicWorld, false, 0, checkOverlaps);
+  logicAlMylarAli1->SetUserLimits(Limits);
 
-  G4Box *SmallScinMA2nd = new G4Box("SmallScinMA",
-                                    20 / 2 * mm + 0.0001 * mm, 20 / 2 * mm + 0.0001 * mm,
-                                    3.0 / 2 * mm + 0.0001 / 2 * mm); // its size
+  // mylar layer for scint A
+  G4SubtractionSolid *solidAlMy = new G4SubtractionSolid("Mylar", SmallScinM, SmallScinMA);
+  G4LogicalVolume *logicAlMylarMy1 = new G4LogicalVolume(solidAlMy, Mylar, "Mylar_sq1");
+  new G4PVPlacement(0, posb2, logicAlMylarMy1, "Mylar_sq1", logicWorld, false, 0, checkOverlaps);
+  logicAlMylarMy1->SetUserLimits(Limits);
 
-  G4Box *SmallScinM2nd = new G4Box("SmallScinM",
-                                   20.0 / 2 * mm + 0.0761 * mm,
-                                   20.0 / 2 * mm + 0.0761 * mm,
-                                   3.0 / 2 * mm + 0.0761 / 2 * mm);
+  // outer aluminum layer for scint A -- colors Scint A "blue"
+  G4SubtractionSolid *solidAlMyO = new G4SubtractionSolid("OuterAl", SmallScinMA2, SmallScinM);
+  G4LogicalVolume *logicAlMylarAlo1 = new G4LogicalVolume(solidAlMyO, Al, "Alo_sq1");
+  new G4PVPlacement(0, posb2, logicAlMylarAlo1, "Alo_sq1", logicWorld, false, 0, checkOverlaps);
+  logicAlMylarAlo1->SetUserLimits(Limits);
+  
+  // outer scintillator "B" (outer = farther from window)
+  G4ThreeVector posb3 = G4ThreeVector(0 * cm, 0 * cm, -(3.317 * mm + (3.0 + 0.0762) * 3 / 2 * mm));
+  flogicDetector5 = new G4LogicalVolume(SmallScin, PVT, "Detector_sq2");
+  new G4PVPlacement(0, posb3, flogicDetector5, "Detector_sq2", logicWorld, false, 0, checkOverlaps);
+  flogicDetector5->SetUserLimits(Limits);
 
+  // aluminum layer for scint B
+  G4RotationMatrix *Rot0 = new G4RotationMatrix;
+  Rot0->rotateX(0 * rad); // seems unnecessary
+  G4SubtractionSolid *solidAlMyI2 = new G4SubtractionSolid("InnerAl2",
+                                                           SmallScinMA, SmallScin, 
+                                                           Rot0,
+                                                           G4ThreeVector(0, 0, -0.0762 / 2 * mm));
+  G4LogicalVolume *logicAlMylarAli2 = new G4LogicalVolume(solidAlMyI2, Al, "Ali_sq2");
+  new G4PVPlacement(0, posb3, logicAlMylarAli2, "Ali_sq2", logicWorld, false, 0, checkOverlaps);
+  logicAlMylarAli2->SetUserLimits(Limits);          
+  
+  // mylar layer for scint B
+  G4SubtractionSolid *solidAlMy2 = new G4SubtractionSolid("Mylar2",
+                                                          SmallScinM, SmallScinMA, Rot0,
+                                                          G4ThreeVector(0, 0, -0.0761 / 2 * mm));
+  G4LogicalVolume *logicAlMylarMy2 = new G4LogicalVolume(solidAlMy2, Mylar, "Mylar_sq2");
+  new G4PVPlacement(0, posb3, logicAlMylarMy2, "Mylar_sq2", logicWorld, false, 0, checkOverlaps);
+  logicAlMylarMy2->SetUserLimits(Limits);
+
+  // outer aluminum layer for scint B. -- colors scint B red
+  // NOTE: this box is slightly different (in z dim) from SmallScinMAOuter.  Is it really needed?
   G4Box *SmallScinMA22nd = new G4Box("SmallScinMAOuter",
                                      20.0 / 2 * mm + 0.0762 * mm + 0.00055 * mm,
                                      20.0 / 2 * mm + 0.0762 * mm + 0.00055 * mm,
                                      3.0 / 2 * mm + 0.0762 / 2 * mm);
-
-  G4SubtractionSolid *solidAlMyO = new G4SubtractionSolid("OuterAl", SmallScinMA2, SmallScinM);
-
-  G4SubtractionSolid *solidAlMy = new G4SubtractionSolid("Mylar", SmallScinM, SmallScinMA);
-
-  G4SubtractionSolid *solidAlMyI = new G4SubtractionSolid("InnerAl", SmallScinMA, SmallScin);
-
-  G4RotationMatrix *Rot0 = new G4RotationMatrix;
-  Rot0->rotateX(0 * rad);
-
   G4SubtractionSolid *solidAlMyO2 = new G4SubtractionSolid("OuterAl2",
-                                                           SmallScinMA22nd, SmallScinM2nd, Rot0,
-                                                           G4ThreeVector(0, 0, -0.0001 / 2 * mm));
+                                                            SmallScinMA22nd, SmallScinM, Rot0,
+                                                            G4ThreeVector(0, 0, -0.0001 / 2 * mm));
+  G4LogicalVolume *logicAlMylarAlo2 = new G4LogicalVolume(solidAlMyO2, Al, "Alo_sq2");
+  new G4PVPlacement(0, posb3, logicAlMylarAlo2, "Alo_sq2", logicWorld, false, 0, checkOverlaps);
+  logicAlMylarAlo2->SetUserLimits(Limits);
 
-  G4SubtractionSolid *solidAlMy2 = new G4SubtractionSolid("Mylar2",
-                                                          SmallScinM2nd, SmallScinMA2nd, Rot0,
-                                                          G4ThreeVector(0, 0, -0.0761 / 2 * mm));
 
-  G4SubtractionSolid *solidAlMyI2 = new G4SubtractionSolid("InnerAl2",
-                                                           SmallScinMA2nd, SmallScin, Rot0,
-                                                           G4ThreeVector(0, 0, -0.0762 / 2 * mm));
+  // === Copper Back Plate / "SiPM Lid" ===
+  G4Tubs *sipmLidBase = new G4Tubs("sipmLidBase", 10.16 / 2 * mm, 120.65 / 2 * mm, 8.89 / 2 * mm,
+                                   0, 360 * deg);
+  G4Tubs *sipmLidSource = new G4Tubs("sipmLidSource", 0, 20 / 2 * mm, 6.096 / 2 * mm, 0, 360 * deg);
+  G4SubtractionSolid *sipmLid = new G4SubtractionSolid("sipmLid", sipmLidBase, sipmLidSource, Rot0,
+                                                       G4ThreeVector(0, 0, -(2.794 + 6.096 / 2) * mm));
+  G4LogicalVolume *logicSiPMLid = new G4LogicalVolume(sipmLid, Cu, "sipm_Lid");
+  new G4PVPlacement(0, G4ThreeVector(0, 0, -(32.079 + 8.89 / 2) * mm), logicSiPMLid, "sipm_Lid",
+                    logicWorld, false, 0, checkOverlaps);
+  logicSiPMLid->SetUserLimits(Limits);
 
+
+  // === Scintillator Holder - (purple block with base, green sleeve, cutout) ===
+  
   G4Box *scintHolderblock = new G4Box("scintHolderbase",
                                       22.2 / 2 * mm, 22.2 / 2 * mm,
                                       27.4 / 2 * mm);
-
   G4Box *scintHoldercutout1 = new G4Box("scintHoldercutout1",
                                         22.2 / 2 * mm - 0.85 * mm,
                                         22.2 / 2 * mm - 0.85 * mm,
@@ -293,104 +348,61 @@ G4VPhysicalVolume *BM_Detector::Construct()
   G4Box *scintHoldercutout2 = new G4Box("scintHoldercutout2",
                                         18 / 2 * mm, 18 / 2 * mm,
                                         30 / 2 * mm);
-
   G4SubtractionSolid *scintHolder1 = new G4SubtractionSolid("scintHolder1", scintHolderblock, scintHoldercutout2);
-
   G4SubtractionSolid *scintHolder = new G4SubtractionSolid("scintHolder", scintHolder1, scintHoldercutout1);
-
-  G4Box *scintSleevebase = new G4Box("scintSleevebase",  20.5 / 2 * mm,  20.5 / 2 * mm, 10 / 2 * mm);
-  
-  G4Box *scintSleevecutout = new G4Box("scintHoldercutout2",  16 / 2 * mm, 16 / 2 * mm, 30 / 2 * mm);
-  
-  G4SubtractionSolid *scintSleeve = new G4SubtractionSolid("scintSleeve", scintSleevebase, scintSleevecutout);
-
-  G4Tubs *scintHolderBase = new G4Tubs("scintHolderbase", 20 / 2 * mm, 45.72 / 2 * mm, 1.575 / 2 * mm, 0, 360 * deg);
-
-  G4Tubs *sipmLidBase = new G4Tubs("sipmLidBase", 10.16 / 2 * mm, 120.65 / 2 * mm, 8.89 / 2 * mm,
-                                   0, 360 * deg);
-
-  G4Tubs *sipmLidSource = new G4Tubs("sipmLidSource", 0, 20 / 2 * mm, 6.096 / 2 * mm, 0, 360 * deg);
-
-  G4SubtractionSolid *sipmLid = new G4SubtractionSolid("sipmLid", sipmLidBase, sipmLidSource, Rot0,
-                                                       G4ThreeVector(0, 0, -(2.794 + 6.096 / 2) * mm));
-
-  // table Source
-  G4Tubs *SourceAlo = new G4Tubs("SourceAlo", 0.9398 / 2 * cm, 1.269 / 2 * cm, 0.31749 / 2 * cm, 0, 360 * deg);
-  G4Tubs *SourceAl1 = new G4Tubs("SourceAl1", 0 * cm, 1.27 / 2 * cm, 0.635 * cm, 0, 360 * deg);
-  G4Tubs *SourceAl2 = new G4Tubs("SourceAl2", 0 * cm, 0.31623 / 2 * cm, 0.3175 * cm, 0, 360 * deg);
-  G4Tubs *SourceMy = new G4Tubs("SourceMy", 0 * cm, 0.9398 / 2 * cm, 0.00032 * cm, 0, 360 * deg);
-
-  G4RotationMatrix *yRot = new G4RotationMatrix; // Rotates X and Z axes only
-  yRot->rotateY(0 * rad);                        // Rotates 45 degrees
-  G4ThreeVector zTrans(0, 0, -0.635 * cm + 0.3175 * cm / 2);
-  G4SubtractionSolid *SourceAl = new G4SubtractionSolid("SourceAl", SourceAl1, SourceAl2, yRot, zTrans);
-
-  // Blake SiPM design (2024)
-  G4ThreeVector posb2 = G4ThreeVector(0 * cm, 0 * cm, -(3.317 * mm + (3.0 + 0.0762) / 2 * mm));
-
-  G4LogicalVolume *logicAlMylarMy1 = new G4LogicalVolume(solidAlMy, Mylar, "Mylar_sq1");
-  new G4PVPlacement(0, posb2, logicAlMylarMy1, "Mylar_sq1", logicWorld, false, 0, checkOverlaps);
-  logicAlMylarMy1->SetUserLimits(Limits);
-
-  G4LogicalVolume *logicAlMylarAli1 = new G4LogicalVolume(solidAlMyI, Al, "Ali_sq1");
-  new G4PVPlacement(0, posb2, logicAlMylarAli1, "Ali_sq1", logicWorld, false, 0, checkOverlaps);
-  logicAlMylarAli1->SetUserLimits(Limits);
-
-  G4LogicalVolume *logicAlMylarAlo1 = new G4LogicalVolume(solidAlMyO, Al, "Alo_sq1");
-  new G4PVPlacement(0, posb2, logicAlMylarAlo1, "Alo_sq1", logicWorld, false, 0, checkOverlaps);
-  logicAlMylarAlo1->SetUserLimits(Limits);
-
-  flogicDetector3 = new G4LogicalVolume(SmallScin, PVT, "Detector_sq1");
-  new G4PVPlacement(0, posb2, flogicDetector3, "Detector_sq1", logicWorld, false, 0, checkOverlaps);
-  flogicDetector3->SetUserLimits(Limits);
-
-  G4ThreeVector posb3 = G4ThreeVector(0 * cm, 0 * cm, -(3.317 * mm + (3.0 + 0.0762) * 3 / 2 * mm));
-
-  G4LogicalVolume *logicAlMylarMy2 = new G4LogicalVolume(solidAlMy2, Mylar, "Mylar_sq2");
-  new G4PVPlacement(0, posb3, logicAlMylarMy2, "Mylar_sq2", logicWorld, false, 0, checkOverlaps);
-  logicAlMylarMy2->SetUserLimits(Limits);
-
-  G4LogicalVolume *logicAlMylarAli2 = new G4LogicalVolume(solidAlMyI2, Al, "Ali_sq2");
-  new G4PVPlacement(0, posb3, logicAlMylarAli2, "Ali_sq2", logicWorld, false, 0, checkOverlaps);
-  logicAlMylarAli2->SetUserLimits(Limits);
-
-  G4LogicalVolume *logicAlMylarAlo2 = new G4LogicalVolume(solidAlMyO2, Al, "Alo_sq2");
-  new G4PVPlacement(0, posb3, logicAlMylarAlo2, "Alo_sq2", logicWorld, false, 0, checkOverlaps);
-  logicAlMylarAlo2->SetUserLimits(Limits);
-
-  flogicDetector5 = new G4LogicalVolume(SmallScin, PVT, "Detector_sq2");
-  new G4PVPlacement(0, posb3, flogicDetector5, "Detector_sq2", logicWorld, false, 0, checkOverlaps);
-  flogicDetector5->SetUserLimits(Limits);
-
-  G4LogicalVolume *logicSiPMLid = new G4LogicalVolume(sipmLid, Cu, "sipm_Lid");
-  new G4PVPlacement(0, G4ThreeVector(0, 0, -(32.079 + 8.89 / 2) * mm), logicSiPMLid, "sipm_Lid",
-                    logicWorld, false, 0, checkOverlaps);
-  logicSiPMLid->SetUserLimits(Limits);
-
   G4LogicalVolume *logicScintHolder = new G4LogicalVolume(scintHolder, mat_PCB, "scint_holder");
   new G4PVPlacement(0, G4ThreeVector(0, 0, -(2.317 + 27.4 / 2) * mm), logicScintHolder, "scint_holder",
                     logicWorld, false, 0, checkOverlaps);
   logicScintHolder->SetUserLimits(Limits);
 
+  G4Tubs *scintHolderBase = new G4Tubs("scintHolderbase", 20 / 2 * mm, 45.72 / 2 * mm, 1.575 / 2 * mm, 0, 360 * deg);
   G4LogicalVolume *logicScintHolderBase = new G4LogicalVolume(scintHolderBase, mat_PCB, "scint_holderBase");
   new G4PVPlacement(0, G4ThreeVector(0, 0, -(29.717 + 1.575 / 2) * mm), logicScintHolderBase, "scint_holderBase",
                     logicWorld, false, 0, checkOverlaps);
   logicScintHolderBase->SetUserLimits(Limits);
 
+  G4Box *scintSleevebase = new G4Box("scintSleevebase",  20.5 / 2 * mm,  20.5 / 2 * mm, 10 / 2 * mm);
+  G4Box *scintSleevecutout = new G4Box("scintHoldercutout2",  16 / 2 * mm, 16 / 2 * mm, 30 / 2 * mm);
+  G4SubtractionSolid *scintSleeve = new G4SubtractionSolid("scintSleeve", scintSleevebase, scintSleevecutout);
   G4LogicalVolume *logicScintSleeve = new G4LogicalVolume(scintSleeve, Al, "scint_Sleeve");
   new G4PVPlacement(0, G4ThreeVector(0, 0, -(9.467 + 10 / 2) * mm), logicScintSleeve, "scint_Sleeve",
                     logicWorld, false, 0, checkOverlaps);
   logicScintSleeve->SetUserLimits(Limits);
 
+
+  // === Calibration source (typically Sr90) on "back" copper plane ===
+
+  // mylar window
   G4double possource = -3.4873 * cm;
   G4RotationMatrix *RotSource = new G4RotationMatrix;
   RotSource->rotateX(2 * 3.14159265 * rad);
-
+  G4Tubs *SourceMy = new G4Tubs("SourceMy", 0 * cm, 0.9398 / 2 * cm, 0.00032 * cm, 0, 360 * deg);
   G4LogicalVolume *logicSourceMy = new G4LogicalVolume(SourceMy, Mylar, "SourceMy");
   new G4PVPlacement(RotSource, G4ThreeVector(0, 0, possource), logicSourceMy, "SourceMy",
                     logicWorld, false, 0, checkOverlaps);
   logicSourceMy->SetUserLimits(Limits);
 
+  // source cylinder (aluminum)
+  G4Tubs *SourceAl1 = new G4Tubs("SourceAl1", 
+                                  0 * cm,         // rmin
+                                  1.27 / 2 * cm,  // rmax
+                                  0.635 * cm,     // delta-z
+                                  0, 360 * deg);  // start-phi, delta-phi
+  G4Tubs *SourceAl2 = new G4Tubs("SourceAl2",  
+                                  0 * cm, 
+                                  0.31623 / 2 * cm, 
+                                  0.3175 * cm, 
+                                  0, 360 * deg);
+  G4Tubs *SourceAlo = new G4Tubs("SourceAlo", 
+                                  0.9398 / 2 * cm, 
+                                  1.269 / 2 * cm, 
+                                  0.31749 / 2 * cm, 
+                                  0, 360 * deg);
+
+  G4RotationMatrix *yRot = new G4RotationMatrix; 
+  yRot->rotateY(0 * rad);
+  G4ThreeVector zTrans(0, 0, -0.635 * cm + 0.3175 * cm / 2);
+  G4SubtractionSolid *SourceAl = new G4SubtractionSolid("SourceAl", SourceAl1, SourceAl2, yRot, zTrans);
   G4LogicalVolume *logicSourceAl = new G4LogicalVolume(SourceAl, Al, "SourceAl");
   new G4PVPlacement(RotSource, G4ThreeVector(0, 0, possource - 0.8 * cm), logicSourceAl, "SourceAl",
                     logicWorld, false, 0, checkOverlaps);
@@ -401,7 +413,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     logicWorld, false, 0, checkOverlaps);
   logicSourceAlo->SetUserLimits(Limits);
 
-  // always return the physical World
+
   return physWorld;
 }
 
@@ -409,8 +421,8 @@ void BM_Detector::ConstructSDandField()
 {
   /*
   NOTE: although this function is not explicitly called in BetaMon, it is still used.
-  ConstructSDandField() is invoked in G4RunManager::InitializeGeometry() alongside Construct().
-  If run with multithreading mode, it is invoked for each thread additionally from G4WorkerRunManager::InitializeGeometry().
+    ConstructSDandField() is invoked in G4RunManager::InitializeGeometry() alongside Construct().
+    If run with multithreading mode, it is invoked for each thread additionally from G4WorkerRunManager::InitializeGeometry().
   https://geant4-forum.web.cern.ch/t/constructsdandfield-in-multi-threaded-mode/2986
   */
   SDMan = G4SDManager::GetSDMpointer();
@@ -426,11 +438,11 @@ void BM_Detector::ConstructSDandField()
   SDMan->AddNewDetector(SDWindow);
   SDMan->AddNewDetector(ScinTrig);
 
-  // Turn on the sensitive detectors
-  flogicDetector1->SetSensitiveDetector(SDWindow);
-  flogicDetector6->SetSensitiveDetector(SDVac);
-  flogicDetector3->SetSensitiveDetector(Scinsq);
-  flogicDetector5->SetSensitiveDetector(ScinTrig);
+  // Turn on the sensitive detectors (1 - window, 6 - vacuum, 3 - scint, 5 - trig(?) )
+  // flogicDetector1->SetSensitiveDetector(SDWindow);
+  // flogicDetector6->SetSensitiveDetector(SDVac);
+  // flogicDetector3->SetSensitiveDetector(Scinsq);
+  // flogicDetector5->SetSensitiveDetector(ScinTrig);
 
   // Magnetic field
   G4double amplitude = 0. * gauss;
