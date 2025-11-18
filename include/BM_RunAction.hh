@@ -19,4 +19,4 @@ public:
    virtual void EndOfRunAction(const G4Run *);
 };
 
-#endif // BM_RUNACTION_HH
+#endif 

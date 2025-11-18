@@ -150,10 +150,10 @@ G4VPhysicalVolume *BM_Detector::Construct()
                         0,               // copy number
                         checkOverlaps);  // overlaps checking
 
+  // ===========================================================================
   // === Declare Geometry components (each is assoc. with a G4LogicalVolume) ===
   // NOTE: To temporarily remove something from the geometry, comment out the G4LV, GVPVPLacement, and SetUserLimits lines.
   
-
   // === T Pipe Inner Vacuum (a.k.a. Decay Volume) == 
   G4double cyl_hdv = 6.75 * 2.54 * cm;    // height of decay volume 16.51 standard
   G4double Tdv_r1i = 3.4798 / 2 * cm;     // T Pipe inner radius
@@ -420,7 +420,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
 void BM_Detector::ConstructSDandField()
 {
   /*
-  NOTE: although this function is not explicitly called in BetaMon, it is still used.
+  NOTE: although this function is not explicitly called in BetaMon cc/hh files, it is still called.
     ConstructSDandField() is invoked in G4RunManager::InitializeGeometry() alongside Construct().
     If run with multithreading mode, it is invoked for each thread additionally from G4WorkerRunManager::InitializeGeometry().
   https://geant4-forum.web.cern.ch/t/constructsdandfield-in-multi-threaded-mode/2986
@@ -439,10 +439,10 @@ void BM_Detector::ConstructSDandField()
   SDMan->AddNewDetector(ScinTrig);
 
   // Turn on the sensitive detectors (1 - window, 6 - vacuum, 3 - scint, 5 - trig(?) )
-  // flogicDetector1->SetSensitiveDetector(SDWindow);
-  // flogicDetector6->SetSensitiveDetector(SDVac);
-  // flogicDetector3->SetSensitiveDetector(Scinsq);
-  // flogicDetector5->SetSensitiveDetector(ScinTrig);
+  flogicDetector1->SetSensitiveDetector(SDWindow);
+  flogicDetector6->SetSensitiveDetector(SDVac);
+  flogicDetector3->SetSensitiveDetector(Scinsq);
+  flogicDetector5->SetSensitiveDetector(ScinTrig);
 
   // Magnetic field
   G4double amplitude = 0. * gauss;

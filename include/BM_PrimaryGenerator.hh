@@ -1,12 +1,11 @@
 #ifndef BM_PRIMARYGENERATOR_HH
 #define BM_PRIMARYGENERATOR_HH
-
-#include "G4VUserPrimaryGeneratorAction.hh"
+#include <fstream>
+#include <vector>
 #include "globals.hh"
+#include "G4VUserPrimaryGeneratorAction.hh"
 #include "G4ParticleGun.hh"
 #include "G4SystemOfUnits.hh"
-// #include "FileReader.hh"
-#include <fstream>
 
 class G4ParticleGun;
 class G4Event;
@@ -29,18 +28,9 @@ private:
   static BM_PrimaryGenerator *instance_;
 
 public:
-  G4ParticleDefinition *positron;
   G4ParticleGun *fParticleGun;
-  G4ParticleGun *heParticleGun;
-  G4ParticleDefinition *recoilparticle;
-  G4ParticleDefinition *gammaradiation;
-  G4PrimaryVertex *vertexpositron;
-  G4PrimaryVertex *vertexrecoil;
-  G4Box *fEnvelopeBox;
-  G4ThreeVector EventVertex;
-  G4ThreeVector sourcePosition;
-  G4double i;
-  G4double theta;
+  std::vector<double> cEn;
+  std::vector<double> cIn;
 };
 
-#endif // BM_PRIMARYGENERATOR_HH
+#endif 

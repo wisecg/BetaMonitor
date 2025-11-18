@@ -1,5 +1,7 @@
 #include <fstream>
 #include <string>
+#include <chrono>
+
 // #define SEG_DBG 
 #ifdef SEG_DBG
   #include <stdio.h>
@@ -20,7 +22,6 @@
 #endif
 #include "G4RunManager.hh"
 
-#include "ActionInitialization.hh"
 #include "BM_RunAction.hh"
 #include "BM_EventAction.hh"
 #include "BM_SteppingAction.hh"
@@ -46,7 +47,12 @@ void handler(int sig) // for segfault
 int main(int argc, char** argv)
 { 
   // NOTE: this version of the BetaMon sim was changed to single-threaded
-  // operation.  (change to main branch to find the multi-threaded version).
+  // operation.  (change to main branch to find David McClain's multi-threaded version).
+
+  auto now = std::chrono::system_clock::now();
+  auto ts_start = std::chrono::system_clock::to_time_t(now);
+  G4cout << "Sim started: " << std::ctime(&ts_start) << G4endl;
+  int unix_start = static_cast<int>(ts_start);
 
   // review input arguments
   G4cout << "Running with " << argc << " arguments:";
@@ -71,8 +77,10 @@ int main(int argc, char** argv)
   physicsList->SetVerboseLevel(1);
   runManager->SetUserInitialization(physicsList);
   
-  runManager->SetUserInitialization(new ActionInitialization());
-
+  // set user actions
+  runManager->SetUserAction(new BM_PrimaryGenerator());
+  runManager->SetUserAction(new BM_EventAction());
+  runManager->SetUserAction(new BM_SteppingAction());
   runManager->SetUserAction(new BM_RunAction());
   
   // initialize ROOT output (example: ./BetaMon run1.mac ./output/outfile.root)
@@ -117,6 +125,13 @@ int main(int argc, char** argv)
   #endif
   
   delete runManager;
+
+  now = std::chrono::system_clock::now();
+  auto ts_stop = std::chrono::system_clock::to_time_t(now);
+  G4cout << "Sim complete: " << std::ctime(&ts_stop) << G4endl;
+  int unix_stop = static_cast<int>(ts_stop);
+
+  G4cout << "Time elapsed: " << unix_stop - unix_start << " seconds.\n";
 
   return 0;
 }

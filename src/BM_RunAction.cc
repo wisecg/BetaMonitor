@@ -1,6 +1,5 @@
 // BM_RunAction.cc - Implementation of BM_RunAction class
 #include "nat_units.hh"
-#include "FileReader.hh"
 #include "g4root.hh"
 
 #include "G4Run.hh"
@@ -61,9 +60,6 @@ void BM_RunAction::BeginOfRunAction(const G4Run *aRun)
   
   G4RunManager::GetRunManager()->SetRandomNumberStore(false);
 
-  // initialize event cumulative quantities
-  FileReader::Instance()->GetAnEvent();
-  
   // initialize our event generator
   BM_EventAction::Instance()->Reset();
   

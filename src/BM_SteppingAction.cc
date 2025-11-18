@@ -34,11 +34,11 @@ void BM_SteppingAction::UserSteppingAction(const G4Step *step)
       G4cout << "Killing track for a sulfur ion" << G4endl;
       track->SetTrackStatus(fKillTrackAndSecondaries);
    }
-   // else if (z == 17)
-   // {
-      // G4cout << "Counting chlorine ion step" << G4endl;
-   // }
-   // BM_StepCounter::Instance()->Increment();
+   else if (z == 17)
+   {
+      G4cout << "Counting chlorine ion step" << G4endl;
+   }
+   // // BM_StepCounter::Instance()->Increment();
 }
 
 void BM_SteppingAction::Reset() {}
