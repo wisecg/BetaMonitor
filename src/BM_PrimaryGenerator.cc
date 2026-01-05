@@ -45,20 +45,23 @@ BM_PrimaryGenerator::BM_PrimaryGenerator() : G4VUserPrimaryGeneratorAction(),
   // std::ifstream inputFile ("137CsGammas.txt");
   // std::ifstream inputFile ("60CoGammas.txt");
   // std::ifstream inputFile("90Sr90YDecaycdf.txt");
-  std::ifstream inputFile ("./dat/90SrDecaypdf.txt");
+  std::ifstream inputFile ("../dat/90SrDecay_cdf.txt");
   // std::ifstream inputFile ("90YDecaypdf.txt");
   // std::ifstream inputFile("He6Betas-test.txt");
+
+  if (!inputFile.is_open()) {
+    std::cerr << "ERROR: Could not open input file" << std::endl;
+    exit(1);
+  }
 
   std::filesystem::path currentPath = std::filesystem::current_path();
   std::cout << "Current working directory: " << currentPath << std::endl;
 
-  while (!inputFile.eof())
-  {
-    double a, b;
-    inputFile >> a >> b;
+  double a, b;
+  while (inputFile >> a >> b) {
     cEn.push_back(a);
     cIn.push_back(b);
-  }
+  } 
   inputFile.close();
 
 }
@@ -181,6 +184,6 @@ void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   //   exit(0);
   // }
 
-  // fParticleGun->GeneratePrimaryVertex(anEvent); 
+  fParticleGun->GeneratePrimaryVertex(anEvent); 
 }
 
