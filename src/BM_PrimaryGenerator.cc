@@ -110,79 +110,93 @@ void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   fParticleGun->SetParticleEnergy(cEn.at(n) * eV);
 
 
-  // // === "T pipe" position generator ===
-  // if (gas_source) 
-  // {  
-  //   G4double z0 = -3.4873 * cm - 0.00064 * cm; // near//-5.15112*cm-0.00064*cm;//far//-1.66*cm;//Bi//
+  // === "T pipe" position generator ===
+  if (gas_source) 
+  {  
+    G4double z0 = -3.4873 * cm - 0.00064 * cm; // near//-5.15112*cm-0.00064*cm;//far//-1.66*cm;//Bi//
 
-  //   // G4double u0 = sqrt((1.0 / 2) * (1.0 / 2) * G4UniformRand()) * cm;
-  //   G4double v0 = 2 * 3.141592653 * G4UniformRand();
-  //   // G4double x0 = 1.60274 / 2 * cm * (2 * G4UniformRand() - 1) * cos(v0); // 2.68205602104/2*cm + u * cos (v);
-  //   // G4double y0 = 1.60274 / 2 * cm * (2 * G4UniformRand() - 1) * sin(v0); // 2.68205602104/2*cm + u * sin (v);
+    // G4double u0 = sqrt((1.0 / 2) * (1.0 / 2) * G4UniformRand()) * cm;
+    G4double v0 = 2 * 3.141592653 * G4UniformRand();
+    // G4double x0 = 1.60274 / 2 * cm * (2 * G4UniformRand() - 1) * cos(v0); // 2.68205602104/2*cm + u * cos (v);
+    // G4double y0 = 1.60274 / 2 * cm * (2 * G4UniformRand() - 1) * sin(v0); // 2.68205602104/2*cm + u * sin (v);
 
-  //   // calibration source generator - Source Radius 0.9398
-  //   G4double rad_new = 0.9398; // 3.4798/2*cm beam rad; 
-  //   G4double u0 = sqrt((rad_new / 2) * (rad_new) / 2 * G4UniformRand()) * cm;
-  //   G4double v = 2 * 3.141592653 * G4UniformRand();
-  //   G4double x1 = 0 / 2 * cm + u0 * cos(v); //-2.68205602104
-  //   G4double y1 = 0 / 2 * cm + u0 * sin(v);
+    // calibration source generator - Source Radius 0.9398
+    G4double rad_new = 0.9398; // 3.4798/2*cm beam rad; 
+    G4double u0 = sqrt((rad_new / 2) * (rad_new) / 2 * G4UniformRand()) * cm;
+    G4double v = 2 * 3.141592653 * G4UniformRand();
+    G4double x1 = 0 / 2 * cm + u0 * cos(v); //-2.68205602104
+    G4double y1 = 0 / 2 * cm + u0 * sin(v);
 
-  //   // G4double z1 = 1.27 * cm + G4UniformRand() * 16.51 * cm; // 11.13765*cm-2.31115*cm+(G4UniformRand())*16*cm/2;
-  //   G4double vx1 = 2 * G4UniformRand() - 1;
-  //   G4double vy1 = 2 * G4UniformRand() - 1;
-  //   G4double vz2 = -2 * G4UniformRand() + 1;
+    // G4double z1 = 1.27 * cm + G4UniformRand() * 16.51 * cm; // 11.13765*cm-2.31115*cm+(G4UniformRand())*16*cm/2;
+    G4double vx1 = 2 * G4UniformRand() - 1;
+    G4double vy1 = 2 * G4UniformRand() - 1;
+    G4double vz2 = -2 * G4UniformRand() + 1;
    
-  //   G4double randall = 2 * G4UniformRand() - 1;
-  //   G4double H1 = 6.75 * 2.54;     // make sure this agrees with Tdv_H1 in BM_Detector.cc
-  //   G4double h2 = 6.75 * 2.54 / 2; // make sure this agrees with Tdv_h2 in BM_Detector.cc
+    G4double randall = 2 * G4UniformRand() - 1;
+    G4double H1 = 6.75 * 2.54;     // make sure this agrees with Tdv_H1 in BM_Detector.cc
+    G4double h2 = 6.75 * 2.54 / 2; // make sure this agrees with Tdv_h2 in BM_Detector.cc
     
-  //   G4double rat = (h2 + rad_new / 2) / (H1 + h2 + rad_new);
+    G4double rat = (h2 + rad_new / 2) / (H1 + h2 + rad_new);
 
-  //   u0 = sqrt ((rad_new/2) * (rad_new)/2 * G4UniformRand())*cm;
-  //   v0 = 2 * 3.141592653* G4UniformRand();
-  //   G4double z2 = 0/2*cm + u0 * cos (v0);//-2.68205602104
-  //   G4double y2 = 0/2*cm + u0 * sin (v0);
-  //   G4double x2 = -1* G4UniformRand()*h2*cm;
-  //   G4double r2 = sqrt(y2*y2 + x2*x2);
+    u0 = sqrt ((rad_new/2) * (rad_new)/2 * G4UniformRand())*cm;
+    v0 = 2 * 3.141592653* G4UniformRand();
+    G4double z2 = 0/2*cm + u0 * cos (v0);//-2.68205602104
+    G4double y2 = 0/2*cm + u0 * sin (v0);
+    G4double x2 = -1* G4UniformRand()*h2*cm;
+    G4double r2 = sqrt(y2*y2 + x2*x2);
     
-  //   G4bool okay = false;
-  //   if (randall < rat){
-  //     while (okay != true){
-  //       G4double u = sqrt ((rad_new/2) * (rad_new)/2 * G4UniformRand())*cm;
-  //       G4double v = 2 * 3.141592653 * G4UniformRand();
-  //       G4double z2 = (1.27*4+6.75*2.54)/2*cm + u * cos (v);//-2.68205602104 3.4798/2*cm - 6.75*2.54/2*cm//(-1.27+16.51)/2*cm
-  //       G4double y2 = 0/2*cm + u * sin (v);
-  //       G4double x2 = -1* G4UniformRand()*h2*cm;
-  //       G4double r2 = sqrt(y2*y2 + x2*x2);
-  //       if (r2 > rad_new){
-  //         okay = true;
-  //         fParticleGun->SetParticlePosition(G4ThreeVector(x2,y2,z2));// T pipe
-  //       }
-  //     }
-  //   }
-  //   else {
-  //     G4double u0 = sqrt ((rad_new/2) * (rad_new)/2 * G4UniformRand())*cm;
-  //     G4double v0 = 2 * 3.141592653* G4UniformRand();
-  //     G4double x2 = 0/2*cm + u0 * cos (v0);//-2.68205602104
-  //     G4double y2 = 0/2*cm + u0 * sin (v0);
-  //     G4double z2 = 2*1.27*cm + G4UniformRand()*(6.75*2.54)*cm;
-  //     fParticleGun->SetParticlePosition(G4ThreeVector(x2,y2,z2));// T pipe
-  //   }    
-  // }
+    G4bool okay = false;
+    if (randall < rat){
+      while (okay != true){
+        G4double u = sqrt ((rad_new/2) * (rad_new)/2 * G4UniformRand())*cm;
+        G4double v = 2 * 3.141592653 * G4UniformRand();
+        G4double z2 = (1.27*4+6.75*2.54)/2*cm + u * cos (v);//-2.68205602104 3.4798/2*cm - 6.75*2.54/2*cm//(-1.27+16.51)/2*cm
+        G4double y2 = 0/2*cm + u * sin (v);
+        G4double x2 = -1* G4UniformRand()*h2*cm;
+        G4double r2 = sqrt(y2*y2 + x2*x2);
+        if (r2 > rad_new){
+          okay = true;
+          fParticleGun->SetParticlePosition(G4ThreeVector(x2,y2,z2));// T pipe
+        }
+      }
+    }
+    else {
+      G4double u0 = sqrt ((rad_new/2) * (rad_new)/2 * G4UniformRand())*cm;
+      G4double v0 = 2 * 3.141592653* G4UniformRand();
+      G4double x2 = 0/2*cm + u0 * cos (v0);//-2.68205602104
+      G4double y2 = 0/2*cm + u0 * sin (v0);
+      G4double z2 = 2*1.27*cm + G4UniformRand()*(6.75*2.54)*cm;
+      fParticleGun->SetParticlePosition(G4ThreeVector(x2,y2,z2));// T pipe
+    }    
+  }
 
-  // // === calibration source position generator ===
-  // else if (cal_source)
-  // {
-  //   G4cout << "Cal source\n";
+  // === calibration source position generator ===
+  else if (cal_source)
+  {
+    G4cout << "Cal source\n";
 
-  //   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(vx1, vy1, vz2));
-  //   fParticleGun->SetParticlePosition(G4ThreeVector(-x1, -y1, z0));
-  // }
-  // else 
-  // {
-  //   G4cout << "No source set!\n";
-  //   exit(0);
-  // }
+    // calibration source generator - Source Radius 0.9398
+    G4double rad_new = 0.9398; // 3.4798/2*cm beam rad; 
+    G4double u0 = sqrt((rad_new / 2) * (rad_new) / 2 * G4UniformRand()) * cm;
+    G4double v = 2 * 3.141592653 * G4UniformRand();
+    G4double x1 = 0 / 2 * cm + u0 * cos(v); //-2.68205602104
+    G4double y1 = 0 / 2 * cm + u0 * sin(v);
+    G4double z0 = -3.4873 * cm + G4UniformRand() * 0.31749 / 2 * cm;
+
+
+    // G4double z1 = 1.27 * cm + G4UniformRand() * 16.51 * cm; // 11.13765*cm-2.31115*cm+(G4UniformRand())*16*cm/2;
+    G4double vx1 = 2 * G4UniformRand() - 1;
+    G4double vy1 = 2 * G4UniformRand() - 1;
+    G4double vz2 = -2 * G4UniformRand() + 1;
+
+    fParticleGun->SetParticleMomentumDirection(G4ThreeVector(vx1, vy1, vz2));
+    fParticleGun->SetParticlePosition(G4ThreeVector(-x1, -y1, z0));
+  }
+  else 
+  {
+    G4cout << "No source set!\n";
+    exit(0);
+  }
 
   fParticleGun->GeneratePrimaryVertex(anEvent); 
 }
