@@ -44,6 +44,7 @@
 #include "G4TransportationManager.hh"
 #include "G4LogicalVolume.hh"
 #include "G4RunManager.hh"
+#include "G4GDMLParser.hh"
 
 #include "G4ThreeVector.hh"
 #include "G4PhysicalConstants.hh"
@@ -413,6 +414,10 @@ G4VPhysicalVolume *BM_Detector::Construct()
                     logicWorld, false, 0, checkOverlaps);
   logicSourceAlo->SetUserLimits(Limits);
 
+  // Remove geometry_export.gdml if it exists to avoid G4GDMLParser exception
+  std::remove("geometry_export.gdml");
+  G4GDMLParser parser;
+  parser.Write("geometry_export.gdml", physWorld, true); // true = store auxiliary info
 
   return physWorld;
 }
