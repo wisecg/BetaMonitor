@@ -46,7 +46,7 @@ void BM_EventAction::BeginOfEventAction(const G4Event *event)
    HC_trig = sdManager->GetCollectionID("Det_trig_HC");
    HC_sq = sdManager->GetCollectionID("Det_sq_HC");
    HC_wind = sdManager->GetCollectionID("Det_wind_HC");
-   // HC_vac = sdManager->GetCollectionID("Det_vac_HC");
+   HC_vac = sdManager->GetCollectionID("Det_vac_HC");
 
    time_t my_time = time(NULL);
    G4int eventN = event->GetEventID();
@@ -227,12 +227,15 @@ void BM_EventAction::EndOfEventAction(const G4Event *event)
    HC_trig_pvt = static_cast<BM_HitsCollection *>(hce->GetHC(HC_trig));
    HC_wind_pvt = static_cast<BM_HitsCollection *>(hce->GetHC(HC_wind));
    HC_sq_pvt = static_cast<BM_HitsCollection *>(hce->GetHC(HC_sq));
+   HC_vac_pvt = static_cast<BM_HitsCollection *>(hce->GetHC(HC_vac));
 
    output = BM_Output::Instance();
 
    EvaluateHC(HC_trig_pvt, trigger);
    EvaluateHC(HC_sq_pvt, square);
    EvaluateHC(HC_wind_pvt, window);
+   EvaluateHC(HC_vac_pvt, vac);
+
    // analysisManager->AddNtupleRow();
 
    output->Fill();
