@@ -160,7 +160,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   G4double Tdv_r1i = 3.4798 / 2 * cm;     // T Pipe inner radius
   G4double Tdv_H1 = 6.75 * 2.54 * cm;     // T Pipe Major axis length
   G4double Tdv_h2 = 6.75 * 2.54 / 2 * cm; // T Pipe Minor axis length
-  G4ThreeVector TransT(Tdv_r1i / 2 - Tdv_h2 / 2, 0, 0);
+  G4ThreeVector TransT(- Tdv_h2 / 2, 0, 0);
   G4RotationMatrix *yRotT = new G4RotationMatrix;
   yRotT->rotateY(3.14159265 / 2 * rad); // Rotates 90 degrees
   G4Tubs *solidShapeT1i = new G4Tubs("Pipe1i",      // 
@@ -187,7 +187,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
 
   // === T Pipe Outer (steel) ===
   G4double Tdv_r1o = 3.81 / 2 * cm;       // T Pipe outer radius
-  G4ThreeVector TransT2(Tdv_r1i / 2 - Tdv_h2, 0, 0);
+  G4ThreeVector TransT2(-Tdv_h2 / 2, 0, 0);
   G4Tubs *solidShapeT1o = new G4Tubs("Pipe1o", 0, Tdv_r1o, Tdv_H1 / 2., 0, 360 * deg);
   G4Tubs *solidShapeT2o = new G4Tubs("Pipe2o", 0, Tdv_r1o, Tdv_h2 / 2, 0, 360 * deg);
   G4UnionSolid *Pipeo = new G4UnionSolid("OuterTPipe", solidShapeT1o, solidShapeT2o, yRotT, TransT);
