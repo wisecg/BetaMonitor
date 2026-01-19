@@ -1,6 +1,6 @@
 #----------------------------------------------------------------------------
 # Setup the project
-cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 project(BetaMon)
 
 find_package(Geant4 REQUIRED ui_all vis_all)
@@ -20,6 +20,17 @@ INCLUDE_DIRECTORIES(SYSTEM ${ROOT_INCLUDE_DIR})
 #set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_CXX_FLAGS} -l:libtcmalloc.so.4")
 #set(CMAKE_DCMAKE_SHARED_LINKER_FLAGS  "${CMAKE_CXX_FLAGS} -ltcmalloc")
 
+# Find GSL (GNU Scientific Library)
+find_package(GSL REQUIRED)
+
+# Ensure GSL is found
+if(GSL_FOUND)
+    include_directories(${GSL_INCLUDE_DIRS})
+    message(STATUS "Found GSL: ${GSL_INCLUDE_DIRS}, ${GSL_LIBRARIES}")
+else()
+    message(FATAL_ERROR "GSL not found! Set GSL_INCLUDE_DIR and GSL_LIBRARY if necessary.")
+endif()
+
 #----------------------------------------------------------------------------
 # Locate sources and headers for this project
 # NB: headers are included so they will show up in IDEs
@@ -33,9 +44,15 @@ add_definitions(-g -O3 -std=c++17 -W -Wall -Wpointer-arith)
 # Add the executable, and link it to the Geant4 libraries
 
 add_executable(BetaMon BetaMon.cc ${sources} ${headers})
-target_link_libraries(BetaMon ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
 link_directories(/fastdata)
-target_link_libraries(BetaMon gsl gslcblas)
+# Link required libraries
+target_link_libraries(BetaMon
+    PRIVATE
+        GSL::gsl
+        GSL::gslcblas
+        ${Geant4_LIBRARIES}
+        ${ROOT_LIBRARIES}
+)
 
 #----------------------------------------------------------------------------
 # Copy scripts to the build directory, i.e. the directory in which we

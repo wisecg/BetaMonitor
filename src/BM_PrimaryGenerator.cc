@@ -45,20 +45,25 @@ BM_PrimaryGenerator::BM_PrimaryGenerator() : G4VUserPrimaryGeneratorAction(),
   // std::ifstream inputFile ("137CsGammas.txt");
   // std::ifstream inputFile ("60CoGammas.txt");
   // std::ifstream inputFile("90Sr90YDecaycdf.txt");
-  std::ifstream inputFile ("./dat/90SrDecaypdf.txt");
+  // std::ifstream inputFile ("../dat/90SrDecay_cdf.txt");
+  // std::ifstream inputFile("../dat/6HeDecay_cdf.txt");
+  std::ifstream inputFile("../dat/19NeDecay_cdf.txt");
   // std::ifstream inputFile ("90YDecaypdf.txt");
   // std::ifstream inputFile("He6Betas-test.txt");
+
+  if (!inputFile.is_open()) {
+    std::cerr << "ERROR: Could not open input file" << std::endl;
+    exit(1);
+  }
 
   std::filesystem::path currentPath = std::filesystem::current_path();
   std::cout << "Current working directory: " << currentPath << std::endl;
 
-  while (!inputFile.eof())
-  {
-    double a, b;
-    inputFile >> a >> b;
+  double a, b;
+  while (inputFile >> a >> b) {
     cEn.push_back(a);
     cIn.push_back(b);
-  }
+  } 
   inputFile.close();
 
 }
@@ -76,8 +81,8 @@ void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   */
   fParticleGun->SetParticleTime(10 * G4UniformRand());
 
-  bool cal_source = true;
-  bool gas_source = false;
+  bool cal_source = false;
+  bool gas_source = true; 
 
   // === set particle type, energy, and intensity === 
 
@@ -85,10 +90,10 @@ void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   G4String particleName;
 
   // He/Sr is e-
-  G4ParticleDefinition *particle = particleTable->FindParticle(particleName = "e-");
+  // G4ParticleDefinition *particle = particleTable->FindParticle(particleName = "e-");
   
   // Ne is e+
-  // G4ParticleDefinition* particle = particleTable->FindParticle(particleName="e+");
+  G4ParticleDefinition* particle = particleTable->FindParticle(particleName="e+");
   // G4ParticleDefinition* particle = particleTable->FindParticle(particleName="gamma");
   
   fParticleGun->SetParticleDefinition(particle);
@@ -107,80 +112,87 @@ void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   fParticleGun->SetParticleEnergy(cEn.at(n) * eV);
 
 
-  // // === "T pipe" position generator ===
-  // if (gas_source) 
-  // {  
-  //   G4double z0 = -3.4873 * cm - 0.00064 * cm; // near//-5.15112*cm-0.00064*cm;//far//-1.66*cm;//Bi//
+  // declaring variables used in position generation
+  G4double x, y, z, vx, vy, vz, r_rand, theta;
 
-  //   // G4double u0 = sqrt((1.0 / 2) * (1.0 / 2) * G4UniformRand()) * cm;
-  //   G4double v0 = 2 * 3.141592653 * G4UniformRand();
-  //   // G4double x0 = 1.60274 / 2 * cm * (2 * G4UniformRand() - 1) * cos(v0); // 2.68205602104/2*cm + u * cos (v);
-  //   // G4double y0 = 1.60274 / 2 * cm * (2 * G4UniformRand() - 1) * sin(v0); // 2.68205602104/2*cm + u * sin (v);
-
-  //   // calibration source generator - Source Radius 0.9398
-  //   G4double rad_new = 0.9398; // 3.4798/2*cm beam rad; 
-  //   G4double u0 = sqrt((rad_new / 2) * (rad_new) / 2 * G4UniformRand()) * cm;
-  //   G4double v = 2 * 3.141592653 * G4UniformRand();
-  //   G4double x1 = 0 / 2 * cm + u0 * cos(v); //-2.68205602104
-  //   G4double y1 = 0 / 2 * cm + u0 * sin(v);
-
-  //   // G4double z1 = 1.27 * cm + G4UniformRand() * 16.51 * cm; // 11.13765*cm-2.31115*cm+(G4UniformRand())*16*cm/2;
-  //   G4double vx1 = 2 * G4UniformRand() - 1;
-  //   G4double vy1 = 2 * G4UniformRand() - 1;
-  //   G4double vz2 = -2 * G4UniformRand() + 1;
-   
-  //   G4double randall = 2 * G4UniformRand() - 1;
-  //   G4double H1 = 6.75 * 2.54;     // make sure this agrees with Tdv_H1 in BM_Detector.cc
-  //   G4double h2 = 6.75 * 2.54 / 2; // make sure this agrees with Tdv_h2 in BM_Detector.cc
+  // === "T pipe" position generator ===
+  if (gas_source) 
+  {  
+    // T pipe dimensions, variables names from BM_Detector.cc
+    G4double cyl_hdv = 6.75 * 2.54 * cm;     // height of decay volume 16.51 standard
+    G4double Tdv_r1i = 3.4798 / 2 * cm; //t-pipe decay vol inner radius
+    G4double Tdv_h1 = 6.75 * 2.54 * cm; // t-pipe major axis length
+    G4double Tdv_h2 = 6.75 * 2.54 / 2 * cm; // t-pipe minor axis length
     
-  //   G4double rat = (h2 + rad_new / 2) / (H1 + h2 + rad_new);
+    // rectangular bounding area for positions generation
+    // Coordinate system origin is center of T pipe, will shift later
+    G4double xmin = -Tdv_h2; // should maybe be Tdv_r1i - Tdv_h2
+    G4double xmax = Tdv_r1i;
+    G4double ymin = -Tdv_r1i; 
+    G4double ymax = Tdv_r1i;
+    G4double zmin = -Tdv_h1 / 2;
+    G4double zmax = Tdv_h1 / 2;
 
-  //   u0 = sqrt ((rad_new/2) * (rad_new)/2 * G4UniformRand())*cm;
-  //   v0 = 2 * 3.141592653* G4UniformRand();
-  //   G4double z2 = 0/2*cm + u0 * cos (v0);//-2.68205602104
-  //   G4double y2 = 0/2*cm + u0 * sin (v0);
-  //   G4double x2 = -1* G4UniformRand()*h2*cm;
-  //   G4double r2 = sqrt(y2*y2 + x2*x2);
+    bool in_tpipe = false;
+    G4double x_t, y_t, z_t;
+    while (!in_tpipe)
+    {
+      x_t = xmin + (xmax - xmin) * G4UniformRand();
+      y_t = ymin + (ymax - ymin) * G4UniformRand();
+      z_t = zmin + (zmax - zmin) * G4UniformRand();
+      
+      bool in_main = (
+        (x_t * x_t + y_t * y_t) <= (Tdv_r1i * Tdv_r1i) && 
+        abs(z_t) <= (Tdv_h1 / 2)
+      ); // in main cylinder
+
+      bool in_branch = (
+        (y_t * y_t + z_t * z_t) <= (Tdv_r1i * Tdv_r1i) && 
+        (x_t >= -Tdv_h2) && (x_t <= 0)
+      ); // in branch cylinder
+      in_tpipe = in_main || in_branch;
+    }
+
+    // shift coordinates to be relative to world origin
+    x = x_t;
+    y = y_t;
+    z = z_t + (cyl_hdv / 2 + 2 * 1.27 * cm); // shift z to be inside T pipe in world coords
+    vx = 2 * G4UniformRand() - 1;
+    vy = 2 * G4UniformRand() - 1;
+    vz = 2 * G4UniformRand() - 1;
+    fParticleGun->SetParticleMomentumDirection(G4ThreeVector(vx, vy, vz));
+    fParticleGun->SetParticlePosition(G4ThreeVector(x, y, z)); 
+  }
+
+  // === calibration source position generator ===
+  else if (cal_source)
+  {
+    // G4cout << "Cal source\n";
+
+    // calibration source generator - Source Radius 0.9398 / 2
+    G4double r_source = 0.9398 / 2; // radius of the source 3.4798/2*cm beam rad; 
+    G4double mylar_thickness = 0.00032; // thickness of source backing material in cm
     
-  //   G4bool okay = false;
-  //   if (randall < rat){
-  //     while (okay != true){
-  //       G4double u = sqrt ((rad_new/2) * (rad_new)/2 * G4UniformRand())*cm;
-  //       G4double v = 2 * 3.141592653 * G4UniformRand();
-  //       G4double z2 = (1.27*4+6.75*2.54)/2*cm + u * cos (v);//-2.68205602104 3.4798/2*cm - 6.75*2.54/2*cm//(-1.27+16.51)/2*cm
-  //       G4double y2 = 0/2*cm + u * sin (v);
-  //       G4double x2 = -1* G4UniformRand()*h2*cm;
-  //       G4double r2 = sqrt(y2*y2 + x2*x2);
-  //       if (r2 > rad_new){
-  //         okay = true;
-  //         fParticleGun->SetParticlePosition(G4ThreeVector(x2,y2,z2));// T pipe
-  //       }
-  //     }
-  //   }
-  //   else {
-  //     G4double u0 = sqrt ((rad_new/2) * (rad_new)/2 * G4UniformRand())*cm;
-  //     G4double v0 = 2 * 3.141592653* G4UniformRand();
-  //     G4double x2 = 0/2*cm + u0 * cos (v0);//-2.68205602104
-  //     G4double y2 = 0/2*cm + u0 * sin (v0);
-  //     G4double z2 = 2*1.27*cm + G4UniformRand()*(6.75*2.54)*cm;
-  //     fParticleGun->SetParticlePosition(G4ThreeVector(x2,y2,z2));// T pipe
-  //   }    
-  // }
+    r_rand = r_source * sqrt(G4UniformRand()) * cm; // r_rand to sample uniformly in circle
+    theta = 2 * 3.141592653 * G4UniformRand(); 
+    x = r_rand * cos(theta); 
+    y = r_rand * sin(theta);
+    z = -3.4873 * cm - mylar_thickness / 2; // placing particles behind the mylar window
 
-  // // === calibration source position generator ===
-  // else if (cal_source)
-  // {
-  //   G4cout << "Cal source\n";
+    // G4double z1 = 1.27 * cm + G4UniformRand() * 16.51 * cm; // 11.13765*cm-2.31115*cm+(G4UniformRand())*16*cm/2;
+    vx = 2 * G4UniformRand() - 1;
+    vy = 2 * G4UniformRand() - 1;
+    vz = 2 * G4UniformRand() - 1; //only generate particles in hemisphere toward detector
 
-  //   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(vx1, vy1, vz2));
-  //   fParticleGun->SetParticlePosition(G4ThreeVector(-x1, -y1, z0));
-  // }
-  // else 
-  // {
-  //   G4cout << "No source set!\n";
-  //   exit(0);
-  // }
+    fParticleGun->SetParticleMomentumDirection(G4ThreeVector(vx, vy, vz));
+    fParticleGun->SetParticlePosition(G4ThreeVector(-x, -y, z));
+  }
+  else 
+  {
+    G4cout << "No source set!\n";
+    exit(0);
+  }
 
-  // fParticleGun->GeneratePrimaryVertex(anEvent); 
+  fParticleGun->GeneratePrimaryVertex(anEvent); 
 }
 

@@ -1,0 +1,11 @@
+# Ignore Python cache directories
+__pycache__/
+
+# Ignore build output directories
+build/
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore VS Code settings folder
+.vscode/
