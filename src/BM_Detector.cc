@@ -181,7 +181,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   // FIXME: appears redundant w/ logicEnv; could make logicEnv the Sens.Det.
   flogicDetector6 = new G4LogicalVolume(Pipei, Vacuum, "Envelopedet"); 
   new G4PVPlacement(0, G4ThreeVector(0 * cm, 0 * cm, cyl_hdv / 2 + 2 * 1.27 * cm),
-                    flogicDetector6, "Envelopedet", logicWorld, false, 0, checkOverlaps);
+                    flogicDetector6, "Envelopedet", logicWorld, false, 6, checkOverlaps);
   flogicDetector6->SetUserLimits(Limits);
 
 
@@ -239,7 +239,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   G4Tubs *solidShape4 = new G4Tubs("Shape4", 0. * cm, cyl_r2c, cyl_hc / 2., 0, 360 * deg);
   flogicDetector1 = new G4LogicalVolume(solidShape4, Al, "Copper");
   G4ThreeVector poscu = G4ThreeVector(0 * cm, 0 * cm, 1.27 * cm + cyl_hc / 2);
-  new G4PVPlacement(0, poscu, flogicDetector1, "Copper", logicWorld, false, 0, checkOverlaps);
+  new G4PVPlacement(0, poscu, flogicDetector1, "Copper", logicWorld, false, 1, checkOverlaps);
   flogicDetector1->SetUserLimits(Limits);
 
 
@@ -265,7 +265,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   // inner scintillator "A" (inner = closer to window)
   G4ThreeVector posb2 = G4ThreeVector(0 * cm, 0 * cm, -(3.317 * mm + (3.0 + 0.0762) / 2 * mm));
   flogicDetector3 = new G4LogicalVolume(SmallScin, PVT, "Detector_sq1");
-  new G4PVPlacement(0, posb2, flogicDetector3, "Detector_sq1", logicWorld, false, 0, checkOverlaps);
+  new G4PVPlacement(0, posb2, flogicDetector3, "Detector_sq1", logicWorld, false, 3, checkOverlaps);
   flogicDetector3->SetUserLimits(Limits);
   
   // inner aluminum layer for scint A
@@ -289,7 +289,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   // outer scintillator "B" (outer = farther from window)
   G4ThreeVector posb3 = G4ThreeVector(0 * cm, 0 * cm, -(3.317 * mm + (3.0 + 0.0762) * 3 / 2 * mm));
   flogicDetector5 = new G4LogicalVolume(SmallScin, PVT, "Detector_sq2");
-  new G4PVPlacement(0, posb3, flogicDetector5, "Detector_sq2", logicWorld, false, 0, checkOverlaps);
+  new G4PVPlacement(0, posb3, flogicDetector5, "Detector_sq2", logicWorld, false, 5, checkOverlaps);
   flogicDetector5->SetUserLimits(Limits);
 
   // aluminum layer for scint B
