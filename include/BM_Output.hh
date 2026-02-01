@@ -24,11 +24,10 @@ public:
   // Decay function
 
   // Detection functions
-  void setTrigParams0(int iD, double en, double inen, double inx, double iny, double inz);
-  void setWindParams0(int iD, double en, double inen, double inx, double iny, double inz);
-  void setSQParams0(int iD, double en, double inen, double inx, double iny, double inz);  
-  void setVacParams0(int iD, double en, double inen, double inx, double iny, double inz);  
-
+  void setParams(int pid_step, int eventid_step, int trackid_step, int parentid_step, 
+                 int volumeid_step, int stepnumber_step, double inenergy_step, 
+                 double kineticenergy_step, double depenergy_step, double x_step, 
+                 double y_step, double z_step, double px_step, double py_step, double pz_step);
 private:
   static BM_Output *Instance_;
 
@@ -36,12 +35,11 @@ private:
   TFile *File;
   TTree *Tree;
   
-  int sqID, trigID, windID, vacID;
+  int pid, eventid, trackid, parentid, volumeid, stepnumber;
+  double inenergy, kineticenergy, depenergy;
+  double x, y, z;
+  double px, py, pz;
 
-  double sqEn, sqInEn, sqInx, sqIny, sqInz;
-  double trigEn, trigInEn, trigInx, trigIny, trigInz;
-  double windEn, windInEn, windInx, windIny, windInz;
-  double vacEn, vacInEn, vacInx, vacIny, vacInz;
 };
 
 #endif
