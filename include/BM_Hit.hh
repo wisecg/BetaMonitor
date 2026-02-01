@@ -17,7 +17,7 @@ class BM_Hit : public G4VHit
 public:                        // Constructor
    BM_Hit(G4int id, G4int pid, // G4double mass, G4int charge,
           G4double time, G4ThreeVector position, G4double energy, G4double energyDep, G4ThreeVector momentum,
-          G4bool exited, G4double inEn, G4int parentID);
+          G4bool exited, G4double inEn, G4int parentID, G4int trackID);
    virtual ~BM_Hit();
    inline void *operator new(size_t);
    inline void operator delete(void *);
@@ -27,6 +27,7 @@ private: // Variables
    G4int id_;
    G4int pid_;
    G4int parentid_;
+   G4int trackid_;
    // G4double mass_;
    // G4int charge_; // because it could be a secondary electron
    G4double time_;
@@ -41,17 +42,14 @@ private: // Variables
 public: // Accessors
    G4int id() const { return id_; }
    G4int pid() const { return pid_; }
-   // G4double mass() const {return mass_;}
-   // G4int charge() const {return charge_;}
    G4double time() const { return time_; }
    G4ThreeVector position() const { return position_; } // globally
    G4ThreeVector momentum() const { return momentum_; }
-   // G4double theta() const {return theta_;}
    G4double inEnergy() const { return inEnergy_; }
    G4double energy() const { return energy_; } // kinetic
    G4double energyDep() const { return energyDep_; }
    G4int parentID() const { return parentid_; }
-   G4bool leftVolume() const { return exited_; };
+   G4int trackID() const { return trackid_; }
    
    // Set methods
    //     void SetTrackID  (G4int track)      { fTrackID = track; };
