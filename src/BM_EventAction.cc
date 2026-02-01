@@ -54,175 +54,46 @@ void BM_EventAction::BeginOfEventAction(const G4Event *event)
       G4cout << "\n---> Begin event: " << eventN << "  time: " << ctime(&my_time) << G4endl;
 }
 
-void BM_EventAction::EvaluateHC(BM_HitsCollection *hc, int det_num)
+void BM_EventAction::EvaluateHC(BM_HitsCollection *hc, int eventN)
 {
-   int n = hc->entries(); // error thrown?
-
-   G4double eDep = 0., eDepPhot = 0., eDepAnn = 0., eDepPos = 0., eDepElec = 0., eDepOther = 0.;
-   G4double InEn = 0., finEn = 0., time = 1.e54, depth = 0.;
-
-   G4int pid = 999, pIDNew = 999, pidtemp = 999, pidpre = 999;
-   G4int exitPosCounter = 0, exitElecCounter = 0, exitPhotCounter = 0, exitAnnCounter = 0, exitOthCounter = 0, parent = 0;
-
-   G4ThreeVector averagePos(999., 999., 999.);
-   G4ThreeVector firstPos(999., 999., 999.);
-   G4ThreeVector anniPos(999., 999., 999.);
-   G4ThreeVector EscPos(999., 999., 999.);
-
-   G4bool exited = false, exitedPos = false, exitedElec = false, exitedPhot = false, exitedOth = false;
-
-   if (n > 0)
+   int n = hc->entries();
+   for (int i = 0; i < n; i++)
    {
-      for (int i = 0; i < n; i++)
-      {
-         BM_Hit *hit = (*hc)[i];
-         pidtemp = hit->pid();
-         if (i >= 1)
-         {
-            BM_Hit *prehit = (*hc)[i - 1];
-            pidpre = prehit->pid();
-            if (pidtemp == 22)
-            {
-               if (pidpre == -11)
-               {
-                  anniPos = hit->position();
-               }
-            }
-         }
-         if (hit->time() < time)
-         {
-            time = hit->time();
-            InEn = hit->inEnergy();
-            pid = hit->pid();
-         }
-         G4double z = hit->position().z();
-
-         // Log the depth of hit if deeper than previous hit
-         if (z * z > depth * depth)
-         {
-            depth = z;
-         }
-
-         // Accumulate deposited energy and position
-         eDep += hit->energyDep();
-         averagePos += hit->position() / n;
-         
-         // If this is the first hit, log the position
-         if (i == 0)
-         {
-            firstPos = hit->position();
-         }
-         switch (pidtemp)
-         {
-         case -11:
-            eDepPos += hit->energyDep();
-            exitedPos = hit->leftVolume();
-            if (exitedPos == true)
-            {
-               exitPosCounter++;
-            }
-            continue;
-         case 11:
-            eDepElec += hit->energyDep();
-            exitedElec = hit->leftVolume();
-            if (exitedElec == true)
-            {
-               exitElecCounter++;
-            }
-            continue;
-         case 22:
-            parent = hit->parentID();
-            eDepPhot += hit->energyDep();
-            exitedPhot = hit->leftVolume();
-
-            if (parent == 1)
-            {
-               eDepAnn += hit->energyDep();
-               if (exitedPhot == true)
-               {
-                  exitAnnCounter++;
-               }
-            }
-            if (exitedPhot == true)
-            {
-               exitPhotCounter++;
-            }
-            continue;
-         default:
-            pIDNew = pidtemp;
-            eDepOther += hit->energyDep();
-            exitedOth = hit->leftVolume();
-            if (exitedOth == true)
-            {
-               exitOthCounter++;
-            }
-         }
-         finEn = hit->energy();
-         exited = hit->leftVolume();
-         EscPos = hit->position();
-      }
+      BM_Hit *hit = (*hc)[i];
+      G4int pid_step = hit->pid();
+      G4int eventid_step = eventN;
+      G4int trackid_step = hit->trackID();
+      G4int parentid_step = hit->parentID();
+      G4int stepnumber_step = i + 1;
+      // G4bool exited_step = hit->leftVolume();
+      G4int volumeid_step = hit->id();
+      G4double inenergy_step = hit->inEnergy();
+      G4double kineticenergy_step = hit->energy();
+      G4double depenergy_step = hit->energyDep();
+      G4double x_step = hit->position().x();
+      G4double y_step = hit->position().y();
+      G4double z_step = hit->position().z();
+      G4double px_step = hit->momentum().x();
+      G4double py_step = hit->momentum().y();
+      G4double pz_step = hit->momentum().z();
+      output->setParams(pid_step, eventid_step, trackid_step, parentid_step, volumeid_step, 
+                        stepnumber_step, inenergy_step, kineticenergy_step, 
+                        depenergy_step, x_step, y_step, z_step, px_step, py_step, pz_step);
+      output->Fill();
+      
    }
-
-   bool pHit = (eDep > 0) ? true : false;
-   switch (det_num)
-   {
-   case 1:
-      output->setTrigParams0(pid, eDep, InEn, firstPos.x(), firstPos.y(), firstPos.z());
-      // analysisManager->FillNtupleIColumn(0, 0, pHit);  // save this block as an example of how output was handled in the past
-      // analysisManager->FillNtupleDColumn(0, 1, eDep);
-      // analysisManager->FillNtupleDColumn(0, 2, averagePos.x());
-      // analysisManager->FillNtupleDColumn(0, 3, averagePos.y());
-      // analysisManager->FillNtupleDColumn(0, 4, averagePos.z());
-      // analysisManager->FillNtupleDColumn(0, 5, time);
-      // output->setTrigParams(pHit, eDep,
-      //               averagePos.x(), averagePos.y(), averagePos.z(),
-      //               time);
-      break;
-   case 2:
-      output->setWindParams0(pid, eDep, InEn, firstPos.x(), firstPos.y(), firstPos.z());
-      break;
-   case 3:
-      output->setSQParams0(pid, eDep, InEn, firstPos.x(), firstPos.y(), firstPos.z());
-      break;
-   case 4:
-      output->setVacParams0(pid, eDep, InEn, firstPos.x(), firstPos.y(), firstPos.z());
-      break;
-   }
-
-   // else if (particleType == "e-")
-   // {
-   //   bool b1Hit = (eDep > 0)?true:false;
-   //   switch(det_num)
-   //   {
-   //     case 1:
-   //     output->setTrigParams(b1Hit, eDep, averagePos.x(), averagePos.y(), averagePos.z(), time, 0., bs, bsPos.x(), bsPos.y(), bsPos.z(), bsTime);
-   //     break;
-   //     case 2:
-   //     output->setWindParams(b1Hit, eDep, averagePos.x(), averagePos.y(), averagePos.z(), time, 0., bs, bsPos.x(), bsPos.y(), bsPos.z(), bsTime);
-   //     break;
-   //     case 3:
-   //     output->setSQParams(b1Hit, eDep, averagePos.x(), averagePos.y(), averagePos.z(), time, 0., bs, bsPos.x(), bsPos.y(), bsPos.z(), bsTime);
-   //     break;
-   //   }
-   // }
 
    return;
-}
+}       
 
 void BM_EventAction::EndOfEventAction(const G4Event *event)
 {
-   // G4cout << "Event step count: " << BM_StepCounter::Instance()->Read() << G4endl;
-   
-   // auto analysisManager = G4AnalysisManager::Instance();
    G4HCofThisEvent *hce = event->GetHCofThisEvent();
    if (!hce)
    {
       G4cout << "No hits collection of this event found.\n";
       return;
    }
-   //  BM_HitsCollection* HC_trig_pvt;
-   //  BM_HitsCollection* HC_wind_pvt;
-   //  BM_HitsCollection* HC_sq_pvt;
 
    HC_trig_pvt = static_cast<BM_HitsCollection *>(hce->GetHC(HC_trig));
    HC_wind_pvt = static_cast<BM_HitsCollection *>(hce->GetHC(HC_wind));
@@ -231,14 +102,13 @@ void BM_EventAction::EndOfEventAction(const G4Event *event)
 
    output = BM_Output::Instance();
 
-   EvaluateHC(HC_trig_pvt, trigger);
-   EvaluateHC(HC_sq_pvt, square);
-   EvaluateHC(HC_wind_pvt, window);
-   EvaluateHC(HC_vac_pvt, vac);
+   G4int eventN = event->GetEventID();
 
-   // analysisManager->AddNtupleRow();
+   EvaluateHC(HC_trig_pvt, eventN);
+   EvaluateHC(HC_sq_pvt, eventN);
+   EvaluateHC(HC_wind_pvt, eventN);
+   EvaluateHC(HC_vac_pvt, eventN);
 
-   output->Fill();
    return;
 }
 

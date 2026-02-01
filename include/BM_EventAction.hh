@@ -16,10 +16,6 @@ class BM_EventAction : public G4UserEventAction
 public:
    BM_EventAction();
    virtual ~BM_EventAction();
-   G4int trigger = 1;
-   G4int square = 3;
-   G4int window = 2;
-   G4int vac = 4;
    // static access method
    static BM_EventAction *Instance();
    BM_HitsCollection *HC_trig_pvt;
