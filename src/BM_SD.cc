@@ -20,9 +20,7 @@ BM_SD::BM_SD(G4String name, G4String HCName) : G4VSensitiveDetector(name),
 
                                                printed_(false)
 {
-   collectionName.insert(HCName); // like "proton"
-   // collectionName.insert(HCName + "_b"); // like "beta"
-   // collectionName.insert(HCName + "_b2"); // like "beta"
+   collectionName.insert(HCName); 
 }
 
 BM_SD::~BM_SD() {}
@@ -37,34 +35,12 @@ void BM_SD::Initialize(G4HCofThisEvent *hce)
 
 G4bool BM_SD::ProcessHits(G4Step *aStep, G4TouchableHistory *)
 {
-   // BM_TrackInfo* info = (BM_TrackInfo*) (aStep->GetTrack()->GetUserInformation());
-   // G4double edep = aStep->GetTotalEnergyDeposit();
-   // if(edep==0.) return true;//only log on energy loss
 
-   // BM_Hit* newHit = new BM_Hit();
-   //    int nHit = pCollection_->entries();
-   //    for(int i=0;i<nHit;i++)
-   //   {
-   //     newHit = (*pCollection_)[i];
-   //     newHit->SetEdep(edep);
-   //     newHit->SetTrackID  (aStep->GetTrack()->GetTrackID());
-   //     newHit->SetChamberNb(aStep->GetPreStepPoint()->GetTouchableHandle()
-   //                                                ->GetCopyNumber());
-   //     newHit->SetPos (aStep->GetPostStepPoint()->GetPosition());
-   //     return true;
-   //   }
-   //    newHit = new BM_Hit();
-   //    newHit->SetEdep(edep);
-   //    newHit->SetTrackID  (aStep->GetTrack()->GetTrackID());
-   //    newHit->SetChamberNb(aStep->GetPreStepPoint()->GetTouchableHandle()
-   //                                                ->GetCopyNumber());
-   //    newHit->SetPos (aStep->GetPostStepPoint()->GetPosition());
    
    G4ParticleDefinition *aPart = aStep->GetTrack()->GetDefinition();
    G4StepPoint *preStepPoint = aStep->GetPreStepPoint();
    G4int id = preStepPoint->GetTouchableHandle()->GetVolume()->GetCopyNo(); // Which volume we hit
 
-   // G4double mass = aPart->GetPDGMass();
    G4int pid = aPart->GetPDGEncoding();
    G4double myTime = preStepPoint->GetGlobalTime();
    G4ThreeVector globalPosition = preStepPoint->GetPosition(); // global position
@@ -76,13 +52,10 @@ G4bool BM_SD::ProcessHits(G4Step *aStep, G4TouchableHistory *)
    G4double energyDep = aStep->GetTotalEnergyDeposit();
    G4bool exited = aStep->IsLastStepInVolume();
    G4int parent = aStep->GetTrack()->GetParentID();
+   G4int trackid = aStep->GetTrack()->GetTrackID();  
 
-   BM_Hit *aHit = new BM_Hit(id, pid, myTime, globalPosition, energy, energyDep, momentum, exited, inEnergy, parent);
-   
-   // G4String type = aPart->GetParticleSubType();
-   // G4int parID = aStep->GetTrack()->GetParentID();
-   // G4int myID = info->GetOriginalTrackID();
-   
+   BM_Hit *aHit = new BM_Hit(id, pid, myTime, globalPosition, energy, energyDep, momentum, exited, inEnergy, parent, trackid);
+
    pIncident_ = localPosition;
    pCollection_->insert(aHit);
    return true;
