@@ -6,6 +6,9 @@
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "G4ParticleGun.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4UImessenger.hh"
+#include "G4UIcmdWithAString.hh"
+#include "G4UIcmdWithABool.hh"
 
 class G4ParticleGun;
 class G4Event;
@@ -23,6 +26,7 @@ public:
 public:
   static BM_PrimaryGenerator *Instance();
   void GeneratePrimaries(G4Event *anEvent);
+  void LoadSpectrum();
 
 private:
   static BM_PrimaryGenerator *instance_;
@@ -31,6 +35,22 @@ public:
   G4ParticleGun *fParticleGun;
   std::vector<double> cEn;
   std::vector<double> cIn;
+  G4String inputFileName;
+  G4String sourceType; // "gas" or "cal"
+  G4String particleType; // "e-" or "e+"
+  // Messenger pointer
+  class BM_PrimaryGeneratorMessenger* messenger;
 };
 
-#endif 
+class BM_PrimaryGeneratorMessenger : public G4UImessenger {
+  BM_PrimaryGenerator* generator;
+  G4UIcmdWithAString* inputFileCmd;
+  G4UIcmdWithAString* sourceTypeCmd;
+  G4UIcmdWithAString* particleTypeCmd;
+public:
+  BM_PrimaryGeneratorMessenger(BM_PrimaryGenerator* gen);
+  ~BM_PrimaryGeneratorMessenger();
+  void SetNewValue(G4UIcommand* cmd, G4String value) override;
+};
+
+#endif

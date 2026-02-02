@@ -32,45 +32,13 @@ BM_PrimaryGenerator::BM_PrimaryGenerator() : G4VUserPrimaryGeneratorAction(),
 
   // He/Ne (monoenergetic) particle generation - also used for Sr90 betas
   fParticleGun = new G4ParticleGun(n_particle);
-
-  // FIXME: pass the name of the input file (energy & intensity columns)
-
-  // input the CDF of a beta decay (energy & intensity columns)
-  // the intensity must be monotonically increasing, but not necessarily normalized to [0,1]
-
-  // std::ifstream inputFile ("6HeDecay5.txt");
-  // std::ifstream inputFile ("19NeDecay.txt");
-  // std::ifstream inputFile ("Mono1MeV.txt");
-  // std::ifstream inputFile ("133BaGammas.txt");
-  // std::ifstream inputFile ("137CsGammas.txt");
-  // std::ifstream inputFile ("60CoGammas.txt");
-  // std::ifstream inputFile("90Sr90YDecaycdf.txt");
-  // std::ifstream inputFile ("../dat/90SrDecay_cdf.txt");
-  // std::ifstream inputFile("../dat/6HeDecay_cdf.txt");
-  std::ifstream inputFile("../dat/19NeDecay_cdf.txt");
-  // std::ifstream inputFile ("90YDecaypdf.txt");
-  // std::ifstream inputFile("He6Betas-test.txt");
-
-  if (!inputFile.is_open()) {
-    std::cerr << "ERROR: Could not open input file" << std::endl;
-    exit(1);
-  }
-
-  std::filesystem::path currentPath = std::filesystem::current_path();
-  std::cout << "Current working directory: " << currentPath << std::endl;
-
-  double a, b;
-  while (inputFile >> a >> b) {
-    cEn.push_back(a);
-    cIn.push_back(b);
-  } 
-  inputFile.close();
-
+  messenger = new BM_PrimaryGeneratorMessenger(this);
 }
 
 BM_PrimaryGenerator::~BM_PrimaryGenerator()
 {
   delete fParticleGun;
+  delete messenger;
 }
 
 void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
@@ -81,21 +49,15 @@ void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   */
   fParticleGun->SetParticleTime(10 * G4UniformRand());
 
-  bool cal_source = false;
-  bool gas_source = true; 
+  bool cal_source = (sourceType == "cal");
+  bool gas_source = (sourceType == "gas"); 
 
   // === set particle type, energy, and intensity === 
 
   G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
   G4String particleName;
 
-  // He/Sr is e-
-  // G4ParticleDefinition *particle = particleTable->FindParticle(particleName = "e-");
-  
-  // Ne is e+
-  G4ParticleDefinition* particle = particleTable->FindParticle(particleName="e+");
-  // G4ParticleDefinition* particle = particleTable->FindParticle(particleName="gamma");
-  
+  G4ParticleDefinition *particle = particleTable->FindParticle(particleType);
   fParticleGun->SetParticleDefinition(particle);
 
   // sample from the CDF of the beta decay spectrum (input file)
@@ -194,5 +156,48 @@ void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   }
 
   fParticleGun->GeneratePrimaryVertex(anEvent); 
+}
+
+void BM_PrimaryGenerator::LoadSpectrum() {
+  cEn.clear();
+  cIn.clear();
+  if (inputFileName.empty()) {
+    std::cerr << "ERROR: inputFileName is empty!" << std::endl;
+    exit(1);
+  }
+  std::ifstream inputFile(inputFileName);
+  if (!inputFile.is_open()) {
+    std::cerr << "ERROR: Could not open input file: " << inputFileName << std::endl;
+    exit(1);
+  }
+  double a, b;
+  while (inputFile >> a >> b) {
+    cEn.push_back(a);
+    cIn.push_back(b);
+  }
+  inputFile.close();
+}
+
+BM_PrimaryGeneratorMessenger::BM_PrimaryGeneratorMessenger(BM_PrimaryGenerator* gen)
+: generator(gen) {
+  inputFileCmd = new G4UIcmdWithAString("/bm/inputFile", this);
+
+  sourceTypeCmd = new G4UIcmdWithAString("/bm/sourceType", this);
+  particleTypeCmd = new G4UIcmdWithAString("/bm/particleType", this);
+}
+
+BM_PrimaryGeneratorMessenger::~BM_PrimaryGeneratorMessenger() {
+  delete inputFileCmd;
+  delete sourceTypeCmd;
+  delete particleTypeCmd;
+}
+
+void BM_PrimaryGeneratorMessenger::SetNewValue(G4UIcommand* cmd, G4String value) {
+  if(cmd == inputFileCmd) {
+    generator->inputFileName = value;
+    generator->LoadSpectrum();
+  }
+  if(cmd == sourceTypeCmd) generator->sourceType = value;
+  if(cmd == particleTypeCmd) generator->particleType = value;
 }
 
