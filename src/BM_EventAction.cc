@@ -33,7 +33,6 @@ BM_EventAction *BM_EventAction::Instance()
 BM_EventAction::BM_EventAction() : G4UserEventAction()
 {
    fgInstance = this;
-   stepwise = true; // default value
 }
 
 BM_EventAction::~BM_EventAction()
@@ -57,109 +56,31 @@ void BM_EventAction::BeginOfEventAction(const G4Event *event)
 
 void BM_EventAction::EvaluateHC(BM_HitsCollection *hc, int eventN)
 {
-   // use the class member variable stepwise
-
-   G4double eDep = 0., eDepPhot = 0., eDepAnn = 0., eDepPos = 0., eDepElec = 0., eDepOther = 0.;
-   G4double InEn = 0., finEn = 0., time = 1.e54, depth = 0.;
-
-   G4int pid = 999, pIDNew = 999, pidtemp = 999, pidpre = 999;
-   G4int exitPosCounter = 0, exitElecCounter = 0, exitPhotCounter = 0, exitAnnCounter = 0, exitOthCounter = 0, parent = 0;
-
-   G4ThreeVector averagePos(999., 999., 999.);
-   G4ThreeVector firstPos(999., 999., 999.);
-   G4ThreeVector anniPos(999., 999., 999.);
-   G4ThreeVector EscPos(999., 999., 999.);
-
-   G4bool exited = false, exitedPos = false, exitedElec = false, exitedPhot = false, exitedOth = false;
-
-   G4int pid_step;
-   G4int eventid_step;
-   G4int trackid_step;
-   G4int parentid_step;
-   G4int stepnumber_step;
-   // G4bool exited_step = hit->leftVolume();
-   G4int volumeid_step;
-   G4double inenergy_step;
-   G4double kineticenergy_step;
-   G4double depenergy_step = 0.0;
-   G4double x_step;
-   G4double y_step;
-   G4double z_step;
-   G4double px_step;
-   G4double py_step;
-   G4double pz_step;
-
-   // 22 photon, 11 electron, -11 positron
    int n = hc->entries();
-   if (n == 0)
-      return;
-
-   if (stepwise == false)
+   for (int i = 0; i < n; i++)
    {
-      for (int i = 0; i < n; i++)
-      {
-         BM_Hit *hit = (*hc)[i];
-         // if (!hit) continue; // skip null pointer
-         if (hit->time() < time)
-         {
-            time = hit->time();
-            pid_step = hit->pid();
-            eventid_step = eventN;
-            trackid_step = hit->trackID();
-            parentid_step = hit->parentID();
-            volumeid_step = hit->id();
-            trackid_step = hit->trackID();
-            parentid_step = hit->parentID();
-            inenergy_step = hit->inEnergy();
-
-            x_step = hit->position().x();
-            y_step = hit->position().y();
-            z_step = hit->position().z();
-            px_step = hit->momentum().x();
-            py_step = hit->momentum().y();
-            pz_step = hit->momentum().z();
-         }
-
-         // Accumulate deposited energy and position
-         depenergy_step += hit->energyDep();
-         // averagePos += hit->position() / n;
-
-         // kinetic energy of last hit
-         kineticenergy_step = hit->energy();
-         stepnumber_step = i + 1;
-      }
+      BM_Hit *hit = (*hc)[i];
+      G4int pid_step = hit->pid();
+      G4int eventid_step = eventN;
+      G4int trackid_step = hit->trackID();
+      G4int parentid_step = hit->parentID();
+      G4int stepnumber_step = i + 1;
+      // G4bool exited_step = hit->leftVolume();
+      G4int volumeid_step = hit->id();
+      G4double inenergy_step = hit->inEnergy();
+      G4double kineticenergy_step = hit->energy();
+      G4double depenergy_step = hit->energyDep();
+      G4double x_step = hit->position().x();
+      G4double y_step = hit->position().y();
+      G4double z_step = hit->position().z();
+      G4double px_step = hit->momentum().x();
+      G4double py_step = hit->momentum().y();
+      G4double pz_step = hit->momentum().z();
       output->setParams(pid_step, eventid_step, trackid_step, parentid_step, volumeid_step, 
-                           stepnumber_step, inenergy_step, kineticenergy_step, 
-                           depenergy_step, x_step, y_step, z_step, px_step, py_step, pz_step);
+                        stepnumber_step, inenergy_step, kineticenergy_step, 
+                        depenergy_step, x_step, y_step, z_step, px_step, py_step, pz_step);
       output->Fill();
-   }
-   else
-   {
-      for (int i = 0; i < n; i++)
-      {
-         BM_Hit *hit = (*hc)[i];
-         // if (!hit) continue; // skip null pointer
-         pid_step = hit->pid();
-         eventid_step = eventN;
-         trackid_step = hit->trackID();
-         parentid_step = hit->parentID();
-         stepnumber_step = i + 1;
-         // G4bool exited_step = hit->leftVolume();
-         volumeid_step = hit->id();
-         inenergy_step = hit->inEnergy();
-         kineticenergy_step = hit->energy();
-         depenergy_step = hit->energyDep();
-         x_step = hit->position().x();
-         y_step = hit->position().y();
-         z_step = hit->position().z();
-         px_step = hit->momentum().x();
-         py_step = hit->momentum().y();
-         pz_step = hit->momentum().z();
-         output->setParams(pid_step, eventid_step, trackid_step, parentid_step, volumeid_step, 
-                           stepnumber_step, inenergy_step, kineticenergy_step, 
-                           depenergy_step, x_step, y_step, z_step, px_step, py_step, pz_step);
-         output->Fill();
-      }     
+      
    }
 
    return;
