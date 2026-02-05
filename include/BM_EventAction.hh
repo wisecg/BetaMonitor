@@ -27,6 +27,8 @@ public:
 
    void Reset();
 
+   // Make stepwise accessible to all member functions
+   bool stepwise;
 private:
    void EvaluateHC(BM_HitsCollection *hits, int det_num);
    static BM_EventAction *fgInstance;
