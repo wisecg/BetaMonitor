@@ -326,11 +326,22 @@ G4VPhysicalVolume *BM_Detector::Construct()
 
 
   // === Copper Back Plate / "SiPM Lid" ===
-  G4Tubs *sipmLidBase = new G4Tubs("sipmLidBase", 10.16 / 2 * mm, 120.65 / 2 * mm, 8.89 / 2 * mm,
-                                   0, 360 * deg);
-  G4Tubs *sipmLidSource = new G4Tubs("sipmLidSource", 0, 20 / 2 * mm, 6.096 / 2 * mm, 0, 360 * deg);
+  G4Tubs *sipmLidBase = new G4Tubs("sipmLidBase", 
+                                    10.16 / 2 * mm, //rmin
+                                    120.65 / 2 * mm, //rmax
+                                    8.89 / 2 * mm, //delta-z
+                                    0, //start phi
+                                    360 * deg); //end phi
+  G4Tubs *sipmLidSource = new G4Tubs("sipmLidSource", 
+                                      0, //rmin
+                                      12.701 / 2 * mm, //rmax
+                                      8.89 / 2 * mm, //delta-z
+                                      0, //start phi
+                                      360 * deg); //end phi
+  // source cutout is moved in the negative z dir by the half the width of the 
+  // -32.079 (position of front of sipmLidBase) - (-34.873 [pos of source mylar] + 3.1749/2 [half width of sourceAlo ring]) = 1.2065 cm
   G4SubtractionSolid *sipmLid = new G4SubtractionSolid("sipmLid", sipmLidBase, sipmLidSource, Rot0,
-                                                       G4ThreeVector(0, 0, -(2.794 + 6.096 / 2) * mm));
+                                                       G4ThreeVector(0, 0, -0.12065 * cm));
   G4LogicalVolume *logicSiPMLid = new G4LogicalVolume(sipmLid, Cu, "sipm_Lid");
   new G4PVPlacement(0, G4ThreeVector(0, 0, -(32.079 + 8.89 / 2) * mm), logicSiPMLid, "sipm_Lid",
                     logicWorld, false, 0, checkOverlaps);
