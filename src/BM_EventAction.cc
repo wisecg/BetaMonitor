@@ -33,7 +33,7 @@ BM_EventAction *BM_EventAction::Instance()
 BM_EventAction::BM_EventAction() : G4UserEventAction()
 {
    fgInstance = this;
-   stepwise = true; // default value
+   stepwise = false; // default value
 }
 
 BM_EventAction::~BM_EventAction()
