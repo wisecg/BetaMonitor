@@ -61,9 +61,7 @@ void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   fParticleGun->SetParticleDefinition(particle);
 
   // sample from the CDF of the beta decay spectrum (input file)
-  srand(time(NULL));
-  double r1 = (double)rand() / RAND_MAX; // [0, 1]
-  double r2 = cIn.back() * r1;  // cIn.back() is the final value of the cdf (can be norm'd to 1, but not required)
+  double r2 = cIn.back() * G4UniformRand();  // cIn.back() is the final value of the cdf (can be norm'd to 1, but not required)
   
   // return the first position not less than the specified value (r2)
   vector<double>::iterator low = lower_bound(cIn.begin(), cIn.end(), r2); 
@@ -72,7 +70,6 @@ void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
   double n = low - cIn.begin();
   
   fParticleGun->SetParticleEnergy(cEn.at(n) * eV);
-
 
   // declaring variables used in position generation
   G4double x, y, z, vx, vy, vz, r_rand, theta;
