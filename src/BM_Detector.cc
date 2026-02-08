@@ -130,8 +130,8 @@ G4VPhysicalVolume *BM_Detector::Construct()
   G4Material *Vacuum = new G4Material("interGalactic", atomicNumber, massOfMole, density2, kStateGas, temperature, pressure);
 
   // World
-  G4double world_sizeXY = 18 * cm;
-  G4double world_sizeZ = 40.75 * cm;
+  G4double world_sizeXY = 20 * cm;
+  G4double world_sizeZ = 45 * cm;
   G4Material *world_mat = nist->FindOrBuildMaterial("G4_AIR");
   G4Box *solidWorld = new G4Box("World", 0.5 * world_sizeXY, 0.5 * world_sizeXY, 0.5 * world_sizeZ);
   logicWorld = new G4LogicalVolume(solidWorld, world_mat, "World"); // (G4 volume instance, material, name)
@@ -157,25 +157,27 @@ G4VPhysicalVolume *BM_Detector::Construct()
   
   // === T Pipe Inner Vacuum (a.k.a. Decay Volume) == 
   G4double cyl_hdv = 6.75 * 2.54 * cm;    // height of decay volume 16.51 standard
-  G4double Tdv_r1i = 3.4798 / 2 * cm;     // T Pipe inner radius
-  G4double Tdv_H1 = 6.75 * 2.54 * cm;     // T Pipe Major axis length
+  G4double Tdv_r1i = 1.7399 * cm;     // T Pipe inner radius
+  G4double Tdv_h1 = 6.75 * 2.54 * cm;     // T Pipe Major axis length
   G4double Tdv_h2 = 6.75 * 2.54 / 2 * cm; // T Pipe Minor axis length
-  G4ThreeVector TransT(- Tdv_h2 / 2, 0, 0);
+  G4double flange_width = 1.27 * cm; // Flange width
+
+  G4ThreeVector TransT(- Tdv_h2 / 2 - flange_width / 2, 0, 0);
   G4RotationMatrix *yRotT = new G4RotationMatrix;
   yRotT->rotateY(3.14159265 / 2 * rad); // Rotates 90 degrees
   G4Tubs *solidShapeT1i = new G4Tubs("Pipe1i",      // 
                                       0,            // rmin
                                       Tdv_r1i,      // rmax
-                                      Tdv_H1 / 1.9, // delta-z
+                                      Tdv_h1 / 2 + flange_width,  // delta-z
                                       0,            // start-phi
                                       360 * deg);   // delta-phi
-  G4Tubs *solidShapeT2i = new G4Tubs("Pipe2i", 0, Tdv_r1i, Tdv_h2 / 2, 0, 360 * deg);
+  G4Tubs *solidShapeT2i = new G4Tubs("Pipe2i", 0, Tdv_r1i, Tdv_h2 / 2 + flange_width / 2, 0, 360 * deg);
   G4UnionSolid *Pipei = new G4UnionSolid("InnerTPipe", solidShapeT1i, solidShapeT2i, yRotT, TransT);
 
-  logicEnv = new G4LogicalVolume(Pipei, Vacuum, "Envelope"); // (its g4 geometry object, its material, its name)
-  new G4PVPlacement(0, G4ThreeVector(0 * cm, 0 * cm, cyl_hdv / 2 + 2 * 1.27 * cm),
-                    logicEnv, "Envelope", logicWorld, false, 0, checkOverlaps);
-  logicEnv->SetUserLimits(Limits);
+  // logicEnv = new G4LogicalVolume(Pipei, Vacuum, "Envelope"); // (its g4 geometry object, its material, its name)
+  // new G4PVPlacement(0, G4ThreeVector(0 * cm, 0 * cm, cyl_hdv / 2 + 2 * 1.27 * cm),
+  //                   logicEnv, "Envelope", logicWorld, false, 0, checkOverlaps);
+  // logicEnv->SetUserLimits(Limits);
 
   // copy of logicEnv to create a sensitive detector for the vacuum.
   // FIXME: appears redundant w/ logicEnv; could make logicEnv the Sens.Det.
@@ -188,57 +190,58 @@ G4VPhysicalVolume *BM_Detector::Construct()
   // === T Pipe Outer (steel) ===
   G4double Tdv_r1o = 3.81 / 2 * cm;       // T Pipe outer radius
   G4ThreeVector TransT2(-Tdv_h2 / 2, 0, 0);
-  G4Tubs *solidShapeT1o = new G4Tubs("Pipe1o", 0, Tdv_r1o, Tdv_H1 / 2., 0, 360 * deg);
+  G4Tubs *solidShapeT1o = new G4Tubs("Pipe1o", 0, Tdv_r1o, Tdv_h1 / 2., 0, 360 * deg);
   G4Tubs *solidShapeT2o = new G4Tubs("Pipe2o", 0, Tdv_r1o, Tdv_h2 / 2, 0, 360 * deg);
-  G4UnionSolid *Pipeo = new G4UnionSolid("OuterTPipe", solidShapeT1o, solidShapeT2o, yRotT, TransT);
+  G4UnionSolid *Pipeo = new G4UnionSolid("OuterTPipe", solidShapeT1o, solidShapeT2o, yRotT, TransT2);
   G4SubtractionSolid *TPipe1 = new G4SubtractionSolid("TDecayVolume", Pipeo, solidShapeT1i);
   G4SubtractionSolid *TPipe = new G4SubtractionSolid("TDecayVolume", TPipe1, solidShapeT2i, yRotT, TransT2);
   G4LogicalVolume *logicDecayVolume1 = new G4LogicalVolume(TPipe, Stainless_Steel, "Decay_Volume");
-  new G4PVPlacement(0, G4ThreeVector(0, 0, cyl_hdv / 2 + 1.27 * 2 * cm),
+  new G4PVPlacement(0, G4ThreeVector(0, 0, cyl_hdv / 2 + flange_width * 2),
                     logicDecayVolume1, "Decay_Volume", logicWorld, false, 0, checkOverlaps);
   logicDecayVolume1->SetUserLimits(Limits);
 
 
   // === T Pipe Flanges (steel) === 
   G4double cyl_r2dvo = 6.9088 / 2 * cm; // Flange Outer Radius
-  G4double cyl_r1dvi = 3.4798 / 2 * cm; // Inner Radius of T Pipe Decay Volume
-  G4Tubs *solidFlange = new G4Tubs("Flange", 0 * cm, cyl_r2dvo, 1.2700 / 2 * cm, 0, 360 * deg);
-  G4Tubs *boreFlange = new G4Tubs("boreFlange", 0 * cm, cyl_r1dvi, 1.27 * cm, 0, 360 * deg);
+  
+  G4double cyl_r1dvi = 3.4798 / 2 * cm; // Inner Radius of T Pipe Decay Volume 
+  G4Tubs *solidFlange = new G4Tubs("Flange", 0 * cm, cyl_r2dvo, flange_width / 2, 0, 360 * deg);
+  G4Tubs *boreFlange = new G4Tubs("boreFlange", 0 * cm, cyl_r1dvi, flange_width, 0, 360 * deg);
   G4SubtractionSolid *Flangen = new G4SubtractionSolid("Flange", solidFlange, boreFlange);
   
   // leftmost flange (nearest beta monitor)
   G4LogicalVolume *logicDecayVolume3 = new G4LogicalVolume(Flangen, Stainless_Steel, "Decay_Volume_r");
-  G4ThreeVector posdv2 = G4ThreeVector(0 * cm, 0 * cm, 1.27 / 2 * cm);
+  G4ThreeVector posdv2 = G4ThreeVector(0 * cm, 0 * cm, flange_width / 2);
   new G4PVPlacement(0, posdv2, logicDecayVolume3, "Decay_Volume_r", logicWorld,
                     false, 0, checkOverlaps);
   logicDecayVolume3->SetUserLimits(Limits);
 
   // second to leftmost flange (sandwiches the "window")
   G4LogicalVolume *logicDecayVolume6 = new G4LogicalVolume(Flangen, Stainless_Steel, "Decay_Volume_r");
-  new G4PVPlacement(0, G4ThreeVector(0 * cm, 0 * cm, 3 * 1.27 / 2 * cm),
+  new G4PVPlacement(0, G4ThreeVector(0 * cm, 0 * cm, 3 * flange_width / 2), 
                     logicDecayVolume6, "Decay_Volume_r", logicWorld, false, 0, checkOverlaps);
   logicDecayVolume6->SetUserLimits(Limits);
 
   // right flange
   G4LogicalVolume *logicDecayVolume4 = new G4LogicalVolume(Flangen, Stainless_Steel, "Decay_Volume_r");
-  new G4PVPlacement(0, G4ThreeVector(0, 0, cyl_hdv + 1.27 * 2 * cm), logicDecayVolume4, "Decay_Volume_r",
+  new G4PVPlacement(0, G4ThreeVector(0, 0, cyl_hdv + (flange_width * 2 + flange_width / 2)), logicDecayVolume4, "Decay_Volume_r",
                     logicWorld, false, 0, checkOverlaps);
   logicDecayVolume4->SetUserLimits(Limits);
 
   // middle flange
   G4LogicalVolume *logicDecayVolume5 = new G4LogicalVolume(Flangen, Stainless_Steel, "Decay_Volume_r");
-  new G4PVPlacement(yRotT, G4ThreeVector(-Tdv_h2 + 1.27 / 2 * cm, 0, cyl_hdv / 2 + 1.27 * 2 * cm),
+  new G4PVPlacement(yRotT, G4ThreeVector(-Tdv_h2 - flange_width / 2, 0, cyl_hdv / 2 + flange_width * 2),
                     logicDecayVolume5, "Decay_Volume_r", logicWorld, false, 0, false);
   logicDecayVolume5->SetUserLimits(Limits);
 
 
   // === Vacuum Window (copper) - between two left flanges ===
-  G4double cyl_r2c = 3.556 / 2 * cm; // copper seal radius
+  // G4double cyl_r2c = 3.556 / 2 * cm; // copper seal radius //Tdv_r1i = 3.4798 / 2 * cm;
   G4double cyl_hc = 0.0254 * cm;     // thickness of copper
   // G4double cyl_hkap = 0.0012 * cm;   // thickness of kapton (trials - 1:0.0012, 2: 0.00075, 3: 0.006, 4: 0.0127)
-  G4Tubs *solidShape4 = new G4Tubs("Shape4", 0. * cm, cyl_r2c, cyl_hc / 2., 0, 360 * deg);
+  G4Tubs *solidShape4 = new G4Tubs("Shape4", 0. * cm, Tdv_r1i, cyl_hc / 2., 0, 360 * deg);
   flogicDetector1 = new G4LogicalVolume(solidShape4, Al, "Copper");
-  G4ThreeVector poscu = G4ThreeVector(0 * cm, 0 * cm, 1.27 * cm + cyl_hc / 2);
+  G4ThreeVector poscu = G4ThreeVector(0 * cm, 0 * cm, flange_width - cyl_hc / 2);
   new G4PVPlacement(0, poscu, flogicDetector1, "Copper", logicWorld, false, 1, checkOverlaps);
   flogicDetector1->SetUserLimits(Limits);
 

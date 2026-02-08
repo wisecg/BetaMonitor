@@ -82,15 +82,16 @@ void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
     G4double Tdv_r1i = 3.4798 / 2 * cm; //t-pipe decay vol inner radius
     G4double Tdv_h1 = 6.75 * 2.54 * cm; // t-pipe major axis length
     G4double Tdv_h2 = 6.75 * 2.54 / 2 * cm; // t-pipe minor axis length
+    G4double flange_width = 1.27 * cm; // Flange width
     
     // rectangular bounding area for positions generation
     // Coordinate system origin is center of T pipe, will shift later
-    G4double xmin = -Tdv_h2; // should maybe be Tdv_r1i - Tdv_h2
+    G4double xmin = -Tdv_h2 - flange_width; // should maybe be Tdv_r1i - Tdv_h2
     G4double xmax = Tdv_r1i;
     G4double ymin = -Tdv_r1i; 
     G4double ymax = Tdv_r1i;
-    G4double zmin = -Tdv_h1 / 2;
-    G4double zmax = Tdv_h1 / 2;
+    G4double zmin = -Tdv_h1 / 2 - flange_width;
+    G4double zmax = Tdv_h1 / 2 + flange_width;
 
     bool in_tpipe = false;
     G4double x_t, y_t, z_t;
