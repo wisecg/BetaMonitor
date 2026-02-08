@@ -132,12 +132,12 @@ void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
     // calibration source generator - Source Radius 0.9398 / 2
     G4double r_source = 0.9398 / 2; // radius of the source 3.4798/2*cm beam rad; 
     G4double mylar_thickness = 0.00032; // thickness of source backing material in cm
-    
+    G4double possource = -3.4873 * cm + 7.6477 * mm;
     r_rand = r_source * sqrt(G4UniformRand()) * cm; // r_rand to sample uniformly in circle
     theta = 2 * 3.141592653 * G4UniformRand(); 
     x = r_rand * cos(theta); 
     y = r_rand * sin(theta);
-    z = -3.4873 * cm - mylar_thickness / 2; // placing particles behind the mylar window
+    z = possource - mylar_thickness / 2; // placing particles behind the mylar window
 
     // G4double z1 = 1.27 * cm + G4UniformRand() * 16.51 * cm; // 11.13765*cm-2.31115*cm+(G4UniformRand())*16*cm/2;
     vx = 2 * G4UniformRand() - 1;
