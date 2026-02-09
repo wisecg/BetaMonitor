@@ -389,7 +389,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   G4double possource = -3.4873 * cm + 7.6477 * mm;
   G4RotationMatrix *RotSource = new G4RotationMatrix;
   RotSource->rotateX(2 * 3.14159265 * rad);
-  G4Tubs *SourceMy = new G4Tubs("SourceMy", 0 * cm, 0.9398 / 2 * cm, 0.00032 * cm, 0, 360 * deg);
+  G4Tubs *SourceMy = new G4Tubs("SourceMy", 0 * cm, 0.939 / 2 * cm, 0.00032 * cm, 0, 360 * deg);
   G4LogicalVolume *logicSourceMy = new G4LogicalVolume(SourceMy, Mylar, "SourceMy");
   new G4PVPlacement(RotSource, G4ThreeVector(0, 0, possource), logicSourceMy, "SourceMy",
                     logicWorld, false, 0, checkOverlaps);
@@ -398,7 +398,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   // source cylinder (aluminum)
   G4Tubs *SourceAl1 = new G4Tubs("SourceAl1", 
                                   0 * cm,         // rmin
-                                  1.27 / 2 * cm,  // rmax
+                                  1.265 / 2 * cm,  // rmax
                                   0.635 * cm,     // delta-z
                                   0, 360 * deg);  // start-phi, delta-phi
   G4Tubs *SourceAl2 = new G4Tubs("SourceAl2",  
@@ -408,7 +408,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                                   0, 360 * deg);
   G4Tubs *SourceAlo = new G4Tubs("SourceAlo", 
                                   0.9398 / 2 * cm, 
-                                  1.269 / 2 * cm, 
+                                  1.265 / 2 * cm, 
                                   0.31749 / 2 * cm, 
                                   0, 360 * deg);
 
@@ -422,8 +422,8 @@ G4VPhysicalVolume *BM_Detector::Construct()
   logicSourceAl->SetUserLimits(Limits);
 
   G4LogicalVolume *logicSourceAlo = new G4LogicalVolume(SourceAlo, Al, "SourceAlo");
-  new G4PVPlacement(RotSource, G4ThreeVector(0, 0, possource - 0 * cm), logicSourceAlo, "SourceAlo",
-                    logicWorld, false, 0, checkOverlaps);
+  new G4PVPlacement(RotSource, G4ThreeVector(0, 0, 0.31749 / 2 * cm), logicSourceAlo, "SourceAlo",
+                    logicSiPMLid, false, 0, checkOverlaps);
   logicSourceAlo->SetUserLimits(Limits);
 
   // Remove geometry_export.gdml if it exists to avoid G4GDMLParser exception
