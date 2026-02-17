@@ -19,9 +19,12 @@
 #include "G4ParticleGun.hh"
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
+#include "G4Event.hh"
 
 #include "BM_PrimaryGenerator.hh"
 #include "BM_EventAction.hh"
+#include "BM_Output.hh"
+
 
 using namespace std;
 
@@ -152,6 +155,21 @@ void BM_PrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
     G4cout << "No source set!\n";
     exit(0);
   }
+
+  // Fill the primary input tree with primary info
+  // Get BM_Output instance
+  BM_Output* output = BM_Output::Instance();
+  // Use the last set values for x, y, z, vx, vy, vz, and energy
+  int primary_pid = particle->GetPDGEncoding();
+  int primary_eventid = anEvent->GetEventID();
+  output->setPrimaryInputParams(
+    primary_pid,
+    primary_eventid,
+    x, y, z,
+    vx, vy, vz,
+    fParticleGun->GetParticleEnergy()
+  );
+  output->FillPrimaryInput();
 
   fParticleGun->GeneratePrimaryVertex(anEvent); 
 }

@@ -47,7 +47,6 @@ G4bool BM_SD::ProcessHits(G4Step *aStep, G4TouchableHistory *)
    G4ThreeVector localPosition = globalPosition - preStepPoint->GetPhysicalVolume()->GetObjectTranslation();
    G4ThreeVector momentum = aStep->GetTrack()->GetMomentum();
    G4double primaryEnergy = aStep->GetTrack()->GetVertexKineticEnergy(); // kinetic energy at vertex, i.e. primary energy for primaries, and energy of parent at time of secondary creation for secondaries
-   localPosition.setZ(localPosition.z());
    G4double energy = aStep->GetTrack()->GetKineticEnergy();
    G4double inEnergy = preStepPoint->GetKineticEnergy();
    G4double energyDep = aStep->GetTotalEnergyDeposit();
