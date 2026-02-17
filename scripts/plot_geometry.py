@@ -176,7 +176,7 @@ def plot_by_volume(reg, vol_select=None):
                 vol.material = unique_mat
                 legend_entries.append((vol_name, [1.0, 0.0, 0.0]))
                 mat_vis.colour = [1.0, 0.0, 0.0]
-                mat_vis.alpha = 0.5
+                mat_vis.alpha = 0.3
                 v.addMaterialVisOption("UniqueMat", mat_vis)
             # else:
             else:
@@ -187,7 +187,7 @@ def plot_by_volume(reg, vol_select=None):
                 # set material back to original
         else:
             mat_vis.colour = colors[n]
-            mat_vis.alpha = 0.3
+            mat_vis.alpha = 0.0
             v.addMaterialVisOption(mat_name , mat_vis)
             print('Added volume vis for ',  vol_name)
             legend_entries.append((vol_name, colors[n]))
@@ -286,6 +286,7 @@ def load_gdml(gdml_path):
 if __name__ == "__main__":
     # Load the GDML file
     gdml_parser = pg4.gdml.Reader(r'build/geometry_export.gdml')
+    # gdml_parser = pg4.gdml.Reader(r'test/geometry_export_withoverlap.gdml')
     reg = gdml_parser.getRegistry()
     vol_list = print_vol_names(reg)
     # v = plot_by_volume(reg, vol_select="SourceMy")
@@ -296,8 +297,28 @@ if __name__ == "__main__":
         # v.view()
     #     print(' ')
     # v = plot_with_custom_colors_by_material(reg)
-    v = plot_by_volume(reg, vol_select="Envelopedet")
+    # v = plot_by_volume(reg, vol_select="sipm_Lid")
+    # v.view()
+    v = plot_by_volume(reg, vol_select='SourceAlo')
+    v.ren.GetActiveCamera().SetPosition(-100, 0, 0)
+    v.ren.GetActiveCamera().SetFocalPoint(0, 0, 0)
+    points = [(-3.312149048552093,-3.333207116303375,-27.51595106546894),
+              (-4.058167376476526,2.368940323630207,-26.77103589193567),
+              (-4.544889519496763,1.193557759243719,-27.58649972300845),
+              (-1.431761465801464,4.475562499157975,-28.67158607483769),
+              (-1.977454357726672,4.26266053353124,-28.05334578515911),
+              (-0.1043984405395905,0.6941053859617042,-28.87529999501661),
+              (-1.37488643530141,4.493360412449973,-27.57117058309792),
+              (4.355326475581579,1.764010229749548,-27.31218330583254),
+              (-4.603599181965649,0.9420591667697585,-27.97247984873296)]
+
+
+    # for point in points:
+    #     add_vtk_point(v, point, color=(0, 0, 1), radius=0.5)
     # add_vtk_point(v, (0, 0, 0), color=(0, 0, 0), radius=5.0)  # Black point at origin
+    cyl_hdv = 6.75 * 2.54 / 10
+    flange_width = 1.27 / 10 
+
     add_vtk_text(v, "Axes showing origin", pos=(0.7, 0.1), font_size=48, color=(0,0,0))
     add_vtk_axes(v, origin=(0, 0, 0), length=50)
     v.view()

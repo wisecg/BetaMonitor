@@ -35,12 +35,13 @@ def add_points_for_det(det, reg, df):
         add_vtk_point(v, np.array([x[i], y[i], z[i]]), color=(0,1,0), radius=0.5)
     
     return v
+    
 
 if __name__ == "__main__":
     gdml_path =r'build/geometry_export.gdml'
     reg = load_gdml(gdml_path)
 
-    ff = uproot.open("build/output/outfile_macrogas.root")
+    ff = uproot.open("build/output/outfile_caltest.root")
     ff.keys()
     tree = ff['simData']
 
@@ -51,6 +52,6 @@ if __name__ == "__main__":
     df = tree.arrays(field_names, library='pd')
     result = cumulative_energy_and_entry_positions(df)
 
-    v = add_points_for_det('window', reg, result)
-    v.view()
+    # v = add_points_for_det('window', reg, result)
+    # v.view()
     print('end')
