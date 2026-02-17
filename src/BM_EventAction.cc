@@ -59,7 +59,7 @@ void BM_EventAction::BeginOfEventAction(const G4Event *event)
 void BM_EventAction::EvaluateHC(BM_HitsCollection *hc, int eventN)
 {
 
-   G4bool exited = false, exitedPos = false, exitedElec = false, exitedPhot = false, exitedOth = false;
+   G4double min_time, max_time;
 
    G4int pid_hit;
    G4int eventid_hit;
@@ -125,11 +125,12 @@ void BM_EventAction::EvaluateHC(BM_HitsCollection *hc, int eventN)
             if (hit->time() > max_time)
                max_time = hit->time();
                kineticenergy_hit = hit->energy();
+               exited_hit = hit->exited();
          }
       }
       output->setParams(pid_hit, eventid_hit, trackid_hit, parentid_hit, volumeid_hit, 
                         primaryenergy_hit, inenergy_hit, kineticenergy_hit, 
-                        depenergy_hit, x_hit, y_hit, z_hit, px_hit, py_hit, pz_hit);
+                        depenergy_hit, exited_hit, x_hit, y_hit, z_hit, px_hit, py_hit, pz_hit);
       output->Fill(); 
    }     
    return;

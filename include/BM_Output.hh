@@ -26,7 +26,7 @@ public:
   // Detection functions
   void setParams(int pid_hit, int eventid_hit, int trackid_hit, int parentid_hit, 
                  int volumeid_hit, double primaryenergy_hit, double inenergy_hit, 
-                 double kineticenergy_hit, double depenergy_hit, double x_hit, 
+                 double kineticenergy_hit, double depenergy_hit, bool exited_hit, double x_hit, 
                  double y_hit, double z_hit, double px_hit, double py_hit, double pz_hit);
 private:
   static BM_Output *Instance_;
@@ -39,6 +39,7 @@ private:
   double primaryenergy, inenergy, kineticenergy, depenergy;
   double x, y, z;
   double px, py, pz;
+  bool exited;
 
 };
 

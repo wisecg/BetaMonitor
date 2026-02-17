@@ -41,6 +41,7 @@ void BM_Output::OpenFile()
   File = new TFile(Name.c_str(), "RECREATE");
   Tree = new TTree("simData", "Simulation Data");
 
+
   Tree->Branch("pid", &pid, "pid/I");
   Tree->Branch("eventid", &eventid, "eventid/I");
   Tree->Branch("trackid", &trackid, "trackid/I");
@@ -56,6 +57,7 @@ void BM_Output::OpenFile()
   Tree->Branch("px", &px, "px/D");
   Tree->Branch("py", &py, "py/D");
   Tree->Branch("pz", &pz, "pz/D");
+  Tree->Branch("exited", &exited, "exited/O");
 
 }
 
@@ -73,7 +75,7 @@ void BM_Output::Fill()
 
 void BM_Output::setParams(int pid_hit, int eventid_hit, int trackid_hit, int parentid_hit, int volumeid_hit, 
                           double primaryenergy_hit, double inenergy_hit, double kineticenergy_hit, 
-                          double depenergy_hit, double x_hit, double y_hit, double z_hit, double px_hit, 
+                          double depenergy_hit, bool exited_hit, double x_hit, double y_hit, double z_hit, double px_hit, 
                           double py_hit, double pz_hit)
 {
   pid = pid_hit;
@@ -85,6 +87,7 @@ void BM_Output::setParams(int pid_hit, int eventid_hit, int trackid_hit, int par
   inenergy = inenergy_hit;
   kineticenergy =  kineticenergy_hit;
   depenergy = depenergy_hit;
+  exited = exited_hit;
   x = x_hit;
   y = y_hit;
   z = z_hit;
@@ -92,5 +95,6 @@ void BM_Output::setParams(int pid_hit, int eventid_hit, int trackid_hit, int par
   py = py_hit;
   pz = pz_hit;
 }
+
 
 
