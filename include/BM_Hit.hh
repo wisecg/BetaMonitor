@@ -16,7 +16,7 @@ class BM_Hit : public G4VHit
 {
 public:                        // Constructor
    BM_Hit(G4int id, G4int pid, // G4double mass, G4int charge,
-          G4double time, G4ThreeVector position, G4double energy, G4double energyDep, G4ThreeVector momentum,
+          G4double time, G4ThreeVector position, G4double primaryEnergy, G4double energy, G4double energyDep, G4ThreeVector momentum,
           G4bool exited, G4double inEn, G4int parentID, G4int trackID);
    virtual ~BM_Hit();
    inline void *operator new(size_t);
@@ -38,7 +38,7 @@ private: // Variables
    G4double energy_;
    G4double energyDep_;
    G4bool exited_;
-
+   G4double primaryEnergy_;
 public: // Accessors
    G4int id() const { return id_; }
    G4int pid() const { return pid_; }
@@ -50,7 +50,7 @@ public: // Accessors
    G4double energyDep() const { return energyDep_; }
    G4int parentID() const { return parentid_; }
    G4int trackID() const { return trackid_; }
-   
+   G4double primaryEnergy() const { return primaryEnergy_; }
    // Set methods
    //     void SetTrackID  (G4int track)      { fTrackID = track; };
    //     void SetChamberNb(G4int chamb)      { fChamberNb = chamb; };

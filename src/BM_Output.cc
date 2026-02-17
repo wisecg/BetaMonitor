@@ -46,7 +46,7 @@ void BM_Output::OpenFile()
   Tree->Branch("trackid", &trackid, "trackid/I");
   Tree->Branch("parentid", &parentid, "parentid/I");
   Tree->Branch("volumeid", &volumeid, "volumeid/I");
-  Tree->Branch("stepnumber", &stepnumber, "stepnumber/I");
+  Tree->Branch("primaryenergy", &primaryenergy, "primaryenergy/D");
   Tree->Branch("inenergy", &inenergy, "inenergy/D");
   Tree->Branch("kineticenergy", &kineticenergy, "kineticenergy/D");
   Tree->Branch("depenergy", &depenergy, "depenergy/D");
@@ -71,23 +71,26 @@ void BM_Output::Fill()
   Tree->Fill();
 }
 
-void BM_Output::setParams(int pid_step, int eventid_step, int trackid_step, int parentid_step, int volumeid_step, int stepnumber_step, double inenergy_step, double kineticenergy_step, double depenergy_step, double x_step, double y_step, double z_step, double px_step, double py_step, double pz_step)
+void BM_Output::setParams(int pid_hit, int eventid_hit, int trackid_hit, int parentid_hit, int volumeid_hit, 
+                          double primaryenergy_hit, double inenergy_hit, double kineticenergy_hit, 
+                          double depenergy_hit, double x_hit, double y_hit, double z_hit, double px_hit, 
+                          double py_hit, double pz_hit)
 {
-  pid = pid_step;
-  eventid = eventid_step;
-  trackid = trackid_step;
-  parentid = parentid_step;
-  volumeid = volumeid_step;
-  stepnumber = stepnumber_step;
-  inenergy = inenergy_step;
-  kineticenergy =  kineticenergy_step;
-  depenergy = depenergy_step;
-  x = x_step;
-  y = y_step;
-  z = z_step;
-  px = px_step;
-  py = py_step;
-  pz = pz_step;
+  pid = pid_hit;
+  eventid = eventid_hit;
+  trackid = trackid_hit;
+  parentid = parentid_hit;
+  volumeid = volumeid_hit;
+  primaryenergy = primaryenergy_hit;
+  inenergy = inenergy_hit;
+  kineticenergy =  kineticenergy_hit;
+  depenergy = depenergy_hit;
+  x = x_hit;
+  y = y_hit;
+  z = z_hit;
+  px = px_hit;
+  py = py_hit;
+  pz = pz_hit;
 }
 
 

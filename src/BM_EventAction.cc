@@ -6,6 +6,8 @@
 #include <time.h>
 #include <chrono>
 #include <thread>
+#include <set>
+#include <vector>
 
 #include "g4root.hh"
 #include "G4RunManager.hh"
@@ -33,7 +35,6 @@ BM_EventAction *BM_EventAction::Instance()
 BM_EventAction::BM_EventAction() : G4UserEventAction()
 {
    fgInstance = this;
-   stepwise = false; // default value
 }
 
 BM_EventAction::~BM_EventAction()
@@ -57,111 +58,80 @@ void BM_EventAction::BeginOfEventAction(const G4Event *event)
 
 void BM_EventAction::EvaluateHC(BM_HitsCollection *hc, int eventN)
 {
-   // use the class member variable stepwise
-
-   G4double eDep = 0., eDepPhot = 0., eDepAnn = 0., eDepPos = 0., eDepElec = 0., eDepOther = 0.;
-   G4double InEn = 0., finEn = 0., time = 1.e54, depth = 0.;
-
-   G4int pid = 999, pIDNew = 999, pidtemp = 999, pidpre = 999;
-   G4int exitPosCounter = 0, exitElecCounter = 0, exitPhotCounter = 0, exitAnnCounter = 0, exitOthCounter = 0, parent = 0;
-
-   G4ThreeVector averagePos(999., 999., 999.);
-   G4ThreeVector firstPos(999., 999., 999.);
-   G4ThreeVector anniPos(999., 999., 999.);
-   G4ThreeVector EscPos(999., 999., 999.);
 
    G4bool exited = false, exitedPos = false, exitedElec = false, exitedPhot = false, exitedOth = false;
 
-   G4int pid_step;
-   G4int eventid_step;
-   G4int trackid_step;
-   G4int parentid_step;
-   G4int stepnumber_step;
-   // G4bool exited_step = hit->leftVolume();
-   G4int volumeid_step;
-   G4double inenergy_step;
-   G4double kineticenergy_step;
-   G4double depenergy_step = 0.0;
-   G4double x_step;
-   G4double y_step;
-   G4double z_step;
-   G4double px_step;
-   G4double py_step;
-   G4double pz_step;
+   G4int pid_hit;
+   G4int eventid_hit;
+   G4int trackid_hit;
+   G4int parentid_hit;
+   G4bool exited_hit;
+   G4int volumeid_hit;
+   G4double inenergy_hit;
+   G4double kineticenergy_hit;
+   G4double depenergy_hit = 0.0;
+   G4double primaryenergy_hit = -999;
+   G4double x_hit;
+   G4double y_hit;
+   G4double z_hit;
+   G4double px_hit;
+   G4double py_hit;
+   G4double pz_hit;
 
-   // 22 photon, 11 electron, -11 positron
+   std::set<G4int> uniqueTrackIDs;
+
    int n = hc->entries();
    if (n == 0)
       return;
-
-   if (stepwise == false)
+   
+   // Loop through hits collection and get unique trackIDs
+   for (int i = 0; i < n; i++)
    {
+      BM_Hit *hit = (*hc)[i];
+      uniqueTrackIDs.insert(hit->trackID());
+   }
+
+   // Loop through unique trackIDs and get hit information for each trackID (trackwise logging)
+   for (auto trackID : uniqueTrackIDs)
+   {
+      trackid_hit = trackID;
+      min_time = 1.e54;
+      max_time = 0.0;
+      depenergy_hit = 0.0;
+
       for (int i = 0; i < n; i++)
       {
          BM_Hit *hit = (*hc)[i];
-         // if (!hit) continue; // skip null pointer
-         if (hit->time() < time)
+         if (hit->trackID() == trackID)
          {
-            time = hit->time();
-            pid_step = hit->pid();
-            eventid_step = eventN;
-            trackid_step = hit->trackID();
-            parentid_step = hit->parentID();
-            volumeid_step = hit->id();
-            trackid_step = hit->trackID();
-            parentid_step = hit->parentID();
-            inenergy_step = hit->inEnergy();
+            depenergy_hit += hit->energyDep(); // sum deposited energy across all hits for a given trackID.
+            if (hit->time() < min_time) //gets earliest hit for the variables contained below.
+            {
+               min_time = hit->time();
+               pid_hit = hit->pid();
+               eventid_hit = eventN;
+               parentid_hit = hit->parentID();
+               volumeid_hit = hit->id();
+               inenergy_hit = hit->inEnergy();
+               primaryenergy_hit = hit->primaryEnergy();
+               x_hit = hit->position().x();
+               y_hit = hit->position().y();
+               z_hit = hit->position().z();
+               px_hit = hit->momentum().x();
+               py_hit = hit->momentum().y();
+               pz_hit = hit->momentum().z();
+            }
 
-            x_step = hit->position().x();
-            y_step = hit->position().y();
-            z_step = hit->position().z();
-            px_step = hit->momentum().x();
-            py_step = hit->momentum().y();
-            pz_step = hit->momentum().z();
+            if (hit->time() > max_time)
+               max_time = hit->time();
+               kineticenergy_hit = hit->energy();
          }
-
-         // Accumulate deposited energy and position
-         depenergy_step += hit->energyDep();
-         // averagePos += hit->position() / n;
-
-         // kinetic energy of last hit
-         kineticenergy_step = hit->energy();
-         stepnumber_step = i + 1;
       }
-      output->setParams(pid_step, eventid_step, trackid_step, parentid_step, volumeid_step, 
-                           stepnumber_step, inenergy_step, kineticenergy_step, 
-                           depenergy_step, x_step, y_step, z_step, px_step, py_step, pz_step);
-      output->Fill();
-   }
-   else
-   {
-      for (int i = 0; i < n; i++)
-      {
-         BM_Hit *hit = (*hc)[i];
-         // if (!hit) continue; // skip null pointer
-         pid_step = hit->pid();
-         eventid_step = eventN;
-         trackid_step = hit->trackID();
-         parentid_step = hit->parentID();
-         stepnumber_step = i + 1;
-         // G4bool exited_step = hit->leftVolume();
-         volumeid_step = hit->id();
-         inenergy_step = hit->inEnergy();
-         kineticenergy_step = hit->energy();
-         depenergy_step = hit->energyDep();
-         x_step = hit->position().x();
-         y_step = hit->position().y();
-         z_step = hit->position().z();
-         px_step = hit->momentum().x();
-         py_step = hit->momentum().y();
-         pz_step = hit->momentum().z();
-         output->setParams(pid_step, eventid_step, trackid_step, parentid_step, volumeid_step, 
-                           stepnumber_step, inenergy_step, kineticenergy_step, 
-                           depenergy_step, x_step, y_step, z_step, px_step, py_step, pz_step);
-         output->Fill();
-      }     
-   }
-
+      output->setParams(pid_hit, eventid_hit, trackid_hit, parentid_hit, volumeid_hit, 
+                        primaryenergy_hit, inenergy_hit, kineticenergy_hit, 
+                        depenergy_hit, x_hit, y_hit, z_hit, px_hit, py_hit, pz_hit);
+      output->Fill(); 
+   }     
    return;
 }       
 

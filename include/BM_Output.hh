@@ -24,10 +24,10 @@ public:
   // Decay function
 
   // Detection functions
-  void setParams(int pid_step, int eventid_step, int trackid_step, int parentid_step, 
-                 int volumeid_step, int stepnumber_step, double inenergy_step, 
-                 double kineticenergy_step, double depenergy_step, double x_step, 
-                 double y_step, double z_step, double px_step, double py_step, double pz_step);
+  void setParams(int pid_hit, int eventid_hit, int trackid_hit, int parentid_hit, 
+                 int volumeid_hit, double primaryenergy_hit, double inenergy_hit, 
+                 double kineticenergy_hit, double depenergy_hit, double x_hit, 
+                 double y_hit, double z_hit, double px_hit, double py_hit, double pz_hit);
 private:
   static BM_Output *Instance_;
 
@@ -35,8 +35,8 @@ private:
   TFile *File;
   TTree *Tree;
   
-  int pid, eventid, trackid, parentid, volumeid, stepnumber;
-  double inenergy, kineticenergy, depenergy;
+  int pid, eventid, trackid, parentid, volumeid;
+  double primaryenergy, inenergy, kineticenergy, depenergy;
   double x, y, z;
   double px, py, pz;
 

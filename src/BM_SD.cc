@@ -46,6 +46,7 @@ G4bool BM_SD::ProcessHits(G4Step *aStep, G4TouchableHistory *)
    G4ThreeVector globalPosition = preStepPoint->GetPosition(); // global position
    G4ThreeVector localPosition = globalPosition - preStepPoint->GetPhysicalVolume()->GetObjectTranslation();
    G4ThreeVector momentum = aStep->GetTrack()->GetMomentum();
+   G4double primaryEnergy = aStep->GetTrack()->GetVertexKineticEnergy(); // kinetic energy at vertex, i.e. primary energy for primaries, and energy of parent at time of secondary creation for secondaries
    localPosition.setZ(localPosition.z());
    G4double energy = aStep->GetTrack()->GetKineticEnergy();
    G4double inEnergy = preStepPoint->GetKineticEnergy();
@@ -54,7 +55,7 @@ G4bool BM_SD::ProcessHits(G4Step *aStep, G4TouchableHistory *)
    G4int parent = aStep->GetTrack()->GetParentID();
    G4int trackid = aStep->GetTrack()->GetTrackID();  
 
-   BM_Hit *aHit = new BM_Hit(id, pid, myTime, globalPosition, energy, energyDep, momentum, exited, inEnergy, parent, trackid);
+   BM_Hit *aHit = new BM_Hit(id, pid, myTime, globalPosition, primaryEnergy, energy, energyDep, momentum, exited, inEnergy, parent, trackid);
 
    pIncident_ = localPosition;
    pCollection_->insert(aHit);
