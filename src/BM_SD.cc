@@ -16,9 +16,7 @@
 
 BM_SD::BM_SD(G4String name, G4String HCName) : G4VSensitiveDetector(name),
                                                pCollection_(NULL),
-                                               pIncident_(0.),
-
-                                               printed_(false)
+                                               pIncident_(0.)
 {
    collectionName.insert(HCName); 
 }

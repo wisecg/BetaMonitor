@@ -17,8 +17,6 @@ public:
 
 private:
    G4ThreeVector pIncident_;
-   // G4String name;
-   bool printed_;
 
 public:
    virtual void Initialize(G4HCofThisEvent *HCE);
