@@ -8,7 +8,6 @@
 #include <TTree.h>
 
 #include "BM_Output.hh"
-#include "PMT.hh"
 
 BM_Output *BM_Output::Instance_ = nullptr;
 

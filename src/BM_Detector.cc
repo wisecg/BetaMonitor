@@ -54,7 +54,6 @@
 #include "BM_Detector.hh"
 #include "BM_SD.hh"
 #include "BM_SteppingAction.hh"
-#include "MagneticField.hh"
 
 /*
   NOTE: Nov 2025 - many block comments & other old geometries were removed to

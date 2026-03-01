@@ -2,7 +2,6 @@
 
 #ifndef BM_OUTPUT_HH
 #define BM_OUTPUT_HH
-// #include "PMT.hh"
 #include <string>
 
 class TFile;
