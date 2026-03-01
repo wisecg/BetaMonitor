@@ -22,6 +22,9 @@
 #/gun/energy 2.5 MeV
 #/tracking/verbose 2
 
-#10M-12 min
+/bm/inputFile ../dat/6HeDecay_cdf.txt
+/bm/sourceType gas
+/bm/particleType e-
+
 /run/initialize
-/run/beamOn 10000000
+/run/beamOn 2100

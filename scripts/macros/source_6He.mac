@@ -1,0 +1,6 @@
+/bm/inputFile ../dat/6HeDecay_cdf.txt
+/bm/sourceType gas
+/bm/particleType e-
+
+/run/initialize
+/run/beamOn 3000000
