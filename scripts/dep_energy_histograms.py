@@ -30,41 +30,57 @@ def read_root_to_df(root_file):
         pd.DataFrame: DataFrame containing the extracted data.
     """
     ff = uproot.open(root_file)
-    ff.keys()
     tree = ff['simData']
+    tree_primaries = ff['primaryInput']
     # tree.show()
 
-    field_names = ['pid', 'eventid', 'trackid', 'parentid', 'volumeid', 
-                'stepnumber', 'inenergy', 'kineticenergy', 
-                'depenergy', 'x','y','z','px','py','pz']
+    # field_names = tree.keys()
 
-    df = tree.arrays(field_names, library='pd')
-    return df 
+    df = tree.arrays(tree.keys(), library='pd')
+    df_primaries = tree_primaries.arrays(tree_primaries.keys(), library='pd')
+    return df, df_primaries
 
-def plot_dep_energy_histogram(df, title='', cal=False):
+def plot_dep_energy_histogram(df, df_primaries, title='', cal=False):
     """
     Plots a histogram of deposited energy from the DataFrame for volumeids 6 (vaccuum), 3 (scint), 5 (trigger).
 
     Parameters:
         df (pd.DataFrame): DataFrame containing the simulation data.
+        df_primaries (pd.DataFrame): DataFrame containing the primary input data.
         title (str): Title for the histogram plot.
     """
     plt.figure(figsize=(10, 6))
     # df = df[df['pid'] != 22]  # Filter out photons
     if cal == True:
-        plt.hist(df[df['volumeid']==5]['depenergy'], bins=150, 
-                 label='Trigger - Deposited Energy', alpha=1, color='mediumseagreen')
-        plt.hist(df[df['volumeid']==3]['depenergy'], bins=150, 
-                 label='Scintillator - Deposited Energy', alpha=1, color='royalblue')
+        # plt.hist(df[df['volumeid']==5]['depenergy'], bins=150, 
+        #          label='Trigger - Deposited Energy', alpha=1, color='mediumseagreen')
+        # plt.hist(df[df['volumeid']==3]['depenergy'], bins=150, 
+        #          label='Scintillator - Deposited Energy', alpha=1, color='royalblue')
+        
+        en, bins = rebin_energy(df[df['volumeid']==5]['depenergy'], bin_number=150)
+        plt.plot(bins, en, drawstyle='steps-mid', label='Trigger - Deposited Energy', color='mediumseagreen')
 
+        en, bins = rebin_energy(df[df['volumeid']==3]['depenergy'], bin_number=150)
+        plt.plot(bins, en, drawstyle='steps-mid', label='Scintillator - Deposited Energy', color='royalblue')
     
     else:
-        plt.hist(df[df['volumeid']==6]['inenergy'], bins=150, 
-                 label='Primary Particle - Initial Energy', alpha=1, color='firebrick')
-        plt.hist(df[df['volumeid']==3]['depenergy'], bins=150, 
-                 label='Scintillator - Deposited Energy', alpha=1, color='royalblue')
-        plt.hist(df[df['volumeid']==5]['depenergy'], bins=150, 
-                 label='Trigger - Deposited Energy', alpha=1, color='mediumseagreen')
+        # plt.hist(df[df['volumeid']==6]['inenergy'], bins=150, 
+        #          label='Primary Particle - Initial Energy', alpha=1, color='firebrick')
+        
+        # plt.hist(df[df['volumeid']==3]['depenergy'], bins=150, 
+        #          label='Scintillator - Deposited Energy', alpha=1, color='royalblue')
+        # plt.hist(df[df['volumeid']==5]['depenergy'], bins=150, 
+        #          label='Trigger - Deposited Energy', alpha=1, color='mediumseagreen')
+        
+        en, bins = rebin_energy(df[(df['volumeid']==6) & (df['trackid']==1)]['inenergy'], bin_number=150)
+        plt.plot(bins, en, drawstyle='steps-mid', label='Primary Particle - Initial Energy', color='firebrick')
+
+        en, bins = rebin_energy(df_primaries['primaryenergy'], bin_number=150)
+        plt.plot(bins, en, drawstyle='steps-mid', label='Primary Particle - Initial Energy (Primaries)', color='orange')
+        en, bins = rebin_energy(df[df['volumeid']==3]['depenergy'], bin_number=150)
+        plt.plot(bins, en, drawstyle='steps-mid', label='Scintillator - Deposited Energy', color='royalblue')
+        en, bins = rebin_energy(df[df['volumeid']==5]['depenergy'], bin_number=150)
+        plt.plot(bins, en, drawstyle='steps-mid', label='Trigger - Deposited Energy', color='mediumseagreen')
     
     plt.title(f'Histogram of Energy for Different Volumes\n{title}')
     plt.xlabel('Energy (MeV)')
@@ -74,6 +90,22 @@ def plot_dep_energy_histogram(df, title='', cal=False):
     plt.legend()
     plt.grid(True)
     plt.show()
+
+def rebin_energy(energy_array, bin_number):
+    """
+    Rebins the energy array into a specified number of bins.
+
+    Parameters:
+        energy_array (np.ndarray): Array of energy values to be rebinned.
+        bin_number (int): Number of bins to rebin into.
+    Returns:
+        np.ndarray: Rebinned energy array.
+    """
+    min_energy = np.min(energy_array)
+    max_energy = np.max(energy_array)
+    bins = np.linspace(min_energy, max_energy, bin_number + 1)
+    rebinned_energy, bin_edges = np.histogram(energy_array, bins=bins)
+    return rebinned_energy, bin_edges[:-1]
 
 def plot_cdf(cdf_file):
     """
@@ -98,9 +130,10 @@ def plot_cdf(cdf_file):
 if __name__ == "__main__":
     # outfile = "./build/output/outfile_6He_3e6.root"
     # outfile = "./build/output/outfile_19Ne_3e6.root"
-    outfile = "./build/output/outfile_90Sr_3e6.root"
-    df = read_root_to_df(outfile)
-    plot_dep_energy_histogram(df, title=outfile, cal=True)
+    # outfile = "./build/output/outfile_90Sr_3e6.root"
+    outfile = "./build/output/outfile_6He_3e6_tw.root"
+    df, df_primaries = read_root_to_df(outfile)
+    plot_dep_energy_histogram(df, df_primaries, title=outfile, cal=False)
     # plot_cdf("./dat/6HeDecay_cdf.txt")
     print('end')
 
