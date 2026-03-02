@@ -131,7 +131,7 @@ if __name__ == "__main__":
     # outfile = "./build/output/outfile_6He_3e6.root"
     # outfile = "./build/output/outfile_19Ne_3e6.root"
     # outfile = "./build/output/outfile_90Sr_3e6.root"
-    outfile = "./build/output/outfile_6He_3e6_tw.root"
+    outfile = "./output/outfile_6He_3e6_rf.root"
     df, df_primaries = read_root_to_df(outfile)
     plot_dep_energy_histogram(df, df_primaries, title=outfile, cal=False)
     # plot_cdf("./dat/6HeDecay_cdf.txt")

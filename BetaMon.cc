@@ -110,6 +110,7 @@ int main(int argc, char** argv)
     // interactive mode : define UI session
     G4UIExecutive* ui = 0;
     ui = new G4UIExecutive(argc, argv);
+    UImanager->ApplyCommand("/control/macroPath ../scripts/macros/");
     UImanager->ApplyCommand("/control/execute init_vis.mac");
     ui->SessionStart();
     delete ui;
