@@ -80,9 +80,8 @@
 G4FieldManager *BM_Detector::fFieldMgr = 0;
 G4UniformMagField *BM_Detector::fMagneticField = 0;
 
-BM_Detector::BM_Detector() : G4VUserDetectorConstruction(),
-                             flogicDetector6(nullptr), fLogicMagnetic(nullptr), flogicDetector1(nullptr),
-                             flogicDetector5(nullptr), flogicDetector3(nullptr), logicEnv(nullptr), logicWorld(nullptr) {}
+BM_Detector::BM_Detector() : G4VUserDetectorConstruction(), vacuumLV(nullptr), 
+vacuumWindowLV(nullptr), aScintillatorLV(nullptr), bScintillatorLV(nullptr), logicWorld(nullptr) {}
 
 BM_Detector::~BM_Detector() {}
 
@@ -173,17 +172,11 @@ G4VPhysicalVolume *BM_Detector::Construct()
   G4Tubs *solidShapeT2i = new G4Tubs("Pipe2i", 0, Tdv_r1i, Tdv_h2 / 2 + flange_width / 2, 0, 360 * deg);
   G4UnionSolid *Pipei = new G4UnionSolid("InnerTPipe", solidShapeT1i, solidShapeT2i, yRotT, TransT);
 
-  // logicEnv = new G4LogicalVolume(Pipei, Vacuum, "Envelope"); // (its g4 geometry object, its material, its name)
-  // new G4PVPlacement(0, G4ThreeVector(0 * cm, 0 * cm, cyl_hdv / 2 + 2 * 1.27 * cm),
-  //                   logicEnv, "Envelope", logicWorld, false, 0, checkOverlaps);
-  // logicEnv->SetUserLimits(Limits);
-
-  // copy of logicEnv to create a sensitive detector for the vacuum.
-  // FIXME: appears redundant w/ logicEnv; could make logicEnv the Sens.Det.
-  flogicDetector6 = new G4LogicalVolume(Pipei, Vacuum, "Envelopedet"); 
+ // create logical volume for decay volume and place it in world
+  vacuumLV = new G4LogicalVolume(Pipei, Vacuum, "Vacuum"); 
   new G4PVPlacement(0, G4ThreeVector(0 * cm, 0 * cm, cyl_hdv / 2 + 2 * 1.27 * cm),
-                    flogicDetector6, "Envelopedet", logicWorld, false, 6, checkOverlaps);
-  flogicDetector6->SetUserLimits(Limits);
+                    vacuumLV, "Vacuum", logicWorld, false, 1, checkOverlaps);
+  vacuumLV->SetUserLimits(Limits);
 
 
   // === T Pipe Outer (steel) ===
@@ -197,10 +190,10 @@ G4VPhysicalVolume *BM_Detector::Construct()
   G4UnionSolid *Pipeo = new G4UnionSolid("OuterTPipe", solidShapeT1o, solidShapeT2o, yRotT, TransT2);
   G4SubtractionSolid *TPipe1 = new G4SubtractionSolid("TDecayVolume", Pipeo, solidShapeT1i_tol);
   G4SubtractionSolid *TPipe = new G4SubtractionSolid("TDecayVolume", TPipe1, solidShapeT2i_tol, yRotT, TransT2);
-  G4LogicalVolume *logicDecayVolume1 = new G4LogicalVolume(TPipe, Stainless_Steel, "Decay_Volume");
+  G4LogicalVolume *steelTPipeLV = new G4LogicalVolume(TPipe, Stainless_Steel, "SteelTPipe");
   new G4PVPlacement(0, G4ThreeVector(0, 0, cyl_hdv / 2 + flange_width * 2),
-                    logicDecayVolume1, "Decay_Volume", logicWorld, false, 0, checkOverlaps);
-  logicDecayVolume1->SetUserLimits(Limits);
+                    steelTPipeLV, "SteelTPipe", logicWorld, false, 0, checkOverlaps);
+  steelTPipeLV->SetUserLimits(Limits);
 
 
   // === T Pipe Flanges (steel) === 
@@ -212,40 +205,40 @@ G4VPhysicalVolume *BM_Detector::Construct()
   G4SubtractionSolid *Flangen = new G4SubtractionSolid("Flange", solidFlange, boreFlange);
   
   // leftmost flange (nearest beta monitor)
-  G4LogicalVolume *logicDecayVolume3 = new G4LogicalVolume(Flangen, Stainless_Steel, "Decay_Volume_r");
-  G4ThreeVector posdv2 = G4ThreeVector(0 * cm, 0 * cm, flange_width / 2);
-  new G4PVPlacement(0, posdv2, logicDecayVolume3, "Decay_Volume_r", logicWorld,
+  G4LogicalVolume *tpipeFlangeMajor1bLV = new G4LogicalVolume(Flangen, Stainless_Steel, "tPipeFlangeMajor1b");
+  G4ThreeVector posdv2 = G4ThreeVector(0 *  cm, 0 * cm, flange_width / 2);
+  new G4PVPlacement(0, posdv2, tpipeFlangeMajor1bLV, "tPipeFlangeMajor1b", logicWorld,
                     false, 0, checkOverlaps);
-  logicDecayVolume3->SetUserLimits(Limits);
+  tpipeFlangeMajor1bLV->SetUserLimits(Limits);
 
   // second to leftmost flange (sandwiches the "window")
-  G4LogicalVolume *logicDecayVolume6 = new G4LogicalVolume(Flangen, Stainless_Steel, "Decay_Volume_r");
+  G4LogicalVolume *tPipeFlangeMajor1LV = new G4LogicalVolume(Flangen, Stainless_Steel, "tPipeFlangeMajor1");
   new G4PVPlacement(0, G4ThreeVector(0 * cm, 0 * cm, 3 * flange_width / 2), 
-                    logicDecayVolume6, "Decay_Volume_r", logicWorld, false, 0, checkOverlaps);
-  logicDecayVolume6->SetUserLimits(Limits);
+                    tPipeFlangeMajor1LV, "tPipeFlangeMajor1", logicWorld, false, 0, checkOverlaps);
+  tPipeFlangeMajor1LV->SetUserLimits(Limits);
 
   // right flange
-  G4LogicalVolume *logicDecayVolume4 = new G4LogicalVolume(Flangen, Stainless_Steel, "Decay_Volume_r");
-  new G4PVPlacement(0, G4ThreeVector(0, 0, cyl_hdv + (flange_width * 2 + flange_width / 2)), logicDecayVolume4, "Decay_Volume_r",
+  G4LogicalVolume *tPipeFlangeMajor2LV = new G4LogicalVolume(Flangen, Stainless_Steel, "tPipeFlangeMajor2");
+  new G4PVPlacement(0, G4ThreeVector(0, 0, cyl_hdv + (flange_width * 2 + flange_width / 2)), tPipeFlangeMajor2LV, "tPipeFlangeMajor2",
                     logicWorld, false, 0, checkOverlaps);
-  logicDecayVolume4->SetUserLimits(Limits);
+  tPipeFlangeMajor2LV->SetUserLimits(Limits);
 
   // middle flange
-  G4LogicalVolume *logicDecayVolume5 = new G4LogicalVolume(Flangen, Stainless_Steel, "Decay_Volume_r");
+  G4LogicalVolume *tPipeFlangeMinorLV = new G4LogicalVolume(Flangen, Stainless_Steel, "tPipeFlangeMinor");
   new G4PVPlacement(yRotT, G4ThreeVector(-Tdv_h2 - flange_width / 2, 0, cyl_hdv / 2 + flange_width * 2),
-                    logicDecayVolume5, "Decay_Volume_r", logicWorld, false, 0, false);
-  logicDecayVolume5->SetUserLimits(Limits);
+                    tPipeFlangeMinorLV, "tPipeFlangeMinor", logicWorld, false, 0, false);
+  tPipeFlangeMinorLV->SetUserLimits(Limits);
 
 
   // === Vacuum Window (copper) - between two left flanges ===
   // G4double cyl_r2c = 3.556 / 2 * cm; // copper seal radius //Tdv_r1i = 3.4798 / 2 * cm;
   G4double cyl_hc = 0.0254 * cm;     // thickness of copper
   // G4double cyl_hkap = 0.0012 * cm;   // thickness of kapton (trials - 1:0.0012, 2: 0.00075, 3: 0.006, 4: 0.0127)
-  G4Tubs *solidShape4 = new G4Tubs("Shape4", 0. * cm, Tdv_r1i, cyl_hc / 2., 0, 360 * deg);
-  flogicDetector1 = new G4LogicalVolume(solidShape4, Al, "Copper");
+  G4Tubs *vacuumWindowDisk = new G4Tubs("VacuumWindowDisk", 0. * cm, Tdv_r1i, cyl_hc / 2., 0, 360 * deg);
+  vacuumWindowLV = new G4LogicalVolume(vacuumWindowDisk, Al, "VacuumWindow");
   G4ThreeVector poscu = G4ThreeVector(0 * cm, 0 * cm, flange_width - cyl_hc / 2);
-  new G4PVPlacement(0, poscu, flogicDetector1, "Copper", logicWorld, false, 1, checkOverlaps);
-  flogicDetector1->SetUserLimits(Limits);
+  new G4PVPlacement(0, poscu, vacuumWindowLV, "VacuumWindow", logicWorld, false, 2, checkOverlaps);
+  vacuumWindowLV->SetUserLimits(Limits);
 
 
   // === Scintillators (A & B) ===
@@ -269,46 +262,46 @@ G4VPhysicalVolume *BM_Detector::Construct()
   
   // inner scintillator "A" (inner = closer to window)
   // 8.4074 mm is the distnce between the window and the surface of the scint. 
-  G4ThreeVector posb2 = G4ThreeVector(0 * cm, 0 * cm, flange_width - 8.4074 * mm - 3.0 / 2 * mm);
-  flogicDetector3 = new G4LogicalVolume(SmallScin, PVT, "Detector_sq1");
-  new G4PVPlacement(0, posb2, flogicDetector3, "Detector_sq1", logicWorld, false, 3, checkOverlaps);
-  flogicDetector3->SetUserLimits(Limits);
+  G4ThreeVector aScintillatorPos = G4ThreeVector(0 * cm, 0 * cm, flange_width - 8.4074 * mm - 3.0 / 2 * mm);
+  aScintillatorLV = new G4LogicalVolume(SmallScin, PVT, "AScintillator");
+  new G4PVPlacement(0, aScintillatorPos, aScintillatorLV, "AScintillator", logicWorld, false, 3, checkOverlaps);
+  aScintillatorLV->SetUserLimits(Limits);
   
   // inner aluminum layer for scint A
   G4SubtractionSolid *solidAlMyI = new G4SubtractionSolid("InnerAl", SmallScinMA, SmallScin);
   G4LogicalVolume *logicAlMylarAli1 = new G4LogicalVolume(solidAlMyI, Al, "Ali_sq1");
-  new G4PVPlacement(0, posb2, logicAlMylarAli1, "Ali_sq1", logicWorld, false, 0, checkOverlaps);
+  new G4PVPlacement(0, aScintillatorPos, logicAlMylarAli1, "Ali_sq1", logicWorld, false, 0, checkOverlaps);
   logicAlMylarAli1->SetUserLimits(Limits);
 
   // mylar layer for scint A
   G4SubtractionSolid *solidAlMy = new G4SubtractionSolid("Mylar", SmallScinM, SmallScinMA);
   G4LogicalVolume *logicAlMylarMy1 = new G4LogicalVolume(solidAlMy, Mylar, "Mylar_sq1");
-  new G4PVPlacement(0, posb2, logicAlMylarMy1, "Mylar_sq1", logicWorld, false, 0, checkOverlaps);
+  new G4PVPlacement(0, aScintillatorPos, logicAlMylarMy1, "Mylar_sq1", logicWorld, false, 0, checkOverlaps);
   logicAlMylarMy1->SetUserLimits(Limits);
 
   // outer aluminum layer for scint A -- colors Scint A "blue"
   G4SubtractionSolid *solidAlMyO = new G4SubtractionSolid("OuterAl", SmallScinMA2, SmallScinM);
   G4LogicalVolume *logicAlMylarAlo1 = new G4LogicalVolume(solidAlMyO, Al, "Alo_sq1");
-  new G4PVPlacement(0, posb2, logicAlMylarAlo1, "Alo_sq1", logicWorld, false, 0, checkOverlaps);
+  new G4PVPlacement(0, aScintillatorPos, logicAlMylarAlo1, "Alo_sq1", logicWorld, false, 0, checkOverlaps);
   logicAlMylarAlo1->SetUserLimits(Limits);
   
   // outer scintillator "B" (outer = farther from window)
-  // G4ThreeVector posb3 = G4ThreeVector(0 * cm, 0 * cm, -(3.317 * mm + (3.0 + 0.0762) * 3 / 2 * mm));
-  G4ThreeVector posb3 = G4ThreeVector(0 * cm, 0 * cm, flange_width - 8.4074 * mm - 3.0 * mm - 3.0 / 2 * mm - (0.0762 + 0.00055) * 2 * mm);
-  flogicDetector5 = new G4LogicalVolume(SmallScin, PVT, "Detector_sq2");
-  new G4PVPlacement(0, posb3, flogicDetector5, "Detector_sq2", logicWorld, false, 5, checkOverlaps);
-  flogicDetector5->SetUserLimits(Limits);
+  // G4ThreeVector bScintillatorPos = G4ThreeVector(0 * cm, 0 * cm, -(3.317 * mm + (3.0 + 0.0762) * 3 / 2 * mm));
+  G4ThreeVector bScintillatorPos = G4ThreeVector(0 * cm, 0 * cm, flange_width - 8.4074 * mm - 3.0 * mm - 3.0 / 2 * mm - (0.0762 + 0.00055) * 2 * mm);
+    bScintillatorLV = new G4LogicalVolume(SmallScin, PVT, "BScintillatorLV");
+    new G4PVPlacement(0, bScintillatorPos, bScintillatorLV, "BScintillator", logicWorld, false, 4, checkOverlaps);
+    bScintillatorLV->SetUserLimits(Limits);
 
   // aluminum layer for scint B
   G4SubtractionSolid *solidAlMyI2 = new G4SubtractionSolid("InnerAl2", SmallScinMA, SmallScin);
   G4LogicalVolume *logicAlMylarAli2 = new G4LogicalVolume(solidAlMyI2, Al, "Ali_sq2");
-  new G4PVPlacement(0, posb3, logicAlMylarAli2, "Ali_sq2", logicWorld, false, 0, checkOverlaps);
+  new G4PVPlacement(0, bScintillatorPos, logicAlMylarAli2, "Ali_sq2", logicWorld, false, 0, checkOverlaps);
   logicAlMylarAli2->SetUserLimits(Limits);          
   
   // mylar layer for scint B
   G4SubtractionSolid *solidAlMy2 = new G4SubtractionSolid("Mylar2", SmallScinM, SmallScinMA);
   G4LogicalVolume *logicAlMylarMy2 = new G4LogicalVolume(solidAlMy2, Mylar, "Mylar_sq2");
-  new G4PVPlacement(0, posb3, logicAlMylarMy2, "Mylar_sq2", logicWorld, false, 0, checkOverlaps);
+  new G4PVPlacement(0, bScintillatorPos, logicAlMylarMy2, "Mylar_sq2", logicWorld, false, 0, checkOverlaps);
   logicAlMylarMy2->SetUserLimits(Limits);
 
   // outer aluminum layer for scint B. -- colors scint B red
@@ -319,7 +312,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
                                      3.0 / 2 * mm + 0.0762 / 2 * mm);
   G4SubtractionSolid *solidAlMyO2 = new G4SubtractionSolid("OuterAl2", SmallScinMA22nd, SmallScinM);
   G4LogicalVolume *logicAlMylarAlo2 = new G4LogicalVolume(solidAlMyO2, Al, "Alo_sq2");
-  new G4PVPlacement(0, posb3, logicAlMylarAlo2, "Alo_sq2", logicWorld, false, 0, checkOverlaps);
+  new G4PVPlacement(0, bScintillatorPos, logicAlMylarAlo2, "Alo_sq2", logicWorld, false, 0, checkOverlaps);
   logicAlMylarAlo2->SetUserLimits(Limits);
 
 
@@ -426,9 +419,9 @@ G4VPhysicalVolume *BM_Detector::Construct()
   logicSourceAlo->SetUserLimits(Limits);
 
   // Remove geometry_export.gdml if it exists to avoid G4GDMLParser exception
-  std::remove("geometry_export.gdml");
+  std::remove("../output/geometry_export.gdml");
   G4GDMLParser parser;
-  parser.Write("geometry_export.gdml", physWorld, true); // true = store auxiliary info
+  parser.Write("../output/geometry_export.gdml", physWorld, true); // true = store auxiliary info
 
   return physWorld;
 }
@@ -443,22 +436,23 @@ void BM_Detector::ConstructSDandField()
   */
   SDMan = G4SDManager::GetSDMpointer();
 
-  G4VSensitiveDetector *ScinTrig = new BM_SD("Det_trig", "Det_trig_HC"); // trigger
-  G4VSensitiveDetector *Scinsq = new BM_SD("Det_sq", "Det_sq_HC");
-  G4VSensitiveDetector *SDWindow = new BM_SD("Det_window", "Det_wind_HC"); // window foil
-  G4VSensitiveDetector *SDVac = new BM_SD("Det_vac", "Det_vac_HC");
+  G4VSensitiveDetector *bScintillatorSD = new BM_SD("BScintillatorSD", "BScintillatorHC"); // trigger
+  G4VSensitiveDetector *aScintillatorSD = new BM_SD("AScintillatorSD", "AScintillatorHC");
+  G4VSensitiveDetector *windowFoilSD = new BM_SD("WindowFoilSD", "WindowFoilHC"); // window foil
+  G4VSensitiveDetector *vacuumSD = new BM_SD("VacuumSD", "VacuumHC");
 
   // Add the silicon detectors to the Sens.Det.Management
-  SDMan->AddNewDetector(Scinsq);
-  SDMan->AddNewDetector(SDVac);
-  SDMan->AddNewDetector(SDWindow);
-  SDMan->AddNewDetector(ScinTrig);
+  SDMan->AddNewDetector(aScintillatorSD);
+  SDMan->AddNewDetector(bScintillatorSD);
+  SDMan->AddNewDetector(vacuumSD);
+  SDMan->AddNewDetector(windowFoilSD);
+
 
   // Turn on the sensitive detectors (1 - window, 6 - vacuum, 3 - scint, 5 - trig(?) )
-  flogicDetector1->SetSensitiveDetector(SDWindow);
-  flogicDetector6->SetSensitiveDetector(SDVac);
-  flogicDetector3->SetSensitiveDetector(Scinsq);
-  flogicDetector5->SetSensitiveDetector(ScinTrig);
+  vacuumWindowLV->SetSensitiveDetector(windowFoilSD);
+  vacuumLV->SetSensitiveDetector(vacuumSD);
+  aScintillatorLV->SetSensitiveDetector(aScintillatorSD);
+  bScintillatorLV->SetSensitiveDetector(bScintillatorSD);
 
   // Magnetic field
   G4double amplitude = 0. * gauss;
@@ -468,7 +462,7 @@ void BM_Detector::ConstructSDandField()
   G4FieldManager *globalFieldMgr = G4TransportationManager::GetTransportationManager()->GetFieldManager();
   globalFieldMgr->SetDetectorField(MagneticField);
   globalFieldMgr->CreateChordFinder(MagneticField);
-  flogicDetector6->SetFieldManager(globalFieldMgr, false);
+  vacuumLV->SetFieldManager(globalFieldMgr, false);
 
   fScoringVolume = logicWorld;
 }

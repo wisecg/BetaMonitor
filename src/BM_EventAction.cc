@@ -45,10 +45,10 @@ BM_EventAction::~BM_EventAction()
 void BM_EventAction::BeginOfEventAction(const G4Event *event)
 {
    G4SDManager *sdManager = G4SDManager::GetSDMpointer();
-   HC_trig = sdManager->GetCollectionID("Det_trig_HC");
-   HC_sq = sdManager->GetCollectionID("Det_sq_HC");
-   HC_wind = sdManager->GetCollectionID("Det_wind_HC");
-   HC_vac = sdManager->GetCollectionID("Det_vac_HC");
+   HC_bScintillator = sdManager->GetCollectionID("BScintillatorHC");
+   HC_aScintillator = sdManager->GetCollectionID("AScintillatorHC");
+   HC_windowFoil = sdManager->GetCollectionID("WindowFoilHC");
+   HC_vacuum = sdManager->GetCollectionID("VacuumHC");
 
    time_t my_time = time(NULL);
    G4int eventN = event->GetEventID();
@@ -145,19 +145,19 @@ void BM_EventAction::EndOfEventAction(const G4Event *event)
       return;
    }
 
-   HC_trig_pvt = static_cast<BM_HitsCollection *>(hce->GetHC(HC_trig));
-   HC_wind_pvt = static_cast<BM_HitsCollection *>(hce->GetHC(HC_wind));
-   HC_sq_pvt = static_cast<BM_HitsCollection *>(hce->GetHC(HC_sq));
-   HC_vac_pvt = static_cast<BM_HitsCollection *>(hce->GetHC(HC_vac));
+   HC_bScintillator_pvt = static_cast<BM_HitsCollection *>(hce->GetHC(HC_bScintillator));
+   HC_windowFoil_pvt = static_cast<BM_HitsCollection *>(hce->GetHC(HC_windowFoil));
+   HC_aScintillator_pvt = static_cast<BM_HitsCollection *>(hce->GetHC(HC_aScintillator));
+   HC_vacuum_pvt = static_cast<BM_HitsCollection *>(hce->GetHC(HC_vacuum));
 
    output = BM_Output::Instance();
 
    G4int eventN = event->GetEventID();
 
-   EvaluateHC(HC_trig_pvt, eventN);
-   EvaluateHC(HC_sq_pvt, eventN);
-   EvaluateHC(HC_wind_pvt, eventN);
-   EvaluateHC(HC_vac_pvt, eventN);
+   EvaluateHC(HC_bScintillator_pvt, eventN);
+   EvaluateHC(HC_aScintillator_pvt, eventN);
+   EvaluateHC(HC_windowFoil_pvt, eventN);
+   EvaluateHC(HC_vacuum_pvt, eventN);
 
    return;
 }

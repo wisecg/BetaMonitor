@@ -33,13 +33,11 @@ public:
 
   G4LogicalVolume *GetScoringVolume() const { return fScoringVolume; }
   G4SDManager *SDMan;
-  
-  G4LogicalVolume *flogicDetector6;
-  G4LogicalVolume *fLogicMagnetic;
-  G4LogicalVolume *flogicDetector1;
-  G4LogicalVolume *flogicDetector5;
-  G4LogicalVolume *flogicDetector3;
-  G4LogicalVolume *logicEnv;
+
+  G4LogicalVolume *vacuumLV;
+  G4LogicalVolume *vacuumWindowLV;
+  G4LogicalVolume *aScintillatorLV;
+  G4LogicalVolume *bScintillatorLV;
   G4LogicalVolume *logicWorld;
 
   static G4UniformMagField *fMagneticField;

@@ -57,7 +57,7 @@ def plot_dep_energy_histogram(df, df_primaries, title='', cal=False):
         # plt.hist(df[df['volumeid']==3]['depenergy'], bins=150, 
         #          label='Scintillator - Deposited Energy', alpha=1, color='royalblue')
         
-        en, bins = rebin_energy(df[df['volumeid']==5]['depenergy'], bin_number=150)
+        en, bins = rebin_energy(df[df['volumeid']==4]['depenergy'], bin_number=150)
         plt.plot(bins, en, drawstyle='steps-mid', label='Trigger - Deposited Energy', color='mediumseagreen')
 
         en, bins = rebin_energy(df[df['volumeid']==3]['depenergy'], bin_number=150)
@@ -72,14 +72,14 @@ def plot_dep_energy_histogram(df, df_primaries, title='', cal=False):
         # plt.hist(df[df['volumeid']==5]['depenergy'], bins=150, 
         #          label='Trigger - Deposited Energy', alpha=1, color='mediumseagreen')
         
-        en, bins = rebin_energy(df[(df['volumeid']==6) & (df['trackid']==1)]['inenergy'], bin_number=150)
+        en, bins = rebin_energy(df[(df['volumeid']==1) & (df['trackid']==1)]['inenergy'], bin_number=150)
         plt.plot(bins, en, drawstyle='steps-mid', label='Primary Particle - Initial Energy', color='firebrick')
 
         en, bins = rebin_energy(df_primaries['primaryenergy'], bin_number=150)
         plt.plot(bins, en, drawstyle='steps-mid', label='Primary Particle - Initial Energy (Primaries)', color='orange')
         en, bins = rebin_energy(df[df['volumeid']==3]['depenergy'], bin_number=150)
         plt.plot(bins, en, drawstyle='steps-mid', label='Scintillator - Deposited Energy', color='royalblue')
-        en, bins = rebin_energy(df[df['volumeid']==5]['depenergy'], bin_number=150)
+        en, bins = rebin_energy(df[df['volumeid']==4]['depenergy'], bin_number=150)
         plt.plot(bins, en, drawstyle='steps-mid', label='Trigger - Deposited Energy', color='mediumseagreen')
     
     plt.title(f'Histogram of Energy for Different Volumes\n{title}')
@@ -131,6 +131,7 @@ if __name__ == "__main__":
     # outfile = "./build/output/outfile_6He_3e6.root"
     # outfile = "./build/output/outfile_19Ne_3e6.root"
     # outfile = "./build/output/outfile_90Sr_3e6.root"
+    # outfile = "./output/outfile_6He_3e6_tw.root"
     outfile = "./output/outfile_6He_3e6_rf.root"
     df, df_primaries = read_root_to_df(outfile)
     plot_dep_energy_histogram(df, df_primaries, title=outfile, cal=False)

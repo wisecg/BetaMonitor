@@ -80,7 +80,7 @@
 /vis/set/textColour    # Revert to default text colour (blue)
 #
 # Axes, scale, etc.
-/vis/scene/add/scale 0.1 m  # Simple scale line
+#/vis/scene/add/scale 0.1 m  # Simple scale line
 /vis/scene/add/axes 0 0 0 0.0254 m    # Simple axes: x=red, y=green, z=blue.
 /vis/scene/add/eventID # Drawn at end of event
 /vis/scene/add/date    # Date stamp
@@ -102,26 +102,20 @@
 # To get nice view
 # Make the "World" box invisible
 /vis/geometry/set/visibility World 0 false
-# "Envelope" is transparent blue to represent water
-#/vis/geometry/set/visibility Envelope 0 false
-/vis/geometry/set/visibility Envelopedet  0 false
-/vis/geometry/set/colour Envelope 0 0 0 1 0.2
-/vis/geometry/set/colour Copper 0 0.707 .449 .199 .1
-/vis/geometry/set/colour Tape_rt 0 0 0.5 0.5 1
-/vis/geometry/set/colour Tape_rb 0 0.2 0 0.5 1
-/vis/geometry/set/colour Tape_sq 0 0 0.75 0.2 1
-/vis/geometry/set/colour Decay_Volume 0 0.6 0.6 0.6 1
-/vis/geometry/set/colour Decay_Volume_r 0 0.6 0.6 0.6 0.9
-/vis/geometry/set/colour Detector_tele1 0 0 0.75 0.2 1
-/vis/geometry/set/colour Detector_tele2 0 0 0.75 0.2 1
-/vis/geometry/set/colour thTelescopeT 0 0 0.5 0.5 1
-/vis/geometry/set/colour TelescopeT 0 0.2 0 0.5 1
+/vis/geometry/set/visibility Vacuum 0 false
+/vis/geometry/set/colour VacuumWindowDisk 0 0.707 .449 .199 .1
+/vis/geometry/set/colour SteelTPipe 0 0.6 0.6 0.6 1
+/vis/geometry/set/colour tPipeFlangeMajor1b 0 0.6 0.6 0.6 0.9
+/vis/geometry/set/colour tPipeFlangeMajor1 0 0.6 0.6 0.6 0.9
+/vis/geometry/set/colour tPipeFlangeMajor2 0 0.6 0.6 0.6 0.9
+/vis/geometry/set/colour tPipeFlangeMinor 0 0.6 0.6 0.6 0.9
 /vis/geometry/set/colour scint_holder 0 0.5 0 0.5 0.8
 /vis/geometry/set/colour scint_holderBase 0 0 1 0 0.7
 /vis/geometry/set/colour scint_Sleeve 0 0 0.9 0.1 0.8
 /vis/geometry/set/colour sipm_Lid 0 0.707 .449 .199 0.8
 /vis/geometry/set/colour Alo_sq2 0 0.9 0.6 0.6 1
 /vis/geometry/set/colour Alo_sq1 0 0.6 0.6 0.9 1
+
 /vis/viewer/set/style surface
 /vis/viewer/set/hiddenMarker true
 /vis/viewer/set/viewpointThetaPhi 270 0
