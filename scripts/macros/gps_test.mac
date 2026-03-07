@@ -1,0 +1,15 @@
+
+/gps/particle e-
+/gps/ene/type User
+/gps/ene/type Mono
+/gps/en/mono 1 MeV
+
+/gps/pos/type Volume
+/gps/pos/shape Cylinder
+/gps/pos/radius 15 cm
+/gps/pos/halfz 20 cm
+/gps/pos/centre 0 0 0 cm
+/gps/pos/confine Vacuum
+/gps/ang/type iso
+
+/run/beamOn 100
