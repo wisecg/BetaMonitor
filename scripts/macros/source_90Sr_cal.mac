@@ -1,6 +1,13 @@
-/bm/inputFile ../dat/90SrDecay_cdf.txt
-/bm/sourceType cal
-/bm/particleType e-
-
 /run/initialize
-/run/beamOn 3000000
+/gps/particle e-
+/gps/ene/type User
+/gps/hist/type energy
+/control/execute ../dat/90Sr90YDecay_hist_points.mac
+/gps/pos/type Volume
+/gps/pos/shape Cylinder
+/gps/pos/radius 0.5 cm
+/gps/pos/halfz 0.15 cm
+/gps/pos/centre 0 0 -2.88763 cm
+/gps/pos/confine SourceCal
+/gps/ang/type iso
+/run/beamOn 1000000

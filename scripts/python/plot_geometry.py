@@ -285,7 +285,7 @@ def load_gdml(gdml_path):
 
 if __name__ == "__main__":
     # Load the GDML file
-    gdml_parser = pg4.gdml.Reader(r'build/geometry_export.gdml')
+    gdml_parser = pg4.gdml.Reader(r'output/geometry_export.gdml')
     # gdml_parser = pg4.gdml.Reader(r'test/geometry_export_withoverlap.gdml')
     reg = gdml_parser.getRegistry()
     vol_list = print_vol_names(reg)
@@ -295,27 +295,20 @@ if __name__ == "__main__":
     # for vol in vol_list:
     #     v = plot_by_volume(reg, vol_select=vol)
         # v.view()
-    #     print(' ')
+    #     print(' ')    
     # v = plot_with_custom_colors_by_material(reg)
     # v = plot_by_volume(reg, vol_select="sipm_Lid")
     # v.view()
-    v = plot_by_volume(reg, vol_select='SourceAlo')
+    v = plot_by_volume(reg, vol_select='SourceCal')
     v.ren.GetActiveCamera().SetPosition(-100, 0, 0)
     v.ren.GetActiveCamera().SetFocalPoint(0, 0, 0)
-    points = [(-3.312149048552093,-3.333207116303375,-27.51595106546894),
-              (-4.058167376476526,2.368940323630207,-26.77103589193567),
-              (-4.544889519496763,1.193557759243719,-27.58649972300845),
-              (-1.431761465801464,4.475562499157975,-28.67158607483769),
-              (-1.977454357726672,4.26266053353124,-28.05334578515911),
-              (-0.1043984405395905,0.6941053859617042,-28.87529999501661),
-              (-1.37488643530141,4.493360412449973,-27.57117058309792),
-              (4.355326475581579,1.764010229749548,-27.31218330583254),
-              (-4.603599181965649,0.9420591667697585,-27.97247984873296)]
+    # origin = [0, 0, -(32.079 + 8.89 / 2) + 7.6477]
+    points = [(0, 0, -28.8763)]
 
 
-    # for point in points:
-    #     add_vtk_point(v, point, color=(0, 0, 1), radius=0.5)
-    # add_vtk_point(v, (0, 0, 0), color=(0, 0, 0), radius=5.0)  # Black point at origin
+    for point in points:
+        add_vtk_point(v, point, color=(0, 0, 1), radius=0.5)
+    add_vtk_point(v, (0, 0, 0), color=(0, 0, 0), radius=5.0)  # Black point at origin
     cyl_hdv = 6.75 * 2.54 / 10
     flange_width = 1.27 / 10 
 

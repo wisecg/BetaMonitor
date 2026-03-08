@@ -1,12 +1,13 @@
+/run/initialize
 /gps/particle e-
 /gps/ene/type User
 /gps/hist/type energy
-/gps/hist/file ../dat/6HeDecay_hist.txt
+/control/execute ../dat/6HeDecay_hist_points.mac
 /gps/pos/type Volume
 /gps/pos/shape Cylinder
-/gps/pos/radius 15 cm
-/gps/pos/halfz 20 cm
-/gps/pos/centre 0 0 0 cm
-/gps/pos/confine Vacuum
+/gps/pos/radius 0.5 cm
+/gps/pos/halfz 0.15 cm
+/gps/pos/centre 0 0 -2.88763 cm
+/gps/pos/confine SourceCal
 /gps/ang/type iso
 /run/beamOn 100

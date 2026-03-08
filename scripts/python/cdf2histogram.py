@@ -18,13 +18,24 @@ def cdf_to_histogram_mev(cdf_file, hist_file):
     densities = bin_probs / bin_widths  # Probability density
 
     # Save as histogram: center (MeV), density
-    np.savetxt(hist_file, np.column_stack([bin_centers, densities]), fmt="%.6e")
+    np.savetxt(hist_file, np.column_stack([bin_centers, densities]), fmt="%.8f")
+
+def histogram_to_macro(hist_file, macro_file):
+    """
+    Reads a histogram file (energy, probability) and writes a macro file with /gps/hist/point commands.
+    """
+    data = np.loadtxt(hist_file)
+    with open(macro_file, 'w') as f:
+        for energy, prob in data:
+            f.write(f"/gps/hist/point {energy:.8f} {prob:.8f}\n")
 
 # Example usage:
 # cdf_to_histogram_mev("6HeDecay_cdf.txt", "6HeDecay_hist.txt")
 
 if __name__ == "__main__":
     pwd = os.path.dirname(os.path.realpath(__file__))
-    cdf_file = '/Users/harperumfress/dev/BetaMonitor/dat/6HeDecay_cdf.txt'
-    hist_file = '/Users/harperumfress/dev/BetaMonitor/dat/6HeDecay_hist.txt'
+    cdf_file = '/Users/harperumfress/dev/BetaMonitor/dat/19NeDecay_cdf.txt'
+    hist_file = '/Users/harperumfress/dev/BetaMonitor/dat/19NeDecay_hist.txt'
+    macro_file = '/Users/harperumfress/dev/BetaMonitor/dat/19NeDecay_hist_points.mac'
     cdf_to_histogram_mev(cdf_file, hist_file)
+    histogram_to_macro(hist_file, macro_file)

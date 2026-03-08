@@ -383,8 +383,8 @@ G4VPhysicalVolume *BM_Detector::Construct()
   RotSource->rotateX(2 * 3.14159265 * rad);
   G4Tubs *SourceMy = new G4Tubs("SourceMy", 0 * cm, 0.939 / 2 * cm, 0.00032 * cm, 0, 360 * deg);
   G4LogicalVolume *logicSourceMy = new G4LogicalVolume(SourceMy, Mylar, "SourceMy");
-  new G4PVPlacement(RotSource, G4ThreeVector(0, 0, possource), logicSourceMy, "SourceMy",
-                    logicWorld, false, 0, checkOverlaps);
+  new G4PVPlacement(RotSource, G4ThreeVector(0, 0, 0.31749 / 2 * cm), logicSourceMy, "SourceMy",
+                    logicSiPMLid, false, 0, checkOverlaps);
   logicSourceMy->SetUserLimits(Limits);
 
   // source cylinder (aluminum)
@@ -409,14 +409,25 @@ G4VPhysicalVolume *BM_Detector::Construct()
   G4ThreeVector zTrans(0, 0, -0.635 * cm + 0.3175 * cm / 2);
   G4SubtractionSolid *SourceAl = new G4SubtractionSolid("SourceAl", SourceAl1, SourceAl2, yRot, zTrans);
   G4LogicalVolume *logicSourceAl = new G4LogicalVolume(SourceAl, Al, "SourceAl");
-  new G4PVPlacement(RotSource, G4ThreeVector(0, 0, possource - 0.8 * cm), logicSourceAl, "SourceAl",
-                    logicWorld, false, 0, checkOverlaps);
+  new G4PVPlacement(RotSource, G4ThreeVector(0, 0, -0.635 * cm - 1e-6 * mm), logicSourceAl, "SourceAl",
+                    logicSiPMLid, false, 0, checkOverlaps);
   logicSourceAl->SetUserLimits(Limits);
 
   G4LogicalVolume *logicSourceAlo = new G4LogicalVolume(SourceAlo, Al, "SourceAlo");
   new G4PVPlacement(RotSource, G4ThreeVector(0, 0, 0.31749 / 2 * cm), logicSourceAlo, "SourceAlo",
                     logicSiPMLid, false, 0, checkOverlaps);
   logicSourceAlo->SetUserLimits(Limits);
+
+  G4Tubs *SourceCal = new G4Tubs("SourceCal", 0 * cm, 0.939 / 2 * cm, 1e-3*mm, 0, 360 * deg);
+  G4LogicalVolume *logicSourceCal= new G4LogicalVolume(SourceCal, Al, "SourceCal");
+  // Placed in logicWorld (not logicSiPMLid) so GPS /gps/pos/confine can find it.
+  // The subtraction solid parent prevents the navigator from descending into it.
+  // Absolute position = sipmLid centre + (0,0,0) offset = -(32.079+8.89/2)*mm + 7.6477*mm
+  new G4PVPlacement(RotSource, G4ThreeVector(0, 0, -(32.079 + 8.89/2) * mm + 7.6477 * mm),
+                    logicSourceCal, "SourceCal", logicWorld, false, 1, checkOverlaps);
+  logicSourceCal->SetUserLimits(Limits); 
+
+  
 
   // Remove geometry_export.gdml if it exists to avoid G4GDMLParser exception
   std::remove("../output/geometry_export.gdml");

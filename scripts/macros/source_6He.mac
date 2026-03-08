@@ -1,6 +1,13 @@
-/bm/inputFile ../dat/6HeDecay_cdf.txt
-/bm/sourceType gas
-/bm/particleType e-
-
 /run/initialize
-/run/beamOn 3000000
+/gps/particle e-
+/gps/ene/type User
+/gps/hist/type energy
+/control/execute ../dat/6HeDecay_hist_points.mac
+/gps/pos/type Volume
+/gps/pos/shape Cylinder
+/gps/pos/radius 5 cm
+/gps/pos/halfz 20 cm
+/gps/pos/centre 0 0 0 cm
+/gps/pos/confine Vacuum
+/gps/ang/type iso
+/run/beamOn 1000000

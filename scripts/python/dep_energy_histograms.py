@@ -72,8 +72,8 @@ def plot_dep_energy_histogram(df, df_primaries, title='', cal=False):
         # plt.hist(df[df['volumeid']==5]['depenergy'], bins=150, 
         #          label='Trigger - Deposited Energy', alpha=1, color='mediumseagreen')
         
-        en, bins = rebin_energy(df[(df['volumeid']==1) & (df['trackid']==1)]['inenergy'], bin_number=150)
-        plt.plot(bins, en, drawstyle='steps-mid', label='Primary Particle - Initial Energy', color='firebrick')
+        # en, bins = rebin_energy(df[(df['volumeid']==1) & (df['trackid']==1)]['inenergy'], bin_number=150)
+        # plt.plot(bins, en, drawstyle='steps-mid', label='Primary Particle - Initial Energy', color='firebrick')
 
         en, bins = rebin_energy(df_primaries['primaryenergy'], bin_number=150)
         plt.plot(bins, en, drawstyle='steps-mid', label='Primary Particle - Initial Energy (Primaries)', color='orange')
@@ -132,7 +132,7 @@ if __name__ == "__main__":
     # outfile = "./build/output/outfile_19Ne_3e6.root"
     # outfile = "./build/output/outfile_90Sr_3e6.root"
     # outfile = "./output/outfile_6He_3e6_tw.root"
-    outfile = "./output/outfile_6He_3e6_rf.root"
+    outfile = "./output/outfile_6He_gps_1e6.root"
     df, df_primaries = read_root_to_df(outfile)
     plot_dep_energy_histogram(df, df_primaries, title=outfile, cal=False)
     # plot_cdf("./dat/6HeDecay_cdf.txt")
