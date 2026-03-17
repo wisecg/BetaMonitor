@@ -42,6 +42,29 @@ BM_PrimaryGenerator::~BM_PrimaryGenerator()
 void BM_PrimaryGenerator::GeneratePrimaries(G4Event* anEvent)
 {
   fParticleSource->GeneratePrimaryVertex(anEvent);
+  G4PrimaryVertex* primaryVertex = anEvent->GetPrimaryVertex();
+  G4double primaryEnergy = primaryVertex->GetPrimary()->GetKineticEnergy();
+  G4ParticleDefinition* particle = fParticleSource->GetParticleDefinition();
+  G4double x = fParticleSource->GetParticlePosition().x();
+  G4double y = fParticleSource->GetParticlePosition().y();
+  G4double z = fParticleSource->GetParticlePosition().z();
+  G4double vx = fParticleSource->GetParticleMomentumDirection().x();
+  G4double vy = fParticleSource->GetParticleMomentumDirection().y();
+  G4double vz = fParticleSource->GetParticleMomentumDirection().z();
+  // Fill the primary input tree with primary info
+  // Get BM_Output instance
+  BM_Output* output = BM_Output::Instance();
+  // Use the last set values for x, y, z, vx, vy, vz, and energy
+  int primary_pid = particle->GetPDGEncoding();
+  int primary_eventid = anEvent->GetEventID();
+  output->setPrimaryInputParams(
+    primary_pid,
+    primary_eventid,
+    x, y, z,
+    vx, vy, vz,
+    primaryEnergy
+  );
+  output->FillPrimaryInput();
 }
 
 // BM_PrimaryGenerator::BM_PrimaryGenerator() public G4VUserPrimaryGeneratorAction
