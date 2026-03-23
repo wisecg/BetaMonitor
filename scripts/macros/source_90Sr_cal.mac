@@ -6,8 +6,8 @@
 /gps/pos/type Volume
 /gps/pos/shape Cylinder
 /gps/pos/radius 0.40 cm
-/gps/pos/halfz 0.05 cm
-/gps/pos/centre 0 0 -4.33071 cm
+/gps/pos/halfz 0.0005 cm
+/gps/pos/centre 0 0 -4.43071 cm
 /gps/pos/confine SourceCal
 /gps/ang/type iso
 /run/beamOn 1000000

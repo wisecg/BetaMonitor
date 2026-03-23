@@ -35,21 +35,14 @@ class DepEnergyHistograms:
         counts, bin_edges = np.histogram(energy_array, bins=bins)
         return counts, bin_edges[:-1]
 
-    def plot(self, title='', cal=False, bin_number=150):
+    def plot(self, title='', bin_number=150):
         plt.figure(figsize=(10, 6))
-
-        if cal:
-            en, bins = self.rebin_energy(self.df[self.df['volumeid'] == 4]['depenergy'], bin_number)
-            plt.plot(bins, en, drawstyle='steps-mid', label='Trigger - Deposited Energy', color='mediumseagreen')
-            en, bins = self.rebin_energy(self.df[self.df['volumeid'] == 3]['depenergy'], bin_number)
-            plt.plot(bins, en, drawstyle='steps-mid', label='Scintillator - Deposited Energy', color='royalblue')
-        else:
-            en, bins = self.rebin_energy(self.df_primaries['primaryenergy'], bin_number)
-            plt.plot(bins, en, drawstyle='steps-mid', label='Primary Particle - Initial Energy (Primaries)', color='orange')
-            en, bins = self.rebin_energy(self.df[self.df['volumeid'] == 3]['depenergy'], bin_number)
-            plt.plot(bins, en, drawstyle='steps-mid', label='Scintillator - Deposited Energy', color='royalblue')
-            en, bins = self.rebin_energy(self.df[self.df['volumeid'] == 4]['depenergy'], bin_number)
-            plt.plot(bins, en, drawstyle='steps-mid', label='Trigger - Deposited Energy', color='mediumseagreen')
+        en, bins = self.rebin_energy(self.df_primaries['primaryenergy'], bin_number)
+        plt.plot(bins, en, drawstyle='steps-mid', label='Primary Particle - Initial Energy (Primaries)', color='orange')
+        en, bins = self.rebin_energy(self.df[self.df['volumeid'] == 3]['depenergy'], bin_number)
+        plt.plot(bins, en, drawstyle='steps-mid', label='Scintillator A - Deposited Energy', color='royalblue')
+        en, bins = self.rebin_energy(self.df[self.df['volumeid'] == 4]['depenergy'], bin_number)
+        plt.plot(bins, en, drawstyle='steps-mid', label='Scintillator B - Deposited Energy', color='mediumseagreen')
 
         plt.title(f'Histogram of Energy for Different Volumes\n{title}')
         plt.xlabel('Energy (MeV)')
@@ -77,8 +70,9 @@ if __name__ == "__main__":
     # outfile = "./build/output/outfile_90Sr_3e6.root"
     # outfile = "./output/outfile_6He_3e6_tw.root"
     outfile = "./output/outfile_90Sr_gps_1e6_ds.root"
+    # outfile = "./output/outfile_207Bi_gps_1e6.rootclear"
     plotter = DepEnergyHistograms(outfile)
-    plotter.plot(title=outfile, cal=False)
+    plotter.plot(title=outfile)
     # plotter.plot_cdf("./dat/6HeDecay_cdf.txt")
     print('end')
 
