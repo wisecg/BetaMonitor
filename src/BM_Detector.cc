@@ -439,8 +439,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
 
   G4LogicalVolume *logicSourceAlo = new G4LogicalVolume(SourceAlo, Al, "SourceAlo");
   G4ThreeVector sourceAloPos = G4ThreeVector(0, 0, -aScint2window_z - bScint2source_z - 4*(scint_z/2 + mylar_t + aluminum_t * 2) - sourceAlo_z / 2 - 1*tol);
-  new G4PVPlacement(RotSource, sourceAloPos, logicSourceAlo, "SourceAlo",
-                    logicWorld, false, 0, checkOverlaps);
+  new G4PVPlacement(RotSource, sourceAloPos, logicSourceAlo, "SourceAlo", logicWorld, false, 0, checkOverlaps);
   logicSourceAlo->SetUserLimits(Limits);
 
   G4RotationMatrix *yRot = new G4RotationMatrix; 
@@ -450,8 +449,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   // G4UnionSolid *SourceAlUnion = new G4UnionSolid("SourceAlUnion", SourceAl, SourceAlo, 0, G4ThreeVector(0 * cm, 0 * cm, sourceAl_z / 2 + sourceAlo_z / 2 - tol));
   G4LogicalVolume *logicSourceAl = new G4LogicalVolume(SourceAl, Al, "SourceAl");
   G4ThreeVector sourceAlPos = G4ThreeVector(0, 0, -aScint2window_z - bScint2source_z - 4*(scint_z/2 + mylar_t + aluminum_t * 2) - sourceAlo_z - sourceAl_z / 2 - 2*tol);
-  new G4PVPlacement(RotSource, sourceAlPos, logicSourceAl, "SourceAl",
-                    logicWorld, false, 0, checkOverlaps);
+  new G4PVPlacement(RotSource, sourceAlPos, logicSourceAl, "SourceAl", logicWorld, false, 0, checkOverlaps);
   logicSourceAl->SetUserLimits(Limits);
 
 
@@ -459,8 +457,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   G4Tubs *SourceMy = new G4Tubs("SourceMy", 0 * cm, source_r-tol, sourceMy_z / 2, 0, 360 * deg);
   G4LogicalVolume *logicSourceMy = new G4LogicalVolume(SourceMy, Mylar, "SourceMy");
   G4ThreeVector sourceMyPos = G4ThreeVector(0 * cm, 0 * cm, -aScint2window_z - bScint2source_z - 4*(scint_z/2 + mylar_t + aluminum_t * 2) - sourceAlo_z / 2);
-  new G4PVPlacement(RotSource, sourceMyPos, logicSourceMy, "SourceMy",
-                    logicWorld, false, 0, checkOverlaps);
+  new G4PVPlacement(RotSource, sourceMyPos, logicSourceMy, "SourceMy", logicWorld, false, 0, checkOverlaps);
   logicSourceMy->SetUserLimits(Limits);
 
 

@@ -76,7 +76,7 @@ if __name__ == "__main__":
     # outfile = "./build/output/outfile_19Ne_3e6.root"
     # outfile = "./build/output/outfile_90Sr_3e6.root"
     # outfile = "./output/outfile_6He_3e6_tw.root"
-    outfile = "./output/outfile_6He_gps_1e6_ds.root"
+    outfile = "./output/outfile_90Sr_gps_1e6_ds.root"
     plotter = DepEnergyHistograms(outfile)
     plotter.plot(title=outfile, cal=False)
     # plotter.plot_cdf("./dat/6HeDecay_cdf.txt")

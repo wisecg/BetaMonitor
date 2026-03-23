@@ -5,9 +5,9 @@
 /control/execute ../dat/6HeDecay_hist_points.mac
 /gps/pos/type Volume
 /gps/pos/shape Cylinder
-/gps/pos/radius 0.5 cm
-/gps/pos/halfz 0.15 cm
-/gps/pos/centre 0 0 -2.88763 cm
+/gps/pos/radius 0.40 cm
+/gps/pos/halfz 0.004 cm
+/gps/pos/centre 0 0 -4.431 cm
 /gps/pos/confine SourceCal
 /gps/ang/type iso
 /run/beamOn 100
