@@ -2,7 +2,7 @@
 /gps/particle e-
 /gps/ene/type User
 /gps/hist/type energy
-/control/execute ../dat/6HeDecay_hist_points_downsample.mac
+/control/execute ../dat/6HeDecay_hist_points.mac
 /gps/pos/type Volume
 /gps/pos/shape Cylinder
 /gps/pos/radius 5 cm
