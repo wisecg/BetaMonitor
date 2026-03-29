@@ -27,7 +27,10 @@
 #include "BM_SteppingAction.hh"
 //#include "BM_TrackingAction.hh" 
 //#include "BM_PhysicsList.hh" // removed
-#include "QBBC.hh"  // a standard phys list
+// #include "QBBC.hh"  // a standard phys list
+#include "G4PhysListFactory.hh"
+#include "G4RadioactiveDecayPhysics.hh"
+#include "G4DecayPhysics.hh"
 #include "BM_Detector.hh"
 #include "BM_PrimaryGenerator.hh"
 #include "BM_Output.hh"
@@ -73,7 +76,11 @@ int main(int argc, char** argv)
   runManager->SetUserInitialization(new BM_Detector());
   
   // initialize physics list - use a standard one for now
-  G4VModularPhysicsList* physicsList = new QBBC; 
+  G4PhysListFactory factory;
+  G4VModularPhysicsList* physicsList = factory.GetReferencePhysList("FTFP_BERT_EMZ");
+  physicsList->RegisterPhysics(new G4RadioactiveDecayPhysics());
+  physicsList->RegisterPhysics(new G4DecayPhysics());
+
   physicsList->SetVerboseLevel(1);
   runManager->SetUserInitialization(physicsList);
   

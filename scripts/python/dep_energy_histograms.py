@@ -39,6 +39,7 @@ class DepEnergyHistograms:
         plt.figure(figsize=(10, 6))
         en, bins = self.rebin_energy(self.df_primaries['primaryenergy'], bin_number)
         plt.plot(bins, en, drawstyle='steps-mid', label='Primary Particle - Initial Energy (Primaries)', color='orange')
+        
         en, bins = self.rebin_energy(self.df[self.df['volumeid'] == 3]['depenergy'], bin_number)
         plt.plot(bins, en, drawstyle='steps-mid', label='Scintillator A - Deposited Energy', color='royalblue')
         en, bins = self.rebin_energy(self.df[self.df['volumeid'] == 4]['depenergy'], bin_number)
@@ -63,16 +64,30 @@ class DepEnergyHistograms:
         plt.legend()
         plt.show()
 
+    def print_num_events(self):
+        print(f"Total number of events: {len(self.df)}")
+        print(f"Number of events in Scintillator A (volumeid=3): {len(self.df[self.df['volumeid'] == 3])}")
+        print(f"Number of events in Scintillator B (volumeid=4): {len(self.df[self.df['volumeid'] == 4])}")
+        print(f"Number of events in Vaccuum (volumeid=1): {len(self.df[self.df['volumeid'] == 1])}")
+        print(f"Number of primary events: {len(self.df_primaries[self.df_primaries['pid'] == 11])}")
+
 
 if __name__ == "__main__":
-    # outfile = "./build/output/outfile_6He_3e6.root"
+    outfile = "./output/outfile_6He_1e6.root"
     # outfile = "./build/output/outfile_19Ne_3e6.root"
     # outfile = "./build/output/outfile_90Sr_3e6.root"
     # outfile = "./output/outfile_6He_3e6_tw.root"
     # outfile = "./output/outfile_90Sr_gps_1e6_ds.root"
-    outfile = "./output/outfile_207Bi_gps_1e6.root"
+    outfile = "./output/outfile_6He_1e6_bert_rdm.root"
     plotter = DepEnergyHistograms(outfile)
+    plotter.print_num_events()
     plotter.plot(title=outfile)
+    plt.show()
+    plotter2 = DepEnergyHistograms(outfile2)
+    plotter2.plot(title=outfile2)
+    plt.show()
+
+
     # plotter.plot_cdf("./dat/6HeDecay_cdf.txt")
     print('end')
 

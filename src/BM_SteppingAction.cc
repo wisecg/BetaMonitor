@@ -6,6 +6,7 @@
 
 #include "BM_SteppingAction.hh"
 #include "BM_Detector.hh"
+#include "BM_Output.hh"
 // #include "BM_StepCounter.hh"
 
 BM_SteppingAction *BM_SteppingAction::fgInstance = nullptr;
@@ -27,7 +28,29 @@ BM_SteppingAction::~BM_SteppingAction()
 
 void BM_SteppingAction::UserSteppingAction(const G4Step *step)
 {
-   G4Track *track = step->GetTrack();
+   G4Track* track = step->GetTrack();
+   if (track->GetParentID() > 0 && track->GetCreatorProcess()) {
+      G4String processname = track->GetCreatorProcess()->GetProcessName();
+      // only for the first step of the secondary track, which should be right after creation
+      if ((processname == "RadioactiveDecayBase") && track->GetCurrentStepNumber() == 1) {
+         G4double decayProductEnergy = track->GetKineticEnergy();
+         const G4ParticleDefinition* particle = track->GetParticleDefinition();
+         G4ThreeVector position = track->GetPosition();
+         G4ThreeVector momentumDirection = track->GetMomentumDirection();
+         BM_Output* output = BM_Output::Instance();
+         G4int primary_pid = particle->GetPDGEncoding();
+         G4int primary_eventid = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
+         output->setPrimaryInputParams(
+            primary_pid,
+            primary_eventid,
+            position.x(), position.y(), position.z(),
+            momentumDirection.x(), momentumDirection.y(), momentumDirection.z(),
+            decayProductEnergy
+         );
+         output->FillPrimaryInput();
+      }
+   }
+
    G4double z = track->GetParticleDefinition()->GetAtomicNumber();
    if (z == 16)
    {

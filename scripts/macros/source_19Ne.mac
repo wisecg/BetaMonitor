@@ -1,8 +1,8 @@
 /run/initialize
-/gps/particle e+
-/gps/ene/type User
-/gps/hist/type energy
-/control/execute ../dat/19NeDecay_hist_points.mac
+/gps/particle ion
+/gps/energy 0 keV
+/gps/ion 10 19 0 0   # Z=10 (He), A=19, Q=0, E=0
+/gps/number 1
 /gps/pos/type Volume
 /gps/pos/shape Cylinder
 /gps/pos/radius 5 cm
