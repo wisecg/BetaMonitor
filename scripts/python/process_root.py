@@ -18,13 +18,11 @@ import pandas as pd
 
 class DepEnergyHistograms:
 
-    def __init__(self, root_file):
-        self.root_file = root_file
+    def __init__(self):
         self.df = None
         self.df_primaries = None
-        self._load()
 
-    def _load(self):
+    def load(self):
         ff = uproot.open(self.root_file)
         self.df = ff['simData'].arrays(ff['simData'].keys(), library='pd')
         self.df_primaries = ff['primaryInput'].arrays(ff['primaryInput'].keys(), library='pd')
@@ -35,7 +33,9 @@ class DepEnergyHistograms:
         counts, bin_edges = np.histogram(energy_array, bins=bins)
         return counts, bin_edges[:-1]
 
-    def plot(self, title='', bin_number=150):
+    def plot(self, root_file, title='', bin_number=150):
+        self.root_file = root_file
+        self.load(self.root_file)
         plt.figure(figsize=(10, 6))
         en, bins = self.rebin_energy(self.df_primaries['primaryenergy'], bin_number)
         plt.plot(bins, en, drawstyle='steps-mid', label='Primary Particle - Initial Energy (Primaries)', color='orange')
@@ -72,13 +72,35 @@ class DepEnergyHistograms:
         print(f"Number of primary events: {len(self.df_primaries[self.df_primaries['pid'] == 11])}")
 
 
-def load_old_root(root_file):
-    ff = uproot.open(root_file)
-    df = ff['simData'].arrays(ff['simData'].keys(), library='pd')
-    return df
+    def plot_old_root(self, root_file, bin_number=150, cal=False):
+        ff = uproot.open(root_file)
+        df = ff['simData'].arrays(ff['simData'].keys(), library='pd')
+
+        plt.figure(figsize=(10, 6))
+        plt.title(f'Histogram of Energy for Old Code')
+        # scintillator_a energy
+        en, bins = self.rebin_energy(df[df['detSQ_En'] != 0.0]['detSQ_En'], bin_number)
+        plt.plot(bins, en, drawstyle='steps-mid', label='Scintillator A - Deposited Energy', color='royalblue')
+        # scintillator_b energy
+        en, bins = self.rebin_energy(df[df['detTrig_En'] != 0.0]['detTrig_En'], bin_number)
+        plt.plot(bins, en, drawstyle='steps-mid', label='Scintillator B - Deposited Energy', color='mediumseagreen')
+
+        if not cal:
+            en, bins = self.rebin_energy(df[df['detVac_InEn'] != 0.0]['detVac_InEn'], bin_number)
+            plt.plot(bins, en, drawstyle='steps-mid', label='Vaccuum - Deposited Energy', color='orange')
+        
+        plt.xlabel('Energy (MeV)')
+        plt.ylabel('Frequency')
+        plt.yscale('log')
+        plt.grid(True)
+        plt.legend()
+        plt.show()
+
 
 if __name__ == "__main__":
     old_root = "/Users/harperumfress/UW/betamonitor_data/original_singlethread_data/6He_1e6_original.root"
-    df_old = load_old_root(old_root)
+    plotter = DepEnergyHistograms()
+    plotter.plot_old_root(old_root)
+    print('end')
 
 
