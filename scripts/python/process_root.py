@@ -72,22 +72,13 @@ class DepEnergyHistograms:
         print(f"Number of primary events: {len(self.df_primaries[self.df_primaries['pid'] == 11])}")
 
 
+def load_old_root(root_file):
+    ff = uproot.open(root_file)
+    df = ff['simData'].arrays(ff['simData'].keys(), library='pd')
+    return df
+
 if __name__ == "__main__":
-    outfile = "./output/outfile_6He_1e6.root"
-    # outfile = "./build/output/outfile_19Ne_3e6.root"
-    # outfile = "./build/output/outfile_90Sr_3e6.root"
-    # outfile = "./output/outfile_6He_3e6_tw.root"
-    # outfile = "./output/outfile_90Sr_gps_1e6_ds.root"
-    outfile = "./output/outfile_6He_1e6_bert_rdm.root"
-    plotter = DepEnergyHistograms(outfile)
-    plotter.print_num_events()
-    plotter.plot(title=outfile)
-    plt.show()
-    plotter2 = DepEnergyHistograms(outfile2)
-    plotter2.plot(title=outfile2)
-    plt.show()
+    old_root = "/Users/harperumfress/UW/betamonitor_data/original_singlethread_data/6He_1e6_original.root"
+    df_old = load_old_root(old_root)
 
-
-    # plotter.plot_cdf("./dat/6HeDecay_cdf.txt")
-    print('end')
 
