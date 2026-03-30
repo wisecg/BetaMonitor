@@ -36,7 +36,7 @@ class DepEnergyHistograms:
         counts, bin_edges = np.histogram(energy_array, bins=bins)
         return counts, bin_edges[:-1]
 
-    def plot(self, root_file, title='', bin_number=150):
+    def plot(self, root_file, bin_number=150):
         self.root_file = root_file
         self.load()
         df_prim = self.df_primaries[(self.df_primaries['pid'] == 11) | (self.df_primaries['pid'] == -11)]
@@ -49,13 +49,13 @@ class DepEnergyHistograms:
         en, bins = self.rebin_energy(df[df['volumeid'] == 4]['depenergy'], bin_number)
         self.ax.plot(bins, en, drawstyle='steps-mid', label='Scintillator B - Deposited Energy', color='mediumseagreen')
 
-        self.ax.set_title(f'Histogram of Energy for Different Volumes\n{title}')
+        # self.ax.set_title(f'Histogram of Energy for Different Volumes\n{title}')
         self.ax.set_xlabel('Energy (MeV)')
         self.ax.set_ylabel('Frequency')
         self.ax.set_yscale('log')
         self.ax.grid(True)
-        self.ax.legend()
-        plt.show()
+        # self.ax.legend()
+        # plt.show()
 
     def plot_cdf(self, cdf_file):
         df = pd.read_csv(cdf_file, names=['energy', 'cdf'], delimiter='\t')
@@ -81,14 +81,14 @@ class DepEnergyHistograms:
         # ax.set_title(f'Histogram of Energy for Old Code\n{root_file}')
         # scintillator_a energy
         en, bins = self.rebin_energy(df[df['detSQ_En'] != 0.0]['detSQ_En'], bin_number)
-        self.ax.plot(bins, en, drawstyle='steps-mid', label='Scintillator A - Deposited Energy', color='royalblue', linestyle=':')
+        self.ax.plot(bins, en, drawstyle='steps-mid', label='Old Code - Scintillator A - Dep Energy', color='royalblue', linestyle=':')
         # scintillator_b energy
         en, bins = self.rebin_energy(df[df['detTrig_En'] != 0.0]['detTrig_En'], bin_number)
-        self.ax.plot(bins, en, drawstyle='steps-mid', label='Scintillator B - Deposited Energy', color='mediumseagreen', linestyle=':')
+        self.ax.plot(bins, en, drawstyle='steps-mid', label='Old Code - Scintillator B - Dep Energy', color='mediumseagreen', linestyle=':')
 
         if not cal:
             en, bins = self.rebin_energy(df[df['detVac_InEn'] != 0.0]['detVac_InEn'], bin_number)
-            self.ax.plot(bins, en, drawstyle='steps-mid', label='Vaccuum - Deposited Energy', color='orange', linestyle=':')
+            self.ax.plot(bins, en, drawstyle='steps-mid', label='Old Code - Vaccuum - Dep Energy', color='orange', linestyle=':')
         
         self.ax.set_xlabel('Energy (MeV)')
         self.ax.set_ylabel('Frequency')
@@ -96,18 +96,21 @@ class DepEnergyHistograms:
         self.ax.grid(True)
         self.ax.legend()
         # plt.show()
-    def show(self):
+    def show(self, title=None):
+        if title:
+            self.ax.set_title(title)
         self.ax.legend()
         plt.show()
 
 
 if __name__ == "__main__":
-    old_root = "/Users/harperumfress/UW/betamonitor_data/original_singlethread_data/90Sr_1e6_original.root"
-    new_root = "./output/90Sr_1e6.root"
+    old_root = "/Users/harperumfress/UW/betamonitor_data/original_singlethread_data/19Ne_1e6_original.root"
+    new_root = "./output/19Ne_1e6.root"
     plotter = DepEnergyHistograms()
-    plotter.plot_old_root(old_root, cal=True)
+    plotter.plot_old_root(old_root, cal=False)
     plotter.plot(new_root)
-    plotter.show()
+    plotter.show(title='New Code Window2ScintA=8.4m\nOld Code Window2ScintA=16mm')
     print('end')
 
 
+    

@@ -567,8 +567,8 @@ class GeometryPlotter:
 
 
 if __name__ == "__main__":
-    # plotter = GeometryPlotter("output/geometry_export.gdml")
-    plotter = GeometryPlotter("/Users/harperumfress/UW/betamonitor_data/original_singlethread_data/geometry_export.gdml")
+    plotter = GeometryPlotter("output/geometry_export.gdml")
+    # plotter = GeometryPlotter("/Users/harperumfress/UW/betamonitor_data/original_singlethread_data/geometry_export.gdml")
     plotter.plot_three_view_2d()
     plotter.print_vol_names()
 
