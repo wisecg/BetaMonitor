@@ -79,7 +79,7 @@ int main(int argc, char** argv)
   G4PhysListFactory factory;
   G4VModularPhysicsList* physicsList = factory.GetReferencePhysList("FTFP_BERT_EMZ");
   physicsList->RegisterPhysics(new G4RadioactiveDecayPhysics());
-  physicsList->RegisterPhysics(new G4DecayPhysics());
+
 
   physicsList->SetVerboseLevel(1);
   runManager->SetUserInitialization(physicsList);

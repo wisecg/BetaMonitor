@@ -96,6 +96,34 @@ class DepEnergyHistograms:
         self.ax.grid(True)
         self.ax.legend()
         # plt.show()
+
+
+    def plot_pdf_from_cdf(self, cdf_file, n_primaries):
+        """
+        Reads a CDF file (2 columns: energy, cdf), computes the PDF, and plots the spectrum.
+        The PDF is normalized so the total number of events is n_primaries.
+        If output_pdf_path is given, saves the plot to that file.
+        """
+
+
+        # Read CDF file
+        df = pd.read_csv(cdf_file, names=['energy', 'cdf'], delimiter='\t')
+        # Compute PDF as the discrete derivative of CDF
+        energies = df['energy'].values/1e6 # Convert eV to MeV
+        cdf = df['cdf'].values
+        pdf = np.diff(cdf, prepend=cdf[0])
+        # The first value is zero (since prepend), so shift
+        pdf[0] = pdf[1]
+        # Normalize PDF so sum(pdf) = n_primaries
+        pdf_sum = np.sum(pdf)
+        pdf_scaled = pdf * (n_primaries / pdf_sum)
+        bin_number = 150
+        bins = np.linspace(np.min(energies), np.max(energies), bin_number + 1)
+        counts, bin_edges = np.histogram(energies, bins=bins, weights=pdf_scaled)
+
+        self.ax.plot(bin_edges[:-1], counts, drawstyle='steps-mid', label='PDF (normalized)')
+        self.ax.grid(True)
+    
     def show(self, title=None):
         if title:
             self.ax.set_title(title)
@@ -104,11 +132,13 @@ class DepEnergyHistograms:
 
 
 if __name__ == "__main__":
-    old_root = "/Users/harperumfress/UW/betamonitor_data/original_singlethread_data/19Ne_1e6_original.root"
-    new_root = "./output/19Ne_1e6.root"
+    # old_root = "/Users/harperumfress/UW/betamonitor_data/original_singlethread_data/19Ne_1e6_original.root"
+    old_root = "./output/6He_1e6_original_newgeo.root"
+    new_root = "./output/6He_1e6_shielding.root"
     plotter = DepEnergyHistograms()
     plotter.plot_old_root(old_root, cal=False)
     plotter.plot(new_root)
+    plotter.plot_pdf_from_cdf('./dat/6HeDecay_cdf.txt', n_primaries=1e6)
     plotter.show(title='New Code Window2ScintA=8.4m\nOld Code Window2ScintA=16mm')
     print('end')
 
