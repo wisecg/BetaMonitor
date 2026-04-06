@@ -1,7 +1,8 @@
 /run/initialize
+/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year
 /gps/particle ion
-/gps/energy 0 keV
-/gps/ion 2 6 0 0   # Z=2 (He), A=6, Q=0, E=0
+/gps/ene/mono 0 eV
+/gps/ion 2 6 2 0  # Z=2 (He), A=6, Q=2, E=0
 /gps/number 1
 /gps/pos/type Volume
 /gps/pos/shape Cylinder
@@ -9,4 +10,5 @@
 /gps/pos/halfz 20 cm
 /gps/pos/centre 0 0 0 cm
 /gps/pos/confine Vacuum
+/gps/ang/type iso
 /run/beamOn 1000000

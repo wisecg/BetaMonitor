@@ -1,6 +1,7 @@
 // BM_RunAction.cc - Implementation of BM_RunAction class
 #include "nat_units.hh"
-#include "g4root.hh"
+#include "G4RootAnalysisManager.hh"
+#include "G4AnalysisManager.hh"
 
 #include "G4Run.hh"
 #include "G4RunManager.hh"

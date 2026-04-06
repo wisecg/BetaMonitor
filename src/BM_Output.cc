@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "g4root.hh"
+#include "G4RootAnalysisManager.hh"
 #include <TFile.h>
 #include <TTree.h>
 

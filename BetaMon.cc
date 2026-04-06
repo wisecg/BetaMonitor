@@ -11,7 +11,7 @@
   #include <unistd.h>
 #endif
 
-#include "g4root.hh"
+#include "G4RootAnalysisManager.hh"
 #include "G4Types.hh"
 #include "G4UImanager.hh"
 
@@ -77,7 +77,7 @@ int main(int argc, char** argv)
   
   // initialize physics list - use a standard one for now
   G4PhysListFactory factory;
-  G4VModularPhysicsList* physicsList = factory.GetReferencePhysList("FTFP_BERT_EMZ");
+  G4VModularPhysicsList* physicsList = factory.GetReferencePhysList("QGSP_BIC_HP");
   physicsList->RegisterPhysics(new G4RadioactiveDecayPhysics());
 
 

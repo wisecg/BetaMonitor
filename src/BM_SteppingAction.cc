@@ -31,8 +31,10 @@ void BM_SteppingAction::UserSteppingAction(const G4Step *step)
    G4Track* track = step->GetTrack();
    if (track->GetParentID() > 0 && track->GetCreatorProcess()) {
       G4String processname = track->GetCreatorProcess()->GetProcessName();
+      // print processname
+      // G4cout << "Process name: " << processname << G4endl;
       // only for the first step of the secondary track, which should be right after creation
-      if ((processname == "RadioactiveDecayBase") && track->GetCurrentStepNumber() == 1) {
+      if ((processname == "RadioactiveDecay") && track->GetCurrentStepNumber() == 1) {
          G4double decayProductEnergy = track->GetKineticEnergy();
          const G4ParticleDefinition* particle = track->GetParticleDefinition();
          G4ThreeVector position = track->GetPosition();

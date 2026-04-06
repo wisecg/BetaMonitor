@@ -106,7 +106,7 @@ header = """// BM_Output.cc - Implementation of BM_Output class to write data to
 
 #include <TFile.h>
 #include <TTree.h>
-#include "g4root.hh"
+#include "G4RootAnalysisManager.hh"
 
 BM_Output* BM_Output::Instance_ = nullptr;
 

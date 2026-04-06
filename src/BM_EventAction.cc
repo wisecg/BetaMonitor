@@ -9,7 +9,7 @@
 #include <set>
 #include <vector>
 
-#include "g4root.hh"
+#include "G4RootAnalysisManager.hh"
 #include "G4RunManager.hh"
 #include "G4Event.hh"
 #include "G4SDManager.hh"
