@@ -46,7 +46,7 @@ class DepEnergyHistograms:
         df_prim = self.df_primaries[(self.df_primaries['pid'] == 11) | (self.df_primaries['pid'] == -11)]
         df = self.df[(self.df['pid'] == 11) | (self.df['pid'] == -11 )]
         en, bins = self.rebin_energy(df_prim['primaryenergy'])
-        self.ax.plot(bins, en, drawstyle='steps-mid', label='Primary Particle - Initial Energy (Primaries)', color='orange')
+        self.ax.plot(bins, en, drawstyle='steps-mid', label='G4 Primary Energy, from RDM', color='orange')
         
         en, bins = self.rebin_energy(df[df['volumeid'] == 3]['depenergy'])
         self.ax.plot(bins, en, drawstyle='steps-mid', label='Scintillator A - Deposited Energy', color='royalblue')
@@ -78,24 +78,30 @@ class DepEnergyHistograms:
         print(f"Number of primary events: {len(self.df_primaries[self.df_primaries['pid'] == 11])}")
 
 
-    def plot_old_root(self, root_file, bin_number=150, cal=False):
+    def plot_old_root(self, root_file, n_primaries=1e6, cal=False):
         ff = uproot.open(root_file)
         df = ff['simData'].arrays(ff['simData'].keys(), library='pd')
+        # len_prim = n_primaries
+        if not cal:
+            len_prim = len(df[df['detVac_InEn'] != 0.0]['detVac_InEn'])
+            en, bins = self.rebin_energy(df[df['detVac_InEn'] != 0.0]['detVac_InEn'])
+            en = en * (n_primaries / len_prim)
+            self.ax.plot(bins, en, drawstyle='steps-mid', label='G4 Primary Energy, from PDF', color='green')
 
         # ax.set_title(f'Histogram of Energy for Old Code\n{root_file}')
         # scintillator_a energy
         en, bins = self.rebin_energy(df[df['detSQ_En'] != 0.0]['detSQ_En'])
+        en = en * (n_primaries / len_prim)
         self.ax.plot(bins, en, drawstyle='steps-mid', label='Old Code - Scintillator A - Dep Energy', color='royalblue', linestyle=':')
         # scintillator_b energy
         en, bins = self.rebin_energy(df[df['detTrig_En'] != 0.0]['detTrig_En'])
+        en = en * (n_primaries / len_prim)
         self.ax.plot(bins, en, drawstyle='steps-mid', label='Old Code - Scintillator B - Dep Energy', color='mediumseagreen', linestyle=':')
 
-        if not cal:
-            en, bins = self.rebin_energy(df[df['detVac_InEn'] != 0.0]['detVac_InEn'])
-            self.ax.plot(bins, en, drawstyle='steps-mid', label='Old Code - Vaccuum - Dep Energy', color='orange', linestyle=':')
+
         
         self.ax.set_xlabel('Energy (MeV)')
-        self.ax.set_ylabel('Frequency')
+        self.ax.set_ylabel('Counts')
         self.ax.set_yscale('log')
         self.ax.grid(True)
         self.ax.legend()
@@ -124,7 +130,7 @@ class DepEnergyHistograms:
         bins = np.linspace(self.hist_en_min, self.hist_en_max, self.bin_number + 1)
         counts, bin_edges = np.histogram(energies, bins=bins, weights=pdf_scaled)
 
-        self.ax.plot(bin_edges[:-1], counts, drawstyle='steps-mid', color='red', label='PDF from BM Code (normalized)')
+        self.ax.plot(bin_edges[:-1], counts, drawstyle='steps-mid', color='red', label='PDF from Code (normalized)')
         self.ax.grid(True)
 
     def plot_from_ddep(self, ddep_file, use_experimental=False, n_primaries=None, interpolate=True,
@@ -190,7 +196,7 @@ class DepEnergyHistograms:
                 counts = counts * scale
                 counts_unc = counts_unc * scale
 
-        label = 'DDEP Exp. spectrum' if use_experimental else 'DDEP Calc. spectrum'
+        label = 'DDEP Database Exp. spectrum' if use_experimental else 'DDEP Database Calc. spectrum'
         self.ax.plot(bin_edges[:-1], counts, color='purple', drawstyle='steps-mid', label=label)
         if plot_error_bars:
             stride = max(1, int(errorbar_stride))
@@ -231,9 +237,9 @@ if __name__ == "__main__":
     plotter.plot_pdf_from_cdf(cdf, n_primaries=1e6)
     plotter.plot_from_ddep(ddep, n_primaries=1e6, 
                            use_experimental=True, plot_error_bars=False)
-    plotter.plot_old_root(old_root, cal=False)
+    plotter.plot_old_root(old_root, n_primaries=1e6, cal=False)
     plotter.plot(new_root)
-    plotter.show(title='')
+    plotter.show(title='6He Spectra for 1e6 Primaries')
     print('end')
 
 
