@@ -227,7 +227,7 @@ if __name__ == "__main__":
     # 19Ne
     
 
-    plotter = DepEnergyHistograms()``
+    plotter = DepEnergyHistograms()
     plotter.plot_pdf_from_cdf(cdf, n_primaries=1e6)
     plotter.plot_from_ddep(ddep, n_primaries=1e6, 
                            use_experimental=True, plot_error_bars=False)
