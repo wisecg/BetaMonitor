@@ -226,7 +226,7 @@ class DepEnergyHistograms:
 if __name__ == "__main__":
     # old_root = "/Users/harperumfress/UW/betamonitor_data/original_singlethread_data/19Ne_1e6_original.root"
     # 6He
-    old_root = "./output/6He_1e6_original_newgeo.root"
+    old_root = "./output/6He_1e6_original_newgeo_v2.root"
     new_root = "./output/6He_1e6.root"
     cdf = './dat/6HeDecay_cdf.txt'
     ddep = '/Users/harperumfress/UW/betamonitor_data/He6_ddep/beta-_He6_trans0.bs'
