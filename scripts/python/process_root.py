@@ -22,6 +22,7 @@ class DepEnergyHistograms:
         self.df = None
         self.df_primaries = None
         fig, ax = plt.subplots(figsize=(10, 6))
+        ax.set_ylim(ymin=1e-1, ymax=3e4)
         self.fig = fig
         self.ax = ax
         self.hist_en_min = 0.0
@@ -55,7 +56,7 @@ class DepEnergyHistograms:
 
         # self.ax.set_title(f'Histogram of Energy for Different Volumes\n{title}')
         self.ax.set_xlabel('Energy (MeV)')
-        self.ax.set_ylabel('Frequency')
+        self.ax.set_ylabel('Counts')
         self.ax.set_yscale('log')
         self.ax.grid(True)
         # self.ax.legend()
@@ -226,17 +227,14 @@ if __name__ == "__main__":
     # old_root = "/Users/harperumfress/UW/betamonitor_data/original_singlethread_data/19Ne_1e6_original.root"
     # 6He
     old_root = "./output/6He_1e6_original_newgeo.root"
-    new_root = "./output/6He_1e6_11-4_qgsp.root"
+    new_root = "./output/6He_1e6.root"
     cdf = './dat/6HeDecay_cdf.txt'
     ddep = '/Users/harperumfress/UW/betamonitor_data/He6_ddep/beta-_He6_trans0.bs'
-
-    # 19Ne
     
 
     plotter = DepEnergyHistograms()
     plotter.plot_pdf_from_cdf(cdf, n_primaries=1e6)
-    plotter.plot_from_ddep(ddep, n_primaries=1e6, 
-                           use_experimental=True, plot_error_bars=False)
+    plotter.plot_from_ddep(ddep, n_primaries=1e6, use_experimental=True, plot_error_bars=False)
     plotter.plot_old_root(old_root, n_primaries=1e6, cal=False)
     plotter.plot(new_root)
     plotter.show(title='6He Spectra for 1e6 Primaries')
