@@ -10,7 +10,6 @@
 #include "G4SystemOfUnits.hh"
 #include "G4ParticleDefinition.hh"
 
-#include "BM_TrackInfo.hh"
 #include "BM_Detector.hh"
 #include "BM_Output.hh"
 

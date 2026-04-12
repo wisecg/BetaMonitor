@@ -10,7 +10,6 @@
 #include "G4SystemOfUnits.hh"
 #include "G4SDManager.hh"
 
-#include "BM_TrackInfo.hh"
 #include "G4UniformMagField.hh"
 #include "G4SDManager.hh"
 

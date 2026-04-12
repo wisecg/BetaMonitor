@@ -25,7 +25,6 @@
 #include "BM_RunAction.hh"
 #include "BM_EventAction.hh"
 #include "BM_SteppingAction.hh"
-//#include "BM_TrackingAction.hh" 
 //#include "BM_PhysicsList.hh" // removed
 // #include "QBBC.hh"  // a standard phys list
 #include "G4PhysListFactory.hh"
