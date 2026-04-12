@@ -48,10 +48,13 @@ class DepEnergyHistograms:
         df = self.df[(self.df['pid'] == 11) | (self.df['pid'] == -11 )]
         en, bins = self.rebin_energy(df_prim['primaryenergy'])
         self.ax.plot(bins, en, drawstyle='steps-mid', label='G4 Primary Energy, from RDM', color='orange')
-        
-        en, bins = self.rebin_energy(df[df['volumeid'] == 3]['depenergy'])
+
+        dep_energy = df[df['volumeid'] == 3].groupby('eventid')['depenergy'].sum()
+        en, bins = self.rebin_energy(dep_energy)
         self.ax.plot(bins, en, drawstyle='steps-mid', label='Scintillator A - Deposited Energy', color='royalblue')
-        en, bins = self.rebin_energy(df[df['volumeid'] == 4]['depenergy'])
+        
+        dep_energy = df[df['volumeid'] == 4].groupby('eventid')['depenergy'].sum()
+        en, bins = self.rebin_energy(dep_energy)
         self.ax.plot(bins, en, drawstyle='steps-mid', label='Scintillator B - Deposited Energy', color='mediumseagreen')
 
         # self.ax.set_title(f'Histogram of Energy for Different Volumes\n{title}')
@@ -226,7 +229,7 @@ class DepEnergyHistograms:
 if __name__ == "__main__":
     # old_root = "/Users/harperumfress/UW/betamonitor_data/original_singlethread_data/19Ne_1e6_original.root"
     # 6He
-    old_root = "./output/6He_1e6_original_newgeo_v2.root"
+    old_root = "./output/6He_1e6_original_newgeo_ddep_v2.root"
     new_root = "./output/6He_1e6.root"
     cdf = './dat/6HeDecay_cdf.txt'
     ddep = '/Users/harperumfress/UW/betamonitor_data/He6_ddep/beta-_He6_trans0.bs'
