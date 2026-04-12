@@ -77,7 +77,8 @@ int main(int argc, char** argv)
   
   // initialize physics list - use a standard one for now
   G4PhysListFactory factory;
-  G4VModularPhysicsList* physicsList = factory.GetReferencePhysList("QGSP_BIC_HP");
+  // G4VModularPhysicsList* physicsList = factory.GetReferencePhysList("QGSP_BIC_HP");
+  G4VModularPhysicsList* physicsList = factory.GetReferencePhysList("QBBC"); 
   physicsList->RegisterPhysics(new G4RadioactiveDecayPhysics());
 
 
