@@ -3,6 +3,7 @@
 #ifndef BM_OUTPUT_HH
 #define BM_OUTPUT_HH
 #include <string>
+#include "globals.hh"
 
 class TFile;
 class TTree;
@@ -33,7 +34,7 @@ public:
 private:
   static BM_Output *Instance_;
 
-  std::string Name;
+  G4String Name;
   TFile *File;
   TTree *Tree;
   TTree *primaryInputTree;

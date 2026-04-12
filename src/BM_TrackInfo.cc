@@ -23,7 +23,7 @@ BM_TrackInfo::BM_TrackInfo(const G4Track *aTrack)
   originalTime = aTrack->GetGlobalTime();
 }
 
-BM_TrackInfo::BM_TrackInfo(const G4Track *aTrack, bool beta2)
+BM_TrackInfo::BM_TrackInfo(const G4Track *aTrack)
 {
   originalTrackID = 3;
   particleDefinition = aTrack->GetDefinition();

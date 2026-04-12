@@ -11,9 +11,7 @@
 #include "G4SDManager.hh"
 
 #include "BM_TrackInfo.hh"
-#include "G4VUserDetectorConstruction.hh"
 #include "G4UniformMagField.hh"
-#include "globals.hh"
 #include "G4SDManager.hh"
 
 class G4VPhysicalVolume;
