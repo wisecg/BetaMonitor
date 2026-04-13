@@ -1,4 +1,5 @@
 /run/initialize
+/process/had/rdm/thresholdForVeryLongDecayTime 1.0e+60 year
 /gps/particle ion
 /gps/energy 0 keV
 /gps/ion 38 90 0 0   # Z=38 (Sr), A=90, Q=0, E=0
