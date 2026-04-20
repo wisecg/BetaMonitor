@@ -576,7 +576,7 @@ if __name__ == "__main__":
     v.ren.GetActiveCamera().SetPosition(-100, 0, 0)
     v.ren.GetActiveCamera().SetFocalPoint(0, 0, 0)
 
-    points = [(-1.207637305335604,1.213240555989843,-41.132203)
+    points = [(-17.3944,0.399395,-88.9715), (-97.4837,4.2073,16.8826), (17.3948,0.383145,91.7289)
     ]
     for point in points:
         plotter.add_vtk_point(v, point, color=(0, 0, 1), radius=0.5)

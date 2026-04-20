@@ -128,7 +128,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   G4Material *Vacuum = new G4Material("interGalactic", atomicNumber, massOfMole, density2, kStateGas, temperature, pressure);
 
   // World
-  G4double world_sizeXY = 20 * cm;
+  G4double world_sizeXY = 40 * cm;
   G4double world_sizeZ = 45 * cm;
   G4Material *world_mat = nist->FindOrBuildMaterial("G4_AIR");
   G4Box *solidWorld = new G4Box("World", 0.5 * world_sizeXY, 0.5 * world_sizeXY, 0.5 * world_sizeZ);
@@ -197,7 +197,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
 
   G4ThreeVector TransT(- Tdv_h2 / 2 - flange_width / 2, 0, 0);
   G4RotationMatrix *yRotT = new G4RotationMatrix;
-  yRotT->rotateY(3.14159265 / 2 * rad); // Rotates 90 degrees
+  yRotT->rotateY(90.0 * deg); // Rotates 90 degrees
   G4Tubs *solidShapeT1i = new G4Tubs("Pipe1i",      // 
                                       0,            // rmin
                                       Tdv_r1i,      // rmax
@@ -209,7 +209,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
 
  // create logical volume for decay volume and place it in world
   vacuumLV = new G4LogicalVolume(Pipei, Vacuum, "Vacuum"); 
-  new G4PVPlacement(0, G4ThreeVector(0 * cm, 0 * cm, cyl_hdv / 2 + flange_width),
+  new G4PVPlacement(yRotT, G4ThreeVector(0 * cm, 0 * cm, Tdv_h2 + flange_width),
                     vacuumLV, "Vacuum", logicWorld, false, 1, checkOverlaps);
   vacuumLV->SetUserLimits(Limits);
 
@@ -224,8 +224,9 @@ G4VPhysicalVolume *BM_Detector::Construct()
   G4UnionSolid *Pipeo = new G4UnionSolid("OuterTPipe", solidShapeT1o, solidShapeT2o, yRotT, TransT2);
   G4SubtractionSolid *TPipe1 = new G4SubtractionSolid("TDecayVolume", Pipeo, solidShapeT1i_tol);
   G4SubtractionSolid *TPipe = new G4SubtractionSolid("TDecayVolume", TPipe1, solidShapeT2i_tol, yRotT, TransT2);
+  
   G4LogicalVolume *steelTPipeLV = new G4LogicalVolume(TPipe, Stainless_Steel, "SteelTPipe");
-  new G4PVPlacement(0, G4ThreeVector(0, 0, cyl_hdv / 2 + flange_width),
+  new G4PVPlacement(yRotT, G4ThreeVector(0, 0, Tdv_h2 + flange_width),
                     steelTPipeLV, "SteelTPipe", logicWorld, false, 0, checkOverlaps);
   steelTPipeLV->SetUserLimits(Limits);
 
@@ -235,29 +236,29 @@ G4VPhysicalVolume *BM_Detector::Construct()
   G4Tubs *Flange = new G4Tubs("Flange", cyl_r1dvi, cyl_r2dvo, flange_width / 2, 0, 360 * deg);
   
   // leftmost flange (nearest beta monitor)
-  G4LogicalVolume *tpipeFlangeMajor1bLV = new G4LogicalVolume(Flange, Stainless_Steel, "tPipeFlangeMajor1b");
+  G4LogicalVolume *tpipeFlangeScintLV = new G4LogicalVolume(Flange, Stainless_Steel, "tPipeFlangeScint");
   new G4PVPlacement(0, G4ThreeVector(0 *  cm, 0 * cm, -flange_width / 2), 
-                   tpipeFlangeMajor1bLV, "tPipeFlangeMajor1b", logicWorld,
+                   tpipeFlangeScintLV, "tPipeFlangeScint", logicWorld,
                     false, 0, checkOverlaps);
-  tpipeFlangeMajor1bLV->SetUserLimits(Limits);
+  tpipeFlangeScintLV->SetUserLimits(Limits);
 
   // second to leftmost flange (sandwiches the "window")
-  G4LogicalVolume *tPipeFlangeMajor1LV = new G4LogicalVolume(Flange, Stainless_Steel, "tPipeFlangeMajor1");
+  G4LogicalVolume *tPipeFlange1LV = new G4LogicalVolume(Flange, Stainless_Steel, "tPipeFlange1");
   new G4PVPlacement(0, G4ThreeVector(0 * cm, 0 * cm, flange_width / 2), 
-                    tPipeFlangeMajor1LV, "tPipeFlangeMajor1", logicWorld, false, 0, checkOverlaps);
-  tPipeFlangeMajor1LV->SetUserLimits(Limits);
+                    tPipeFlange1LV, "tPipeFlange1", logicWorld, false, 0, checkOverlaps);
+  tPipeFlange1LV->SetUserLimits(Limits);
 
   // right flange
-  G4LogicalVolume *tPipeFlangeMajor2LV = new G4LogicalVolume(Flange, Stainless_Steel, "tPipeFlangeMajor2");
-  new G4PVPlacement(0, G4ThreeVector(0, 0, cyl_hdv + (3 * flange_width / 2)), tPipeFlangeMajor2LV, "tPipeFlangeMajor2",
+  G4LogicalVolume *tPipeFlange2LV = new G4LogicalVolume(Flange, Stainless_Steel, "tPipeFlange2");
+  new G4PVPlacement(yRotT, G4ThreeVector(Tdv_h1/2 + flange_width / 2, 0, cyl_hdv / 2 + flange_width), tPipeFlange2LV, "tPipeFlange2",
                     logicWorld, false, 0, checkOverlaps);
-  tPipeFlangeMajor2LV->SetUserLimits(Limits);
+  tPipeFlange2LV->SetUserLimits(Limits);
 
   // middle flange
-  G4LogicalVolume *tPipeFlangeMinorLV = new G4LogicalVolume(Flange, Stainless_Steel, "tPipeFlangeMinor");
-  new G4PVPlacement(yRotT, G4ThreeVector(-Tdv_h2 - flange_width / 2, 0, cyl_hdv / 2 + flange_width),
-                    tPipeFlangeMinorLV, "tPipeFlangeMinor", logicWorld, false, 0, false);
-  tPipeFlangeMinorLV->SetUserLimits(Limits);
+  G4LogicalVolume *tPipeFlange3LV = new G4LogicalVolume(Flange, Stainless_Steel, "tPipeFlange3");
+  new G4PVPlacement(yRotT, G4ThreeVector(-Tdv_h1/2 - flange_width / 2, 0, cyl_hdv / 2 + flange_width),
+                    tPipeFlange3LV, "tPipeFlange3", logicWorld, false, 0, checkOverlaps);
+  tPipeFlange3LV->SetUserLimits(Limits);
 
 
   // === Vacuum Window (copper) - between two left flanges ===
@@ -433,13 +434,10 @@ G4VPhysicalVolume *BM_Detector::Construct()
                                   source_ro, 
                                   sourceAlo_z / 2, 
                                   0, 360 * deg);
-  
-  G4RotationMatrix *RotSource = new G4RotationMatrix;
-  RotSource->rotateX(2 * 3.14159265 * rad);
 
   G4LogicalVolume *logicSourceAlo = new G4LogicalVolume(SourceAlo, Al, "SourceAlo");
   G4ThreeVector sourceAloPos = G4ThreeVector(0, 0, -aScint2window_z - bScint2source_z - 4*(scint_z/2 + mylar_t + aluminum_t * 2) - sourceAlo_z / 2 - 1*tol);
-  new G4PVPlacement(RotSource, sourceAloPos, logicSourceAlo, "SourceAlo", logicWorld, false, 0, checkOverlaps);
+  new G4PVPlacement(0, sourceAloPos, logicSourceAlo, "SourceAlo", logicWorld, false, 0, checkOverlaps);
   logicSourceAlo->SetUserLimits(Limits);
 
   G4RotationMatrix *yRot = new G4RotationMatrix; 
@@ -449,7 +447,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   // G4UnionSolid *SourceAlUnion = new G4UnionSolid("SourceAlUnion", SourceAl, SourceAlo, 0, G4ThreeVector(0 * cm, 0 * cm, sourceAl_z / 2 + sourceAlo_z / 2 - tol));
   G4LogicalVolume *logicSourceAl = new G4LogicalVolume(SourceAl, Al, "SourceAl");
   G4ThreeVector sourceAlPos = G4ThreeVector(0, 0, -aScint2window_z - bScint2source_z - 4*(scint_z/2 + mylar_t + aluminum_t * 2) - sourceAlo_z - sourceAl_z / 2 - 2*tol);
-  new G4PVPlacement(RotSource, sourceAlPos, logicSourceAl, "SourceAl", logicWorld, false, 0, checkOverlaps);
+  new G4PVPlacement(0, sourceAlPos, logicSourceAl, "SourceAl", logicWorld, false, 0, checkOverlaps);
   logicSourceAl->SetUserLimits(Limits);
 
 
@@ -457,7 +455,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   G4Tubs *SourceMy = new G4Tubs("SourceMy", 0 * cm, source_r-tol, sourceMy_z / 2, 0, 360 * deg);
   G4LogicalVolume *logicSourceMy = new G4LogicalVolume(SourceMy, Mylar, "SourceMy");
   G4ThreeVector sourceMyPos = G4ThreeVector(0 * cm, 0 * cm, -aScint2window_z - bScint2source_z - 4*(scint_z/2 + mylar_t + aluminum_t * 2) - sourceAlo_z / 2);
-  new G4PVPlacement(RotSource, sourceMyPos, logicSourceMy, "SourceMy", logicWorld, false, 0, checkOverlaps);
+  new G4PVPlacement(0, sourceMyPos, logicSourceMy, "SourceMy", logicWorld, false, 0, checkOverlaps);
   logicSourceMy->SetUserLimits(Limits);
 
 
@@ -468,7 +466,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   // Absolute position = sipmLid centre + (0,0,0) offset = -(32.079+8.89/2)*mm + 7.6477*mm
   // G4ThreeVector sourceCalPos = G4ThreeVector(0, 0, -aScint2window_z - bScint2source_z - 4*(scint_z/2 + mylar_t + aluminum_t * 2) - sourceAlo_z/2 + sourceSr_z / 2 + tol);
   G4ThreeVector sourceCalPos = G4ThreeVector(0, 0, -aScint2window_z - bScint2source_z - 4*(scint_z/2 + mylar_t + aluminum_t * 2) - sourceAlo_z + sourceSr_z / 2);
-  new G4PVPlacement(RotSource, sourceCalPos,
+  new G4PVPlacement(0, sourceCalPos,
                     logicSourceCal, "SourceCal", logicWorld, false, 1, checkOverlaps);
   logicSourceCal->SetUserLimits(Limits); 
 
