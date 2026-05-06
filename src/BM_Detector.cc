@@ -268,7 +268,28 @@ G4VPhysicalVolume *BM_Detector::Construct()
   vacuumWindowLV = new G4LogicalVolume(vacuumWindowDisk, Al, "VacuumWindow");
   new G4PVPlacement(0, G4ThreeVector(0 * cm, 0 * cm, -cyl_hc / 2), vacuumWindowLV, "VacuumWindow", logicWorld, false, 2, checkOverlaps);
   vacuumWindowLV->SetUserLimits(Limits);
+  //Wedge shape at window
+  G4double wedge_ri = 0.78 * 2.54 /2 * cm; // inner radius of wedge (matches inner radius of T pipe)
+  const G4int nZ = 3;
+  G4double zPlane[nZ] = { 0*mm, 1.0*mm, 7.0*mm };
+  G4double rInner[nZ] = { wedge_ri, wedge_ri, Tdv_r1i-tol };
+  G4double rOuter[nZ] = { Tdv_r1i, Tdv_r1i, Tdv_r1i };
 
+  // full ring
+  auto solidRing = new G4Polycone(
+      "WedgeRevolvedRing",
+      0.0*deg,      // start phi
+      360.0*deg,    // delta phi
+      nZ,
+      zPlane,
+      rInner,
+      rOuter
+  );
+
+  auto ringLV = new G4LogicalVolume(solidRing, Stainless_Steel, "WedgeRevolvedRingLV");
+  
+  new G4PVPlacement(nullptr, G4ThreeVector(), ringLV, "WedgeRevolvedRingPV",
+                  logicWorld, false, 0, checkOverlaps);
 
   // === Scintillators (A & B) ===
 
