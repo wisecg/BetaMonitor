@@ -49,9 +49,10 @@ G4bool BM_SD::ProcessHits(G4Step *aStep, G4TouchableHistory *)
    G4double energyDep = aStep->GetTotalEnergyDeposit();
    G4bool exited = aStep->IsLastStepInVolume();
    G4int parent = aStep->GetTrack()->GetParentID();
-   G4int trackid = aStep->GetTrack()->GetTrackID();  
+   G4int trackid = aStep->GetTrack()->GetTrackID();
+   G4double steplen = aStep->GetStepLength();  
 
-   BM_Hit *aHit = new BM_Hit(id, pid, myTime, globalPosition, primaryEnergy, energy, energyDep, momentum, exited, inEnergy, parent, trackid);
+   BM_Hit *aHit = new BM_Hit(id, pid, myTime, globalPosition, primaryEnergy, energy, energyDep, momentum, exited, inEnergy, parent, trackid, steplen);
 
    pIncident_ = localPosition;
    pCollection_->insert(aHit);

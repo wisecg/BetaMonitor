@@ -10,7 +10,7 @@ G4ThreadLocal G4Allocator<BM_Hit> *BM_HitAllocator;
 
 BM_Hit::BM_Hit(G4int id, G4int pid, G4double myTime,
                G4ThreeVector position, G4double primaryEnergy, G4double energy, G4double energyDep, G4ThreeVector momentum,
-               G4bool exited, G4double inEnergy, G4int parentID, G4int trackID) : G4VHit()
+               G4bool exited, G4double inEnergy, G4int parentID, G4int trackID, G4double steplen) : G4VHit()
 {
    id_ = id;
    pid_ = pid;
@@ -24,6 +24,7 @@ BM_Hit::BM_Hit(G4int id, G4int pid, G4double myTime,
    trackid_ = trackID;
    momentum_ = momentum;
    primaryEnergy_ = primaryEnergy;
+   steplen_ = steplen;
 }
 
 BM_Hit::~BM_Hit() {}

@@ -4,6 +4,7 @@
 #include <string>
 
 #include "G4RootAnalysisManager.hh"
+#include "G4GenericMessenger.hh"
 #include <TFile.h>
 #include <TTree.h>
 
@@ -11,7 +12,12 @@
 
 BM_Output *BM_Output::Instance_ = nullptr;
 
-BM_Output::BM_Output() {}
+BM_Output::BM_Output()
+{
+  fMessenger = std::make_unique<G4GenericMessenger>(this, "/bm/", "BetaMon controls");
+  fMessenger->DeclareMethod("outputFile", &BM_Output::SetFilename,
+                            "Set output ROOT filename.");
+}
 
 BM_Output::~BM_Output() {}
 
@@ -58,6 +64,7 @@ void BM_Output::OpenFile()
   Tree->Branch("py", &py, "py/D");
   Tree->Branch("pz", &pz, "pz/D");
   Tree->Branch("exited", &exited, "exited/O");
+  Tree->Branch("pathlen", &pathlen, "pathlen/D");
 
   // Branches for primaryInputTree
   primaryInputTree->Branch("pid", &primaryInput_pid, "pid/I");
@@ -88,7 +95,7 @@ void BM_Output::Fill()
 void BM_Output::setParams(int pid_hit, int eventid_hit, int trackid_hit, int parentid_hit, int volumeid_hit, 
                           double primaryenergy_hit, double inenergy_hit, double kineticenergy_hit, 
                           double depenergy_hit, bool exited_hit, double x_hit, double y_hit, double z_hit, double px_hit, 
-                          double py_hit, double pz_hit)
+                          double py_hit, double pz_hit, double pathlen_hit)
 {
   pid = pid_hit;
   eventid = eventid_hit;
@@ -106,6 +113,7 @@ void BM_Output::setParams(int pid_hit, int eventid_hit, int trackid_hit, int par
   px = px_hit;
   py = py_hit;
   pz = pz_hit;
+  pathlen = pathlen_hit;
 }
 
 void BM_Output::FillPrimaryInput()

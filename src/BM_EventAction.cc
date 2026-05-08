@@ -77,6 +77,7 @@ void BM_EventAction::EvaluateHC(BM_HitsCollection *hc, int eventN)
    G4double px_hit;
    G4double py_hit;
    G4double pz_hit;
+   G4double pathlen_hit;
 
    std::set<G4int> uniqueTrackIDs;
 
@@ -98,6 +99,7 @@ void BM_EventAction::EvaluateHC(BM_HitsCollection *hc, int eventN)
       min_time = 1.e54;
       max_time = 0.0;
       depenergy_hit = 0.0;
+      pathlen_hit = 0.0;
 
       for (int i = 0; i < n; i++)
       {
@@ -105,6 +107,9 @@ void BM_EventAction::EvaluateHC(BM_HitsCollection *hc, int eventN)
          if (hit->trackID() == trackID)
          {
             depenergy_hit += hit->energyDep(); // sum deposited energy across all hits for a given trackID.
+            pathlen_hit += hit->steplen(); // sum path length across all hits for a given trackID to get total distance traveled since last hit. Note that this is not the same as the track's total path length, which is available from the track object itself, because the track may have traveled some distance before the first hit was recorded in the hits collection.
+            // find distance traveled since last hit and add to pathlen
+
             if (hit->time() < min_time) //gets earliest hit for the variables contained below.
             {
                min_time = hit->time();
@@ -130,7 +135,7 @@ void BM_EventAction::EvaluateHC(BM_HitsCollection *hc, int eventN)
       }
       output->setParams(pid_hit, eventid_hit, trackid_hit, parentid_hit, volumeid_hit, 
                         primaryenergy_hit, inenergy_hit, kineticenergy_hit, 
-                        depenergy_hit, exited_hit, x_hit, y_hit, z_hit, px_hit, py_hit, pz_hit);
+                        depenergy_hit, exited_hit, x_hit, y_hit, z_hit, px_hit, py_hit, pz_hit, pathlen_hit);
       output->Fill(); 
    }     
    return;

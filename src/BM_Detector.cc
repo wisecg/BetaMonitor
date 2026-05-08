@@ -167,7 +167,7 @@ G4VPhysicalVolume *BM_Detector::Construct()
   G4double Tdv_r1o = 3.81 / 2 * cm;       // T Pipe outer radius
   G4double cyl_r2dvo = 6.9088 / 2 * cm; // Flange Outer Radius
   G4double cyl_r1dvi = 3.4798 / 2 * cm; // Inner Radius of T Pipe Decay Volume 
-  G4double cyl_hc = 0.0254 * cm;     // thickness of copper
+  G4double cyl_hc = 0.00762 * cm;     // thickness of aluminum window
   G4double mylar_t = 0.076 * mm; // scint mylar thickness
   G4double aluminum_t = 0.0001 * mm; // scint aluminum thickness 
   G4double sipmLid_ri = 10.16 / 2 * mm; //siomLid inner radius 

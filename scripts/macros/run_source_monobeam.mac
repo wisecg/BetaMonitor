@@ -1,0 +1,7 @@
+/run/initialize
+
+# Driver macro: loop beam energy from E_MIN to E_MAX in E_STEP increments.
+# Units are applied in run_source_monobeam_step.mac as keV.
+# Example below runs: 100, 200, ..., 1000 keV.
+/control/macroPath ../scripts/macros
+/control/loop run_source_monobeam_step.mac E 100 5000 100
