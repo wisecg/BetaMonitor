@@ -2,7 +2,7 @@
 # The loop variable is {E} in keV.
 
 # Monoenergetic beta beam using GPS
-/gps/particle e-
+/gps/particle e+
 /gps/number 1
 /gps/ene/type Mono
 /gps/ene/mono {E} keV
@@ -14,7 +14,7 @@
 /gps/direction 0 0 -1
 
 # Set output ROOT file for this energy step
-/bm/outputFile ../output/sweep/mono_{E}keV.root
+/bm/outputFile ../output/sweep_positron/mono_{E}keV.root
 
 # Events per energy point   
 /run/beamOn 100000
