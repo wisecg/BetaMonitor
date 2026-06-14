@@ -16,101 +16,269 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-class DepEnergyHistograms:
-
+class ProcessRoot:
     def __init__(self):
-        self.df = None
+        self.df_dep = None
         self.df_primaries = None
-        fig, ax = plt.subplots(figsize=(10, 6))
-        ax.set_ylim(ymin=1e-1, ymax=3e4)
-        self.fig = fig
-        self.ax = ax
+        self.fig = None
+        self.ax = None
         self.hist_en_min = 0.0
-        self.hist_en_max = 3.5
+        self.hist_en_max = 3.6
+        self.hist_photon_min = 0
+        self.hist_photon_max = 1e3
         self.bin_number = 200
+        self.df_counts = pd.DataFrame()
+        self.df_counts_response = pd.DataFrame()
+        self.df_counts_coincidence = pd.DataFrame()
 
-    def load(self):
+    def load(self, root_file):
+        self.root_file = root_file
         ff = uproot.open(self.root_file)
-        self.df = ff['simData'].arrays(ff['simData'].keys(), library='pd')
+        self.df_dep = ff['simData'].arrays(ff['simData'].keys(), library='pd')
         self.df_primaries = ff['primaryInput'].arrays(ff['primaryInput'].keys(), library='pd')
-
+    
+    def process_counts(self, apply_response=False):
+        # counts_prim, en_prim = self.get_primary_spectrum()
+        df_dep = self.df_dep
+        counts_scint_a, en_scint_a = self.get_scint_spectrum(df_dep, volumeid=3, apply_response=apply_response)
+        df_scint_a = pd.DataFrame({'scint_id': 1, 'energy': en_scint_a, 'counts': counts_scint_a})
+        counts_scint_b, en_scint_b = self.get_scint_spectrum(df_dep, volumeid=4, apply_response=apply_response)
+        df_scint_b = pd.DataFrame({'scint_id': 2, 'energy': en_scint_b, 'counts': counts_scint_b})
+        if apply_response:
+            self.df_counts_response = pd.concat([df_scint_a, df_scint_b], ignore_index=True)
+            # self.df_counts_response = self.df_counts_response.rename(columns={'energy': 'n_photons'})
+        else:
+            self.df_counts = pd.concat([df_scint_a, df_scint_b], ignore_index=True)
+        
     def rebin_energy(self, energy_array):
         bins = np.linspace(self.hist_en_min, self.hist_en_max, self.bin_number + 1)
         if np.min(energy_array) < self.hist_en_min or np.max(energy_array) > self.hist_en_max:
             print(f"Warning: Energy values outside the specified range [{self.hist_en_min}, {self.hist_en_max}].")
         counts, bin_edges = np.histogram(energy_array, bins=bins)
         return counts, bin_edges[:-1]
+    
+    def rebin_photon_counts(self, photon_array):
+        bins = np.linspace(self.hist_photon_min, self.hist_photon_max, self.bin_number + 1)
+        if np.min(photon_array) < self.hist_photon_min or np.max(photon_array) > self.hist_photon_max:
+            print(f"Warning: Photon count values outside the specified range [{self.hist_photon_min}, {self.hist_photon_max}].")
+        counts, bin_edges = np.histogram(photon_array, bins=bins)
+        return counts, bin_edges[:-1]
+    
+    def n_photons_from_energy(self, energy_array):
+        # implement simple response function based on following steps
+        # 1. Convert dep energy to number of scintillation photons from datasheet 1e4 photon/MeV 
+        scintillator_response = 1e4 # photons / MeV
+        total_efficiency = 0.02 # includes geometric effects and SIPM detection efficiency, from Heather's measurements. 
+        rng = np.random.default_rng()
+        n_photons_initial = energy_array * scintillator_response
+        n_photons = rng.poisson(n_photons_initial)
+        n_detected = rng.binomial(n_photons, total_efficiency)
+        return n_detected
+    
+    def get_primary_spectrum(self):
+        # filtering all except electrons and positrons
+        df_prim = self.df_primaries[(self.df_primaries['pid'] == 11) | (self.df_primaries['pid'] == -11)]
+        counts, en = self.rebin_energy(df_prim['primaryenergy'])
+        return counts, en
+    
+    def get_primary_gamma_spectrum(self):
+        # filtering all except gammas
+        df_prim = self.df_primaries[self.df_primaries['pid'] == 22]
+        counts, en = self.rebin_energy(df_prim['primaryenergy'])
+        return counts, en
+    
+    def get_scint_spectrum(self, df_dep, volumeid, apply_response=False, apply_pileup=False):
+        df_vol = df_dep[df_dep['volumeid'] == volumeid]
+        df_vol_e = df_vol[(df_vol['pid'] == 11) | (df_vol['pid'] == -11)] # filter for electrons and positrons only
+        if apply_pileup:
+            try:
+                dep_energy = df_vol_e.groupby('eventid_pileup')['depenergy'].sum()
+            except KeyError:
+                print("Eventid_pileup column not found. Make sure to run simulate_pileup() before calling this function with apply_pileup=True.")
+                dep_energy = df_vol_e.groupby('eventid')['depenergy'].sum()
+        else:
+            dep_energy = df_vol_e.groupby('eventid')['depenergy'].sum()
+        if apply_response:
+            n_detected = self.n_photons_from_energy(dep_energy)
+            counts, en = self.rebin_photon_counts(n_detected)
+        else:
+            counts, en = self.rebin_energy(dep_energy)
+        return counts, en
+    
+    def get_scint_spectrum_photons(self, volumeid):
+        df_dep = self.df_dep
+        df_vol = df_dep[df_dep['volumeid'] == volumeid]
+        dep_energy = df_vol.groupby('eventid')['depenergy'].sum()
+        n_detected = self.n_photons_from_energy(dep_energy)
+        counts, en = self.rebin_photon_counts(n_detected)
+        return counts, en
+    
+    def plot_spectra(self, ax, df_dep=None, plot_primary=True, plot_primary_gamma=False, plot_pileup=False):
+        if df_dep is None:
+            df_dep = self.df_dep    
+        if plot_primary:
+            counts_prim, en_prim = self.get_primary_spectrum()
+            ax.plot(en_prim, counts_prim, drawstyle='steps-mid', label='Primary Energy, $e^-$ & $e^+$', color='orange', alpha=0.4)
+        
+        if plot_primary_gamma:
+            counts_prim_gamma, en_prim_gamma = self.get_primary_gamma_spectrum()
+            ax.plot(en_prim_gamma, counts_prim_gamma, drawstyle='steps-mid', label='Primary Energy, $\gamma$', color='red', alpha=0.4)
 
-    def plot(self, root_file):
+        counts_scint_a, en_scint_a = self.get_scint_spectrum(df_dep, volumeid=3, apply_pileup=plot_pileup)
+        ax.plot(en_scint_a, counts_scint_a, drawstyle='steps-mid', label='Scintillator A - Deposited Energy, $e^-$ & $e^+$', color='royalblue')
+
+        counts_scint_b, en_scint_b = self.get_scint_spectrum(df_dep, volumeid=4, apply_pileup=plot_pileup)
+        ax.plot(en_scint_b, counts_scint_b, drawstyle='steps-mid', label='Scintillator B - Deposited Energy, $e^-$ & $e^+$', color='mediumseagreen')
+
+        ax.set_xlabel('Energy (MeV)')
+        ax.set_ylabel('Counts')
+        ax.set_yscale('log')
+        ax.grid(True)
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=2)
+
+    def plot_photon_spectra(self, ax, df_dep=None):
+        if df_dep is None:
+            df_dep = self.df_dep
+        counts_photons_a, en_photons_a = self.get_scint_spectrum_photons(df_dep, volumeid=3)
+        ax.plot(en_photons_a, counts_photons_a, drawstyle='steps-mid', label='Scintillator A - Detected Photons', color='royalblue')
+
+        counts_photons_b, en_photons_b = self.get_scint_spectrum_photons(df_dep, volumeid=4)
+        ax.plot(en_photons_b, counts_photons_b, drawstyle='steps-mid', label='Scintillator B - Detected Photons', color='mediumseagreen')
+
+        ax.set_xlabel('Number of Detected Photons')
+        ax.set_ylabel('Counts')
+        ax.set_yscale('log')
+        ax.grid(True)
+        ax.legend()
+
+    def test_monoenergetic_dep(self, energy_mev, n_events):
+        dep_energy = np.full(n_events, energy_mev)
+        n_detected = self.n_photons_from_energy(dep_energy)
+        counts, en = self.rebin_photon_counts(n_detected)
+        plt.figure()
+        plt.plot(en, counts, drawstyle='steps-mid', label=f'Monoenergetic Dep Energy = {energy_mev} MeV', color='purple')
+        plt.xlabel(f'Number of Detected Photons for N={n_events} Events')
+        plt.ylabel('Counts')
+        plt.yscale('log')
+        plt.grid(True)
+        plt.legend()
+        plt.show() 
+    
+    def process_coincidence(self):
+        df_dep = self.df_dep
+        # find where the same event is present in both scintillators (volumeid 3 and 4)
+        df_a = df_dep[df_dep['volumeid'] == 3]
+        df_a = df_a[df_a['depenergy'] > 0] # filter for events with nonzero energy deposition in scintillator A
+        df_b = df_dep[df_dep['volumeid'] == 4]
+        df_b = df_b[df_b['depenergy'] > 0] # filter for events with nonzero energy deposition in scintillator B
+        coinc_events = set(df_a['eventid']).intersection(set(df_b['eventid']))
+        df_coin = df_dep[df_dep['eventid'].isin(coinc_events)]
+        self.df_dep_coin  = df_coin
+        print(f"Number of coincident events in both scintillators: {len(coinc_events)}")
+        # further analysis of coincident events can be done here, e.g. comparing
+    
+    def simulate_pileup(self, activity_bq, time_window_s):
+        # first need to add timestamps to the events in the root file based randomly on the activity.
+        df_dep = self.df_dep
+        df_dep['eventid_pileup'] = df_dep['eventid'] # initialize pileup eventid column to original eventid
+
+        events = self.df_primaries['eventid'].unique()
+        n_primary_events = len(events)
+        rng = np.random.default_rng() 
+        event_times = np.zeros(n_primary_events, dtype=float) # initialize event_time column
+        # df_dep.loc[df_dep['eventid'] == events[0], 'eventid_pileup'] = events[0]
+        event_time = 0
+        event_times[0] = event_time
+        
+        for i in range(n_primary_events-1):
+            u = rng.random()
+            dt = -np.log(1-u) / activity_bq # time until next event in seconds, from exponential distribution
+            event_time += dt
+            event_times[i+1] = event_time
+            # if (df_dep['eventid'] == events[i+1]).any(): # this is probably very inefficient 
+            #     df_dep.loc[df_dep['eventid'] == events[i+1], 'event_time'] = event_time
+        
+        dep_events = df_dep['eventid'].unique()
+
+        i = 1
+        dep_event = dep_events[0]
+        # event_time0 = 
+        time_window_s_remaining = time_window_s
+        while i < len(dep_events):
+            time_between_events = event_times[dep_events[i]]-event_times[dep_events[i-1]]
+            if time_between_events < time_window_s_remaining:
+                df_dep.loc[df_dep['eventid'] == dep_events[i], 'eventid_pileup'] = dep_event
+                time_window_s_remaining -= time_between_events
+            else:
+                dep_event = dep_events[i]
+                time_window_s_remaining = time_window_s
+            i += 1
+        
+        # for i in range(len(dep_events)-1):
+        #     for j in range(len(dep_events)-i-1):
+        #         dt = event_times[i+j+1] - event_times[i] # this wont work
+        #         if dt >= time_window_s:
+        #             break
+        #     event_range = range(i, i+j+1)
+        #     df_dep.loc[df_dep['eventid'].isin(dep_events[event_range]), 'eventid_pileup'] = dep_events[i]
+        
+        # self.df_dep = df_dep
+            
+
+
+
+    def create_plot(self, plot_num=1):
+        fig, ax = plt.subplots(plot_num, 1, figsize=(10, 6))
+        if plot_num == 1:
+            ax = [ax]
+        for axis in ax:
+            axis.set_ylim(ymin=1e-1, ymax=3e5)
+        self.fig = fig
+        self.ax = ax
+
+
+    def plot(self, root_file, ax_num = 0, isotope = ''):
         self.root_file = root_file
         self.load()
         df_prim = self.df_primaries[(self.df_primaries['pid'] == 11) | (self.df_primaries['pid'] == -11)]
-        df = self.df[(self.df['pid'] == 11) | (self.df['pid'] == -11 )]
+        df = self.df_dep[(self.df_dep['pid'] == 11) | (self.df_dep['pid'] == -11 )]
+        # df = df[df['trackid']==4]
         en, bins = self.rebin_energy(df_prim['primaryenergy'])
-        self.ax.plot(bins, en, drawstyle='steps-mid', label='G4 Primary Energy, from RDM', color='orange')
+        self.ax[ax_num].plot(bins, en, drawstyle='steps-mid', label=f'{isotope} Primary Energy', color='orange')
 
-        dep_energy = df[df['volumeid'] == 3].groupby('eventid')['depenergy'].sum()
+        # df_slice = df[df['volumeid'] == 2]
+        # # df_slice = df_slice[(df_slice['pid'] == 11) | (df_slice['pid'] == -11)]
+        # dep_energy = df_slice.groupby('eventid')['depenergy'].sum()
+        # en, bins = self.rebin_energy(dep_energy)
+        # self.ax.plot(bins, en, drawstyle='steps-mid', label=f'{isotope} Window - Deposited Energy', color='darkred')
+
+        df_slice = df[df['volumeid'] == 3]
+        # df_slice = df_slice[(df_slice['pid'] == 11) | (df_slice['pid'] == -11)]
+        dep_energy = df_slice.groupby('eventid')['depenergy'].sum()
+        # dep_energy = df[df['volumeid'] == 3]['depenergy']
         en, bins = self.rebin_energy(dep_energy)
-        self.ax.plot(bins, en, drawstyle='steps-mid', label='Scintillator A - Deposited Energy', color='royalblue')
+        self.ax[ax_num].plot(bins, en, drawstyle='steps-mid', label=f'{isotope} Scintillator A - Deposited Energy', color='royalblue')
         
-        dep_energy = df[df['volumeid'] == 4].groupby('eventid')['depenergy'].sum()
+        df_slice = df[df['volumeid'] == 4]
+        # df_slice = df_slice[(df_slice['pid'] == 11) | (df_slice['pid'] == -11)]
+        dep_energy = df_slice.groupby('eventid')['depenergy'].sum()
         en, bins = self.rebin_energy(dep_energy)
-        self.ax.plot(bins, en, drawstyle='steps-mid', label='Scintillator B - Deposited Energy', color='mediumseagreen')
+        self.ax[ax_num].plot(bins, en, drawstyle='steps-mid', label=f'{isotope} Scintillator B - Deposited Energy', color='mediumseagreen')
 
         # self.ax.set_title(f'Histogram of Energy for Different Volumes\n{title}')
-        self.ax.set_xlabel('Energy (MeV)')
-        self.ax.set_ylabel('Counts')
-        self.ax.set_yscale('log')
-        self.ax.grid(True)
+        self.ax[ax_num].set_xlabel('Energy (MeV)')
+        self.ax[ax_num].set_ylabel('Counts')
+        self.ax[ax_num].set_yscale('log')
+        self.ax[ax_num].grid(True)
         # self.ax.legend()
         # plt.show()
 
-    def plot_cdf(self, cdf_file):
-        df = pd.read_csv(cdf_file, names=['energy', 'cdf'], delimiter='\t')
-        fig, ax = plt.subplots(figsize=(10, 6))
-        ax.plot(df['energy'], df['cdf'], label='CDF of Decay Energy', color='green')
-        ax.set_title('Cumulative Distribution Function of Decay Energy')
-        ax.set_xlabel('Decay Energy (eV)')
-        ax.set_ylabel('CDF')
-        ax.grid(True)
-
     def print_num_events(self):
-        print(f"Total number of events: {len(self.df)}")
-        print(f"Number of events in Scintillator A (volumeid=3): {len(self.df[self.df['volumeid'] == 3])}")
-        print(f"Number of events in Scintillator B (volumeid=4): {len(self.df[self.df['volumeid'] == 4])}")
-        print(f"Number of events in Vaccuum (volumeid=1): {len(self.df[self.df['volumeid'] == 1])}")
+        print(f"Total number of events: {len(self.df_dep)}")
+        print(f"Number of events in Scintillator A (volumeid=3): {len(self.df_dep[self.df_dep['volumeid'] == 3])}")
+        print(f"Number of events in Scintillator B (volumeid=4): {len(self.df_dep[self.df_dep['volumeid'] == 4])}")
+        print(f"Number of events in Vaccuum (volumeid=1): {len(self.df_dep[self.df_dep['volumeid'] == 1])}")
         print(f"Number of primary events: {len(self.df_primaries[self.df_primaries['pid'] == 11])}")
-
-
-    def plot_old_root(self, root_file, n_primaries=1e6, cal=False):
-        ff = uproot.open(root_file)
-        df = ff['simData'].arrays(ff['simData'].keys(), library='pd')
-        # len_prim = n_primaries
-        if not cal:
-            len_prim = len(df[df['detVac_InEn'] != 0.0]['detVac_InEn'])
-            en, bins = self.rebin_energy(df[df['detVac_InEn'] != 0.0]['detVac_InEn'])
-            en = en * (n_primaries / len_prim)
-            self.ax.plot(bins, en, drawstyle='steps-mid', label='G4 Primary Energy, from PDF', color='green')
-
-        # ax.set_title(f'Histogram of Energy for Old Code\n{root_file}')
-        # scintillator_a energy
-        en, bins = self.rebin_energy(df[df['detSQ_En'] != 0.0]['detSQ_En'])
-        en = en * (n_primaries / len_prim)
-        self.ax.plot(bins, en, drawstyle='steps-mid', label='Old Code - Scintillator A - Dep Energy', color='royalblue', linestyle=':')
-        # scintillator_b energy
-        en, bins = self.rebin_energy(df[df['detTrig_En'] != 0.0]['detTrig_En'])
-        en = en * (n_primaries / len_prim)
-        self.ax.plot(bins, en, drawstyle='steps-mid', label='Old Code - Scintillator B - Dep Energy', color='mediumseagreen', linestyle=':')
-
-
-        
-        self.ax.set_xlabel('Energy (MeV)')
-        self.ax.set_ylabel('Counts')
-        self.ax.set_yscale('log')
-        self.ax.grid(True)
-        self.ax.legend()
-        # plt.show()
-
 
     def plot_pdf_from_cdf(self, cdf_file, n_primaries):
         """
@@ -136,111 +304,35 @@ class DepEnergyHistograms:
 
         self.ax.plot(bin_edges[:-1], counts, drawstyle='steps-mid', color='red', label='PDF from Code (normalized)')
         self.ax.grid(True)
-
-    def plot_from_ddep(self, ddep_file, use_experimental=False, n_primaries=None, interpolate=True,
-                       plot_error_bars=False, errorbar_stride=1):
-        """
-        Parse a BetaShape .bs spectrum file and plot it rebinned to the class energy grid.
-
-        The expected data table columns are:
-          E(keV), dN/dE calc., unc., dN/dE exp., unc.
-        """
-        table_header_idx = None
-        with open(ddep_file, 'r') as f:
-            lines = f.readlines()
-
-        for idx, line in enumerate(lines):
-            if line.strip().startswith('E(keV)'):
-                table_header_idx = idx + 1
-                break
-
-        if table_header_idx is None:
-            raise ValueError("Could not find BetaShape data table header 'E(keV)'.")
-
-        df = pd.read_csv(
-            ddep_file,
-            sep=r'\s+',
-            skiprows=table_header_idx,
-            names=['E_keV', 'dNdE_calc', 'unc_calc', 'dNdE_exp', 'unc_exp'],
-            engine='python',
-        )
-
-        for col in df.columns:
-            df[col] = pd.to_numeric(df[col], errors='coerce')
-        df = df.dropna()
-
-        energies_mev = df['E_keV'].to_numpy() / 1000.0
-        dnde = df['dNdE_exp'].to_numpy() if use_experimental else df['dNdE_calc'].to_numpy()
-        dnde_unc = df['unc_exp'].to_numpy() if use_experimental else df['unc_calc'].to_numpy()
-
-        bins = np.linspace(self.hist_en_min, self.hist_en_max, self.bin_number + 1)
-        bin_edges = bins
-        bin_width = np.diff(bin_edges)
-        bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
-
-        if interpolate:
-            # Interpolate dN/dE to requested bin centers so fine binning stays smooth.
-            dnde_interp = np.interp(bin_centers, energies_mev, dnde, left=0.0, right=0.0)
-            unc_interp = np.interp(bin_centers, energies_mev, dnde_unc, left=0.0, right=0.0)
-            counts = dnde_interp * bin_width
-            counts_unc = unc_interp * bin_width
-        else:
-            # Legacy behavior: integrate from input sample points via weighted histogram.
-            dE = np.gradient(energies_mev)
-            weights = dnde * dE
-            counts, _ = np.histogram(energies_mev, bins=bin_edges, weights=weights)
-            unc_weights = dnde_unc * dE
-            counts_unc_sq, _ = np.histogram(energies_mev, bins=bin_edges, weights=unc_weights**2)
-            counts_unc = np.sqrt(counts_unc_sq)
-
-        if n_primaries is not None:
-            total = np.sum(counts)
-            if total > 0:
-                scale = float(n_primaries) / total
-                counts = counts * scale
-                counts_unc = counts_unc * scale
-
-        label = 'DDEP Database Exp. spectrum' if use_experimental else 'DDEP Database Calc. spectrum'
-        self.ax.plot(bin_edges[:-1], counts, color='purple', drawstyle='steps-mid', label=label)
-        if plot_error_bars:
-            stride = max(1, int(errorbar_stride))
-            self.ax.errorbar(
-                bin_centers[::stride],
-                counts[::stride],
-                yerr=counts_unc[::stride],
-                fmt='none',
-                ecolor='purple',
-                elinewidth=1,
-                capsize=2,
-                alpha=0.7,
-                label=f'{label} uncertainty'
-            )
-        self.ax.set_xlabel('Energy (MeV)')
-        self.ax.set_ylabel('Counts')
-        self.ax.grid(True)
     
     def show(self, title=None):
         if title:
-            self.ax.set_title(title)
-        self.ax.legend()
+            self.fig.suptitle(title)
+        for axis in self.ax:
+            axis.legend()
+        self.fig.tight_layout()
         plt.show()
 
 
 if __name__ == "__main__":
-    # old_root = "/Users/harperumfress/UW/betamonitor_data/original_singlethread_data/19Ne_1e6_original.root"
-    # 6He
-    old_root = "./output/6He_1e6_original_newgeo_ddep_v2.root"
-    new_root = "./output/6He_1e6.root"
-    cdf = './dat/6HeDecay_cdf.txt'
-    ddep = '/Users/harperumfress/UW/betamonitor_data/He6_ddep/beta-_He6_trans0.bs'
-    
+    root_6He = "~/dev/BetaMonitor/output/6He_1e6.root"
+    root_19Ne = "~/dev/BetaMonitor/output/19Ne_1e6.root"
+    root_90Sr = "~/dev/BetaMonitor/output/90Sr_1e6.root"
+    plotter = ProcessRoot()
 
-    plotter = DepEnergyHistograms()
-    plotter.plot_pdf_from_cdf(cdf, n_primaries=1e6)
-    plotter.plot_from_ddep(ddep, n_primaries=1e6, use_experimental=True, plot_error_bars=False)
-    plotter.plot_old_root(old_root, n_primaries=1e6, cal=False)
-    plotter.plot(new_root)
-    plotter.show(title='6He Spectra for 1e6 Primaries')
+    # plotter.plot_pdf_from_cdf(cdf, n_primaries=1e6)
+    # plotter.plot_from_ddep(ddep, n_primaries=1e6, use_experimental=True, plot_error_bars=False)
+    # plotter.plot_old_root(root_6He_original, n_primaries=1e6, cal=False)
+    plotter.load(root_90Sr)
+    plotter.simulate_pileup(activity_bq=1e6, time_window_s=1e-5)
+    plotter.process_coincidence()
+    plotter.process_counts()
+
+    plotter.create_plot(plot_num=2)
+    plotter.plot_spectra(plotter.df_dep, plotter.ax[0])
+    plotter.plot_photon_spectra(plotter.df_dep, plotter.ax[1])
+    plotter.show(title='Spectra for 1e6 90Sr Primaries')
+    # plotter.test_monoenergetic_dep(1, 100000)
     print('end')
 
 

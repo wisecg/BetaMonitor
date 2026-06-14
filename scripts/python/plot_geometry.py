@@ -135,6 +135,7 @@ class GeometryPlotter:
                 return np.eye(3)
             angles = r.eval() if hasattr(r, 'eval') else [float(r.x.eval()), float(r.y.eval()), float(r.z.eval())]
             rx, ry, rz = [float(a) for a in angles]
+            ry = -ry
             cx, sx = np.cos(rx), np.sin(rx)
             cy, sy = np.cos(ry), np.sin(ry)
             cz, sz = np.cos(rz), np.sin(rz)
@@ -567,7 +568,7 @@ class GeometryPlotter:
 
 
 if __name__ == "__main__":
-    plotter = GeometryPlotter("output/geometry_export.gdml")
+    plotter = GeometryPlotter("/Users/harperumfress/dev/BetaMonitor/output/geometry_telescope_export.gdml")
     # plotter = GeometryPlotter("/Users/harperumfress/UW/betamonitor_data/original_singlethread_data/geometry_export.gdml")
     plotter.plot_three_view_2d()
     plotter.print_vol_names()
@@ -576,7 +577,7 @@ if __name__ == "__main__":
     v.ren.GetActiveCamera().SetPosition(-100, 0, 0)
     v.ren.GetActiveCamera().SetFocalPoint(0, 0, 0)
 
-    points = [(-17.3944,0.399395,-88.9715), (-97.4837,4.2073,16.8826), (17.3948,0.383145,91.7289)
+    points = [(-1.207637305335604,1.213240555989843,-41.132203)
     ]
     for point in points:
         plotter.add_vtk_point(v, point, color=(0, 0, 1), radius=0.5)
