@@ -9,12 +9,6 @@
 
 class G4Run;
 
-/// Run action class
-///
-/// In EndOfRunAction(), it calculates the dose in the selected volume
-/// from the energy deposit accumulated via stepping and event actions.
-/// The computed dose is then printed on the screen.
-
 class BM_RunAction : public G4UserRunAction
 {
 public:
@@ -25,4 +19,4 @@ public:
    virtual void EndOfRunAction(const G4Run *);
 };
 
-#endif // BM_RUNACTION_HH
+#endif 

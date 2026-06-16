@@ -1,0 +1,20 @@
+# Per-energy step macro called by run_source_monobeam.mac.
+# The loop variable is {E} in keV.
+
+# Monoenergetic beta beam using GPS
+/gps/particle e+
+/gps/number 1
+/gps/ene/type Mono
+/gps/ene/mono {E} keV
+
+# Fixed origin and direction
+/gps/pos/type Point
+/gps/pos/centre 0 0 8 cm
+/gps/ang/type beam1d
+/gps/direction 0 0 -1
+
+# Set output ROOT file for this energy step
+/bm/outputFile ../output/sweep_positron/mono_{E}keV.root
+
+# Events per energy point   
+/run/beamOn 100000

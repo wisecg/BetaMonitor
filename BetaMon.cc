@@ -1,5 +1,7 @@
 #include <fstream>
 #include <string>
+#include <chrono>
+
 // #define SEG_DBG 
 #ifdef SEG_DBG
   #include <stdio.h>
@@ -9,35 +11,29 @@
   #include <unistd.h>
 #endif
 
-#include "g4root.hh"
+#include "G4RootAnalysisManager.hh"
 #include "G4Types.hh"
 #include "G4UImanager.hh"
 
-#define G4VIS_USE
-#ifdef G4VIS_USE
+#define G4VIZ
+#ifdef G4VIZ
   #include "G4VisExecutive.hh"
   #include "G4UIExecutive.hh"
 #endif
-// #define G4MULTITHREADED
-#ifdef G4MULTITHREADED
-   #include "G4MTRunManager.hh"
-#else
-  #include "G4RunManager.hh"
-#endif
+#include "G4RunManager.hh"
+
 #include "BM_RunAction.hh"
 #include "BM_EventAction.hh"
 #include "BM_SteppingAction.hh"
-//#include "BM_TrackingAction.hh" 
-#include "ActionInitialization.hh"
 //#include "BM_PhysicsList.hh" // removed
-#include "QBBC.hh"
-
+// #include "QBBC.hh"  // a standard phys list
+#include "G4PhysListFactory.hh"
+#include "G4RadioactiveDecayPhysics.hh"
+#include "G4DecayPhysics.hh"
 #include "BM_Detector.hh"
 #include "BM_PrimaryGenerator.hh"
 #include "BM_Output.hh"
 
-class TFile;
-#include <TFile.h>
 #ifdef SEG_DBG
 void handler(int sig) // for segfault
 {
@@ -52,54 +48,58 @@ void handler(int sig) // for segfault
 
 int main(int argc, char** argv)
 { 
-  G4cout << "Hello!  I'm in the main function." << G4endl;
-  
+  // NOTE: this version of the BetaMon sim was changed to single-threaded
+  // operation.  (change to main branch to find David McClain's multi-threaded version).
+
+  auto now = std::chrono::system_clock::now();
+  auto ts_start = std::chrono::system_clock::to_time_t(now);
+  G4cout << "Sim started: " << std::ctime(&ts_start) << G4endl;
+  int unix_start = static_cast<int>(ts_start);
+
+  // review input arguments
+  G4cout << "Running with " << argc << " arguments:";
+  for (int i = 0; i < argc; ++i) {
+    G4cout << i << ": " << argv[i] << "  ";
+  }
+  G4cout << G4endl;
+    
   #ifdef SEG_DBG
     std::cout << "Using our segfault debugger...\n";
     signal(SIGSEGV, handler); // using the segfault handler
   #endif
 
-  //Change to G4MTRunManager if we want multithreading
-  // #define G4MULTITHREADED
-  // #ifdef G4MULTITHREADED
-  // G4MTRunManager* runManager = new G4MTRunManager;
-  // runManager->SetNumberOfThreads((G4Threading::G4GetNumberOfCores())-2);
-  // G4cout << "Multithreaded, you crazy kid" << G4endl;
-  // #else
   G4RunManager* runManager = new G4RunManager;
-  G4cout << "Single threaded" << G4endl;
-  // #endif
   runManager->SetVerboseLevel(1);
 
   // initialize detector
   runManager->SetUserInitialization(new BM_Detector());
   
   // initialize physics list - use a standard one for now
-  //runManager->SetUserInitialization(new BM_PhysicsList());
-  //physlist->AddPhysicsList("local");
-  
-  G4VModularPhysicsList* physicsList = new QBBC; 
+  G4PhysListFactory factory;
+  // G4VModularPhysicsList* physicsList = factory.GetReferencePhysList("QGSP_BIC_HP");
+  G4VModularPhysicsList* physicsList = factory.GetReferencePhysList("QBBC"); 
+  physicsList->RegisterPhysics(new G4RadioactiveDecayPhysics());
+
+
   physicsList->SetVerboseLevel(1);
   runManager->SetUserInitialization(physicsList);
-  runManager->SetUserInitialization(new ActionInitialization());
   
-  // // initialize work manager - for multithreading
-  // G4WorkerRunManager* WorkManager = new G4WorkerRunManager;
-  // WorkManager->SetUserAction(new BM_PrimaryGenerator());
-  // runManager->SetUserAction(new BM_SteppingAction());
-  // runManager->SetUserAction(new BM_EventAction());
-  // runManager->SetUserAction(new BM_RunAction());
-  // runManager->SetUserAction(new BM_TrackingAction());
-
-  // runManager->Initialize();
-
-  // initialize ROOT output
-  // BM_Output::Instance()->SetFilename();
+  // set user actions
+  runManager->SetUserAction(new BM_PrimaryGenerator());
+  runManager->SetUserAction(new BM_EventAction());
+  runManager->SetUserAction(new BM_SteppingAction());
+  runManager->SetUserAction(new BM_RunAction());
+  
+  // initialize ROOT output (example: ./BetaMon run1.mac ./output/outfile.root)
+  G4String outname = "./output/test.root";
+  if (argc == 3) {
+    outname = argv[2];
+  }
+  G4cout << "Output file: " << outname << G4endl;
+  BM_Output::Instance()->SetFilename(outname);
   
   // initialize visualization
-  // G4VisExecutive can take a verbosity argument - see /vis/verbose guidance.
-  #ifdef G4VIS_USE
-  // G4VisManager* visManager = new G4VisExecutive("Quiet");
+  #ifdef G4VIZ
     G4VisManager* visManager = new G4VisExecutive;
     visManager->Initialize();
   #endif
@@ -117,11 +117,8 @@ int main(int argc, char** argv)
     // interactive mode : define UI session
     G4UIExecutive* ui = 0;
     ui = new G4UIExecutive(argc, argv);
-    // #ifdef G4VIS_USE
+    UImanager->ApplyCommand("/control/macroPath ../scripts/macros/");
     UImanager->ApplyCommand("/control/execute init_vis.mac");
-    //#else
-    //  UImanager->ApplyCommand("/control/execute init.mac");
-    //#endif
     ui->SessionStart();
     delete ui;
     // #endif
@@ -131,11 +128,18 @@ int main(int argc, char** argv)
   // Free the store. user actions, physics_list and detector_description are
   // owned and deleted by the run manager, so they should not be deleted
   // in the main() program !
-  #ifdef G4VIS_USE
+  #ifdef G4VIZ
     delete visManager;
   #endif
   
   delete runManager;
+
+  now = std::chrono::system_clock::now();
+  auto ts_stop = std::chrono::system_clock::to_time_t(now);
+  G4cout << "Sim complete: " << std::ctime(&ts_stop) << G4endl;
+  int unix_stop = static_cast<int>(ts_stop);
+
+  G4cout << "Time elapsed: " << unix_stop - unix_start << " seconds.\n";
 
   return 0;
 }

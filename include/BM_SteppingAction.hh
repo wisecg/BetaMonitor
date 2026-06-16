@@ -17,7 +17,7 @@ public:
   static BM_SteppingAction *Instance();
   virtual void UserSteppingAction(const G4Step *);
   void Reset();
-  void SetVolume(G4LogicalVolume *volume) {}
+  // void SetVolume(G4LogicalVolume *volume) {} // unused?
 
 private:
   static BM_SteppingAction *fgInstance;

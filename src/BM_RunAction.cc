@@ -1,7 +1,7 @@
 // BM_RunAction.cc - Implementation of BM_RunAction class
 #include "nat_units.hh"
-#include "FileReader.hh"
-#include "g4root.hh"
+#include "G4RootAnalysisManager.hh"
+#include "G4AnalysisManager.hh"
 
 #include "G4Run.hh"
 #include "G4RunManager.hh"
@@ -27,7 +27,6 @@ BM_RunAction::BM_RunAction() : G4UserRunAction()
 BM_RunAction::~BM_RunAction()
 {
   delete G4AnalysisManager::Instance();
-  // delete BM_Output::Instance(); // probably?
 }
 
 void BM_RunAction::BeginOfRunAction(const G4Run *aRun)
@@ -55,12 +54,13 @@ void BM_RunAction::BeginOfRunAction(const G4Run *aRun)
   //  analysisManager->CreateNtupleDColumn("detSQ_z");
   //  analysisManager->CreateNtupleDColumn("detSQ_t");
   //  analysisManager->FinishNtuple();
+  G4cout << "Run ID:" << aRun->GetRunID() << G4endl;
+  
   BM_Output::Instance()->OpenFile();
+  G4cout << "Opened output file: " << BM_Output::Instance()->GetFilename() << G4endl;
+  
   G4RunManager::GetRunManager()->SetRandomNumberStore(false);
 
-  // initialize event cumulative quantities
-  FileReader::Instance()->GetAnEvent();
-  
   // initialize our event generator
   BM_EventAction::Instance()->Reset();
   
@@ -68,6 +68,7 @@ void BM_RunAction::BeginOfRunAction(const G4Run *aRun)
 
 void BM_RunAction::EndOfRunAction(const G4Run *aRun)
 {
+  G4cout << "Finished Run ID:" << aRun->GetRunID() << G4endl;
   // auto analysisManager = G4AnalysisManager::Instance();
   // analysisManager->Write();
   // analysisManager->CloseFile();
