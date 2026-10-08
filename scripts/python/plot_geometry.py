@@ -243,7 +243,7 @@ class GeometryPlotter:
         text_prop.SetColor(*color)
         text_actor.GetPositionCoordinate().SetCoordinateSystemToNormalizedViewport()
         text_actor.SetPosition(pos[0], pos[1])
-        viewer.ren.AddActor2D(text_actor)
+        viewer.ren.AddActor(text_actor)
 
     def add_vtk_point(self, viewer, position, color=(1, 0, 0), radius=2.0):
         sphere = vtk.vtkSphereSource()
@@ -568,19 +568,17 @@ class GeometryPlotter:
 
 
 if __name__ == "__main__":
-    plotter = GeometryPlotter("/Users/harperumfress/dev/BetaMonitor/output/geometry_telescope_export.gdml")
+    plotter = GeometryPlotter("/Users/harperumfress/dev/BetaMonitor/dat/betamon_geometry.gdml")
+    # dat/geometry_export_new.gdml
+    # plotter = GeometryPlotter("/Users/harperumfress/dev/BetaMonitor/dat/original_geometry_export.gdml")
     # plotter = GeometryPlotter("/Users/harperumfress/UW/betamonitor_data/original_singlethread_data/geometry_export.gdml")
-    plotter.plot_three_view_2d()
+    plotter.plot_three_view_2d(annotate=False)
     plotter.print_vol_names()
 
-    v = plotter.plot_by_volume(vol_select='SourceCal')
+    v = plotter.plot_by_volume(vol_select='tPipeFlangeScint')
     v.ren.GetActiveCamera().SetPosition(-100, 0, 0)
     v.ren.GetActiveCamera().SetFocalPoint(0, 0, 0)
 
-    points = [(-1.207637305335604,1.213240555989843,-41.132203)
-    ]
-    for point in points:
-        plotter.add_vtk_point(v, point, color=(0, 0, 1), radius=0.5)
     plotter.add_vtk_point(v, (0, 0, 0), color=(0, 0, 0), radius=5.0)
 
     plotter.add_vtk_text(v, "Axes showing origin", pos=(0.7, 0.1), font_size=48, color=(0, 0, 0))
